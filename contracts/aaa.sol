@@ -505,17 +505,18 @@ contract AAA is
 
          uniswapV2Router = IUniswapV2Router02(_routerAddress);
 
-        // uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
-        //         address(this),
-        //         uniswapV2Router.WETH()
-        //     );
+        uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
+                address(this),
+                uniswapV2Router.WETH()
+            );
 
         liquidityToken = IERC20Upgradeable(uniswapV2Pair);
+
          rewardToken1 = IERC20Upgradeable(
-            address(0x47fB260e384C807C7f365F754239408cD1ff34f2)
+             uniswapV2Router.WETH()
          ); //bnb
          rewardToken2 = IERC20Upgradeable(
-            address(0xC9882dEF23bc42D53895b8361D0b1EDC7570Bc6A)
+            address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)
          ); //fist
         rewardToken1Amount = 0.2 * 10**18; //bnb
         rewardToken2Amount = 40 * 10**6;//fist
