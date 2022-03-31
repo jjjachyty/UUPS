@@ -3,14 +3,14 @@
   "proxies": [
     {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0x772a38a0edbd566b6544a9e1c2482d19614ca34b6cb082013897ba2ac2d578a2",
+      "txHash": "0xb643f9aeace5d8be17a18b0e6721ddf23a0dc5c163358c5923cfef6dab370dc4",
       "kind": "uups"
     }
   ],
   "impls": {
-    "bb35e2334f4f3063f10cd4bdecca0c4ad1660f9978f7f5ce2ee4e50826e6464d": {
+    "a2194ab77eba4b0d94dbfbacbe1a90208a9b760c3066dc5b694e718473f072c6": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x46de83b3ac1dc77282f64adf30b26ab0fd810e4034ef82f0a4022c7ad198961c",
+      "txHash": "0xbba5a2d98512b42e449ef5df3c939a5144c21360bcae425fcc4a0e369434315a",
       "layout": {
         "storage": [
           {
@@ -116,6 +116,14 @@
             "type": "t_array(t_uint256)49_storage",
             "contract": "OwnableUpgradeable",
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "value1",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_uint256",
+            "contract": "MyTokenV1",
+            "src": "contracts\\mytoken.sol:12"
           }
         ],
         "types": {
