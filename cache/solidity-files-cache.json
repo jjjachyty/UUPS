@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/janly/data/solidity/UUPS/contracts/aaa.sol": {
-      "lastModificationDate": 1648728002351,
-      "contentHash": "dbb79c540a7b5f785794e03ebd0fcdbb",
+      "lastModificationDate": 1648735054994,
+      "contentHash": "c02fbb33a956d6f62a56aa01f8791eea",
       "sourceName": "contracts/aaa.sol",
       "solcConfig": {
         "version": "0.8.3",

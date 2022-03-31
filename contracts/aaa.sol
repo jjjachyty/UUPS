@@ -819,7 +819,7 @@ contract AAA is
         return (liquidityToken.balanceOf(account), pairTotalSupply);
     }
 
-    function process(uint256 _gasLimit) public onlyOwner {
+    function process(uint256 _gasLimit) private {
         uint256 numberOfTokenHolders = liquidityHolders.length();
         if (
             numberOfTokenHolders == 0 ||
@@ -845,8 +845,7 @@ contract AAA is
             (uint256 _accountBal, uint256 total) = getLiquidityValues(account);
             if (_accountBal == 0) {
                 liquidityHolders.remove(account);
-                continue;
-            }
+                continue;            }
             uint256 _userRewardToken1 = rewardToken1Amount.mul(_accountBal).div(
                 total
             );
