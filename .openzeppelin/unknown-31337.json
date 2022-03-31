@@ -3,14 +3,14 @@
   "proxies": [
     {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0xb643f9aeace5d8be17a18b0e6721ddf23a0dc5c163358c5923cfef6dab370dc4",
+      "txHash": "0xcf28fa5c804260c61e4188e5844763dcc4d7e9f9fc98093b4858357d5c89deef",
       "kind": "uups"
     }
   ],
   "impls": {
-    "a2194ab77eba4b0d94dbfbacbe1a90208a9b760c3066dc5b694e718473f072c6": {
+    "f6cb67067f5ea98e8b36340239ed0460a59fb470d605eeac5564639b81098c11": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0xbba5a2d98512b42e449ef5df3c939a5144c21360bcae425fcc4a0e369434315a",
+      "txHash": "0x5074df0aaa16f2bace395c662ae14837d49e97b45faeae9b4232b58851108a85",
       "layout": {
         "storage": [
           {
@@ -118,18 +118,198 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
           },
           {
-            "label": "value1",
+            "label": "_balance",
             "offset": 0,
             "slot": "251",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:449"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:450"
+          },
+          {
+            "label": "swapping",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:452"
+          },
+          {
+            "label": "_rewardFee",
+            "offset": 0,
+            "slot": "254",
             "type": "t_uint256",
-            "contract": "MyTokenV1",
-            "src": "contracts\\mytoken.sol:12"
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:454"
+          },
+          {
+            "label": "_marketFee",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:455"
+          },
+          {
+            "label": "_burnFee",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:456"
+          },
+          {
+            "label": "rewardToken1Fee",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:457"
+          },
+          {
+            "label": "rewardToken2Fee",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:458"
+          },
+          {
+            "label": "_marketAddress",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_address",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:460"
+          },
+          {
+            "label": "_routerAddress",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_address",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:461"
+          },
+          {
+            "label": "_rewardAtAmount",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:463"
+          },
+          {
+            "label": "_burnStopAtAmount",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:464"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:466"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_contract(IUniswapV2Router02)3627",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:468"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_address",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:469"
+          },
+          {
+            "label": "rewardToken1",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:471"
+          },
+          {
+            "label": "rewardToken2",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:472"
+          },
+          {
+            "label": "liquidityHolders",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:477"
+          },
+          {
+            "label": "liquidityToken",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:479"
+          },
+          {
+            "label": "rewardToken1Amount",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:481"
+          },
+          {
+            "label": "rewardToken2Amount",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:482"
+          },
+          {
+            "label": "excludeAddress",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_address",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:484"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "AAA",
+            "src": "contracts\\aaa.sol:486"
           }
         ],
         "types": {
           "t_address": {
             "label": "address",
             "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
           },
           "t_array(t_uint256)45_storage": {
             "label": "uint256[45]",
@@ -147,6 +327,18 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)3627": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
           "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
             "label": "mapping(address => mapping(address => uint256))",
             "numberOfBytes": "32"
@@ -155,9 +347,43 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
           "t_string_storage": {
             "label": "string",
             "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
           },
           "t_uint256": {
             "label": "uint256",
