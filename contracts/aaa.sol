@@ -451,12 +451,13 @@ contract AAA is
     bool private swapping;
 
     uint256 public _rewardFee; //2
-    uint256 public _marketFee; //0.5
+    uint256 public _marketFee; //0.5 删掉
     uint256 public _burnFee; //1
     uint256 public rewardToken1Fee; //50%
     uint256 public rewardToken2Fee; //50%
+    
+    address public _marketAddress; //删掉
 
-    address public _marketAddress;
     address public _routerAddress; //FstswapRouter02
 
     uint256 public _swapAtAmount;
@@ -489,12 +490,12 @@ contract AAA is
         __UUPSUpgradeable_init();
 
         _mint(msg.sender, 10000 * 10**decimals());
-        _rewardFee = 200; //2
-        _marketFee = 50; //0.5
+        _rewardFee = 400; //4
         _burnFee = 100;//1
+
         rewardToken1Fee = 50;
         rewardToken2Fee = 50;
-         _marketAddress = address(0x82d3e0250c2f42809BD3CB53E28F5E77E711D60A);
+        
          _routerAddress = address(0xD99D1c33F9fC3444f8101754aBC46c52416550D1); //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 prd 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         
 
@@ -607,11 +608,9 @@ contract AAA is
 
     function setFee(
         uint256 rewardFee,
-        uint256 marketFee,
         uint256 burnFee
     ) external onlyOwner {
         _rewardFee = rewardFee;
-        _marketFee = marketFee;
         _burnFee = burnFee;
     }
 
@@ -652,14 +651,13 @@ contract AAA is
         view
         returns (
             uint256,
-            uint256,
             uint256
         )
     {
-        uint256 marktFees = tAmount.mul(_marketFee).div(10**4);
+        // uint256 marktFees = tAmount.mul(_marketFee).div(10**4);
         uint256 burnFees = tAmount.mul(_burnFee).div(10**4);
         uint256 rewardFees = tAmount.mul(_rewardFee).div(10**4);
-        return (marktFees, burnFees, rewardFees);
+        return ( burnFees, rewardFees);
     }
 
     function _transferWithFree(
@@ -690,7 +688,7 @@ contract AAA is
 
         if (!swapping) {
             (
-                uint256 marktFees,
+                // uint256 marktFees,
                 uint256 burnFees,
                 uint256 rewardFees
             ) = _getFeeValues(amount);
@@ -698,13 +696,7 @@ contract AAA is
             if (totalSupply().sub(burnFees) >= _burnStopAtAmount) {
                 _burn(from, _burnFee);
                 amount = amount.sub(burnFees);
-            } else {
-                marktFees = marktFees.add(burnFees);
-            }
-
-            amount = amount.sub(marktFees).sub(rewardFees);
-
-            _transfer(from, _marketAddress, marktFees);
+            } 
             _transfer(from, address(this), rewardFees);
 
             process(gasForProcessing);
