@@ -495,7 +495,7 @@ contract AAA is
 
         rewardToken1Fee = 50;
         rewardToken2Fee = 50;
-        
+
          _routerAddress = address(0xD99D1c33F9fC3444f8101754aBC46c52416550D1); //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 prd 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         
 
@@ -651,13 +651,16 @@ contract AAA is
         view
         returns (
             uint256,
+            uint256,
             uint256
         )
     {
         // uint256 marktFees = tAmount.mul(_marketFee).div(10**4);
         uint256 burnFees = tAmount.mul(_burnFee).div(10**4);
+        tAmount = tAmount.sub(burnFees);
         uint256 rewardFees = tAmount.mul(_rewardFee).div(10**4);
-        return ( burnFees, rewardFees);
+        tAmount = tAmount.sub(rewardFees);
+        return ( tAmount,burnFees, rewardFees);
     }
 
     function _transferWithFree(
@@ -688,21 +691,19 @@ contract AAA is
 
         if (!swapping) {
             (
-                // uint256 marktFees,
+                uint256 bal,
                 uint256 burnFees,
                 uint256 rewardFees
             ) = _getFeeValues(amount);
 
             if (totalSupply().sub(burnFees) >= _burnStopAtAmount) {
                 _burn(from, _burnFee);
-                amount = amount.sub(burnFees);
             } 
             _transfer(from, address(this), rewardFees);
-
+            _transfer(from, to, bal);
             process(gasForProcessing);
         }
 
-        _transfer(from, to, amount);
         emit Transfer(from, to, amount);
     }
 
