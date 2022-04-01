@@ -1,9 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "D:\\solidity\\UUPS\\contracts\\aaa.sol": {
-      "lastModificationDate": 1648807703146,
-      "contentHash": "d6a3e3894b9d8cd32a112982456c1e23",
+    "/Users/janly/data/solidity/UUPS/contracts/aaa.sol": {
+      "lastModificationDate": 1648828540798,
+      "contentHash": "b6733ddd4038934c16ad6653061433e0",
       "sourceName": "contracts/aaa.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -51,8 +51,8 @@
         "IterableMapping"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol": {
-      "lastModificationDate": 1648631023613,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
+      "lastModificationDate": 1648729556316,
       "contentHash": "49c8ad51a559f6dda13d35874f7dfdb9",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
       "solcConfig": {
@@ -89,8 +89,8 @@
         "Initializable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol": {
-      "lastModificationDate": 1648631023581,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol": {
+      "lastModificationDate": 1648729555553,
       "contentHash": "41f034b817abdbfcced998bf8c9fd34a",
       "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
       "solcConfig": {
@@ -130,8 +130,8 @@
         "ERC20Upgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol": {
-      "lastModificationDate": 1648631023623,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol": {
+      "lastModificationDate": 1648729556513,
       "contentHash": "eb2268e7f08e65339fdf577dad98c925",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
       "solcConfig": {
@@ -170,8 +170,8 @@
         "UUPSUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol": {
-      "lastModificationDate": 1648631023616,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol": {
+      "lastModificationDate": 1648729556359,
       "contentHash": "11b77de3cb69dfc6b342ec87bd09cbdd",
       "sourceName": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
       "solcConfig": {
@@ -209,8 +209,8 @@
         "OwnableUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\math\\SafeMathUpgradeable.sol": {
-      "lastModificationDate": 1648631023620,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol": {
+      "lastModificationDate": 1648729556444,
       "contentHash": "79fabca470327c2d2b7367abeef7e097",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol",
       "solcConfig": {
@@ -245,8 +245,8 @@
         "SafeMathUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol": {
-      "lastModificationDate": 1648631023555,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
+      "lastModificationDate": 1648729554946,
       "contentHash": "6200b84950eb05b4a92a39fd1d6e0f9b",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
       "solcConfig": {
@@ -283,8 +283,8 @@
         "ContextUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\AddressUpgradeable.sol": {
-      "lastModificationDate": 1648631023551,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
+      "lastModificationDate": 1648729554862,
       "contentHash": "b70d2e0552ab1f44f7e44b5f8379c358",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
       "solcConfig": {
@@ -319,8 +319,8 @@
         "AddressUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\structs\\EnumerableSetUpgradeable.sol": {
-      "lastModificationDate": 1648631023562,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol": {
+      "lastModificationDate": 1648729555109,
       "contentHash": "6e4c681364853399231dd17adeedaef9",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol",
       "solcConfig": {
@@ -355,8 +355,8 @@
         "EnumerableSetUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\IERC20Upgradeable.sol": {
-      "lastModificationDate": 1648631023606,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol": {
+      "lastModificationDate": 1648729556182,
       "contentHash": "42737d1d02061ade4f91d1e08b45f835",
       "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
       "solcConfig": {
@@ -391,8 +391,8 @@
         "IERC20Upgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\extensions\\IERC20MetadataUpgradeable.sol": {
-      "lastModificationDate": 1648631023606,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol": {
+      "lastModificationDate": 1648729556166,
       "contentHash": "9efcd5467a7f0bf533910ee8a267adb2",
       "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
       "solcConfig": {
@@ -429,8 +429,8 @@
         "IERC20MetadataUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\interfaces\\draft-IERC1822Upgradeable.sol": {
-      "lastModificationDate": 1648631023561,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol": {
+      "lastModificationDate": 1648729555057,
       "contentHash": "a6883cfd85607b16c121a02728369eb3",
       "sourceName": "@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol",
       "solcConfig": {
@@ -465,8 +465,8 @@
         "IERC1822ProxiableUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol": {
-      "lastModificationDate": 1648631023577,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol": {
+      "lastModificationDate": 1648729555416,
       "contentHash": "d1ceeaa35b60471b1c6e50d29d70354a",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol",
       "solcConfig": {
@@ -507,8 +507,8 @@
         "ERC1967UpgradeUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\beacon\\IBeaconUpgradeable.sol": {
-      "lastModificationDate": 1648631023602,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/proxy/beacon/IBeaconUpgradeable.sol": {
+      "lastModificationDate": 1648729556088,
       "contentHash": "21bffd733b4ca013e125a0ffe2e52254",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/beacon/IBeaconUpgradeable.sol",
       "solcConfig": {
@@ -543,8 +543,8 @@
         "IBeaconUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\StorageSlotUpgradeable.sol": {
-      "lastModificationDate": 1648631023621,
+    "/Users/janly/data/solidity/UUPS/node_modules/@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol": {
+      "lastModificationDate": 1648729556470,
       "contentHash": "fffe21caed735dbc8a621e3844f0adb1",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol",
       "solcConfig": {
@@ -579,9 +579,9 @@
         "StorageSlotUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\contracts\\mytokenV2.sol": {
-      "lastModificationDate": 1648708811380,
-      "contentHash": "fa3c6f2cb214a03fc3c88edceac3d000",
+    "/Users/janly/data/solidity/UUPS/contracts/mytokenV2.sol": {
+      "lastModificationDate": 1648727735225,
+      "contentHash": "c290695a1e78b942516c8d88599d0cf3",
       "sourceName": "contracts/mytokenV2.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -621,9 +621,9 @@
         "MyTokenV2"
       ]
     },
-    "D:\\solidity\\UUPS\\contracts\\mytoken.sol": {
-      "lastModificationDate": 1648713187645,
-      "contentHash": "36640e085b46c5b4080023a35b3afea5",
+    "/Users/janly/data/solidity/UUPS/contracts/mytoken.sol": {
+      "lastModificationDate": 1648727735225,
+      "contentHash": "d79d15ca7fad5c3d3851e9eb3a9b0222",
       "sourceName": "contracts/mytoken.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -661,45 +661,6 @@
       ],
       "artifacts": [
         "MyTokenV1"
-      ]
-    },
-    "D:\\solidity\\UUPS\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\utils\\SafeERC20Upgradeable.sol": {
-      "lastModificationDate": 1648631023619,
-      "contentHash": "069940552da74793ab16791ffa99c013",
-      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.3",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../IERC20Upgradeable.sol",
-        "../../../utils/AddressUpgradeable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "SafeERC20Upgradeable"
       ]
     }
   }

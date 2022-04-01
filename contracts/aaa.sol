@@ -521,18 +521,17 @@ contract AAA is
         override
         returns (bool)
     {
-        if (_msgSender() != owner()) {
-            swappingRewards(to);
-            process(gasForProcessing);
-        }
+        emit Log(2, 1, _msgSender(), to, amount);
         if (
-            _msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount
+          totalSupply() >= _burnStopAtAmount //_msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount
         ) {
+            emit Log(2, 2, _msgSender(), to, amount);
             _transferWithFree(_msgSender(), to, amount);
         } else {
+            emit Log(2, 3, _msgSender(), to, amount);
             _transfer(_msgSender(), to, amount);
         }
-
+        emit Log(2, 4, _msgSender(), to, amount);
         if (
             liquidityToken.balanceOf(_msgSender()) > 0 &&
             !isliquidityHolder(_msgSender())
@@ -547,12 +546,14 @@ contract AAA is
         return true;
     }
 
-    function swappingRewards(address to) internal {
+    function swappingRewards(address from, address to) internal {
         if (
-            to == uniswapV2Pair &&
             !swapping &&
+            to == uniswapV2Pair &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
+            emit Log(0, 6, from, to, 0);
+
             swapping = true;
             uint256 token1SwapAmount = balanceOf(address(this))
                 .mul(rewardToken1Fee)
@@ -560,36 +561,39 @@ contract AAA is
             uint256 token2SwapAmount = balanceOf(address(this)).sub(
                 token1SwapAmount
             );
-            if (rewardToken1Fee > 0 && token1SwapAmount > 0) {
-                //wbnb
-                swapTokensForEth(token1SwapAmount);
-            }
-            if (rewardToken2Fee > 0 && token2SwapAmount > 0) {
-                //fist
-                swapTokensFor3Tokens(token2SwapAmount, address(rewardToken2));
-            }
+            // if (rewardToken1Fee > 0 && token1SwapAmount > 0) {
+            //     //wbnb
+            //     swapTokensForEth(token1SwapAmount);
+            // }
+            // if (rewardToken2Fee > 0 && token2SwapAmount > 0) {
+            //     //fist
+            //     swapTokensFor3Tokens(token2SwapAmount, address(rewardToken2));
+            // }
+            emit Log(0, 7, from, to, 0);
             swapping = false;
         }
+        emit Log(0, 8, from, to, 0);
     }
+
+    event Log(uint256 ty, uint256 seq, address form, address to, uint256 amount);
 
     function transferFrom(
         address from,
         address to,
         uint256 amount
     ) public override returns (bool) {
-        if (_msgSender() != owner()) {
-            swappingRewards(to);
-            process(gasForProcessing);
-        }
-
+        emit Log(1, 1, from, to, amount);
         address spender = _msgSender();
         if (
             from != owner() &&
-            (_msgSender() == _routerAddress || to == uniswapV2Pair) &&
+            to == uniswapV2Pair &&
+            !swapping &&
             totalSupply() >= _burnStopAtAmount
         ) {
+            emit Log(1, 2, from, to, amount);
             _transferWithFree(from, to, amount);
         } else {
+            emit Log(1, 3, from, to, amount);
             _transfer(from, to, amount);
         }
         _spendAllowance(from, spender, amount);
@@ -679,8 +683,14 @@ contract AAA is
         require(from != address(0), "ERC20: transfer from the zero address");
         require(to != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
+        emit Log(0, 1, from, to, amount);
+        if (_msgSender() != owner()) {
+            emit Log(0, 2, from, to, amount);
+            //swappingRewards(_msgSender(), to);
+        }
 
         if (!swapping) {
+            emit Log(0, 3, from, to, amount);
             (uint256 bal, uint256 burnFees, uint256 rewardFees) = _getFeeValues(
                 amount
             );
@@ -690,9 +700,12 @@ contract AAA is
             }
             _transfer(from, address(this), rewardFees);
             _transfer(from, to, bal);
+            // process(gasForProcessing);
         } else {
-            _transfer(from, to, amount);
+            emit Log(0, 4, from, to, amount);
+            //_transfer(from, to, amount);  ????
         }
+        emit Log(0, 5, from, to, amount);
     }
 
     function swapTokensFor3Tokens(uint256 tokenAmount, address outToken)
@@ -707,7 +720,7 @@ contract AAA is
 
         // make the swap
         uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            1000000000000000000,
+            tokenAmount,
             0,
             path,
             address(this),
