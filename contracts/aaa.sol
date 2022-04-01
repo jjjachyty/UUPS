@@ -12,7 +12,6 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
-
 library IterableMapping {
     // Iterable mapping from address to uint;
     struct Map {
@@ -435,7 +434,6 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-
 contract AAA is
     Initializable,
     ERC20Upgradeable,
@@ -444,9 +442,8 @@ contract AAA is
 {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
-    using EnumerableSetUpgradeable  for EnumerableSetUpgradeable.AddressSet;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
-  
     EnumerableSetUpgradeable.AddressSet private liquidityHolders;
     bool private swapping;
 
@@ -455,7 +452,7 @@ contract AAA is
     uint256 public _burnFee; //1
     uint256 public rewardToken1Fee; //50%
     uint256 public rewardToken2Fee; //50%
-    
+
     address public _marketAddress; //删掉
 
     address public _routerAddress; //FstswapRouter02
@@ -477,8 +474,6 @@ contract AAA is
     address public excludeAddress;
     uint256 public lastProcessedIndex;
 
-
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
@@ -491,20 +486,18 @@ contract AAA is
 
         _mint(msg.sender, 10000 * 10**decimals());
         _rewardFee = 400; //4
-        _burnFee = 100;//1
+        _burnFee = 100; //1
 
         rewardToken1Fee = 50;
         rewardToken2Fee = 50;
 
-         _routerAddress = address(0xD99D1c33F9fC3444f8101754aBC46c52416550D1); //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 prd 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
-        
+        _routerAddress = address(0xD99D1c33F9fC3444f8101754aBC46c52416550D1); //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 prd 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
 
-         _swapAtAmount  = 15 * 10**decimals();
-         _burnStopAtAmount = 900 * 10**decimals();
-         gasForProcessing = 3 * 10**4;
+        _swapAtAmount = 15 * 10**decimals();
+        _burnStopAtAmount = 900 * 10**decimals();
+        gasForProcessing = 3 * 10**4;
 
-
-         uniswapV2Router = IUniswapV2Router02(_routerAddress);
+        uniswapV2Router = IUniswapV2Router02(_routerAddress);
 
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
@@ -513,18 +506,15 @@ contract AAA is
 
         liquidityToken = IERC20Upgradeable(uniswapV2Pair);
 
-         rewardToken1 = IERC20Upgradeable(
-             uniswapV2Router.WETH()
-         ); //bnb
-         rewardToken2 = IERC20Upgradeable(
+        rewardToken1 = IERC20Upgradeable(uniswapV2Router.WETH()); //bnb
+        rewardToken2 = IERC20Upgradeable(
             address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)
-         ); //fist
+        ); //fist
         rewardToken1Amount = 0.2 * 10**18; //bnb
-        rewardToken2Amount = 40 * 10**6;//fist
+        rewardToken2Amount = 40 * 10**6; //fist
 
         emit Transfer(address(0), _msgSender(), totalSupply());
     }
-
 
     function gas() public view returns (uint256) {
         return address(this).balance;
@@ -532,11 +522,16 @@ contract AAA is
 
     function transfer(address to, uint256 amount)
         public
-        virtual
         override
         returns (bool)
     {
-        if (_msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount) {
+        if (_msgSender() != owner()){
+            swappingRewards(to);
+            process(gasForProcessing);
+        }
+        if (
+            _msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount
+        ) {
             _transferWithFree(_msgSender(), to, amount);
         } else {
             _transfer(_msgSender(), to, amount);
@@ -556,33 +551,58 @@ contract AAA is
         return true;
     }
 
+    function swappingRewards(address to) internal {
+        if (
+            to == uniswapV2Pair &&
+            !swapping &&
+            balanceOf(address(this)) >= _swapAtAmount
+        ) {
+            swapping = true;
+            if (rewardToken1Fee > 0) {
+                //wbnb
+                swapTokensForEth(
+                    balanceOf(address(this)).mul(rewardToken1Fee).div(10**2)
+                );
+            }
+            if (rewardToken1Fee > 0) {
+                //fist
+                swapTokensFor3Tokens(
+                    balanceOf(address(this)).mul(rewardToken2Fee).div(10**2),
+                    address(rewardToken2)
+                );
+            }
+            swapping = false;
+        }
+    }
 
     function transferFrom(
         address from,
         address to,
         uint256 amount
     ) public override returns (bool) {
+     if (_msgSender() != owner()){
+            swappingRewards(to);
+            process(gasForProcessing);
+        }
+
         address spender = _msgSender();
         if (
             from != owner() &&
-            (_msgSender() == _routerAddress || to == uniswapV2Pair) && totalSupply() >= _burnStopAtAmount
+            (_msgSender() == _routerAddress || to == uniswapV2Pair) &&
+            totalSupply() >= _burnStopAtAmount
         ) {
             _transferWithFree(from, to, amount);
         } else {
             _transfer(from, to, amount);
         }
-            _spendAllowance(from, spender, amount);
+        _spendAllowance(from, spender, amount);
 
-        if (
-            liquidityToken.balanceOf(from) > 0 &&
-            !isliquidityHolder(from)
-        ) {
+        if (liquidityToken.balanceOf(from) > 0 && !isliquidityHolder(from)) {
             addHolder(from);
         } else if (
-            liquidityToken.balanceOf(from) == 0 &&
-            isliquidityHolder(from)
+            liquidityToken.balanceOf(from) == 0 && isliquidityHolder(from)
         ) {
-           removeHolder(from);
+            removeHolder(from);
         }
 
         return true;
@@ -591,8 +611,6 @@ contract AAA is
     function setSwapAtAmount(uint256 rewardAtAmount) public onlyOwner {
         _swapAtAmount = rewardAtAmount;
     }
-
-
 
     function updateGasForProcessing(uint256 newValue) public onlyOwner {
         require(
@@ -606,10 +624,7 @@ contract AAA is
         gasForProcessing = newValue;
     }
 
-    function setFee(
-        uint256 rewardFee,
-        uint256 burnFee
-    ) external onlyOwner {
+    function setFee(uint256 rewardFee, uint256 burnFee) external onlyOwner {
         _rewardFee = rewardFee;
         _burnFee = burnFee;
     }
@@ -625,9 +640,6 @@ contract AAA is
         rewardToken1 = IERC20Upgradeable(_rewardToken1);
         rewardToken2 = IERC20Upgradeable(_rewardToken2);
     }
-
-
-
 
     function setRewardTokenFree(
         uint256 _rewardToken1Free,
@@ -645,7 +657,6 @@ contract AAA is
         _burn(account, amount);
     }
 
-
     function _getFeeValues(uint256 tAmount)
         public
         view
@@ -660,7 +671,7 @@ contract AAA is
         tAmount = tAmount.sub(burnFees);
         uint256 rewardFees = tAmount.mul(_rewardFee).div(10**4);
         tAmount = tAmount.sub(rewardFees);
-        return ( tAmount,burnFees, rewardFees);
+        return (tAmount, burnFees, rewardFees);
     }
 
     function _transferWithFree(
@@ -672,48 +683,47 @@ contract AAA is
         require(to != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
 
-        if (!swapping && balanceOf(address(this)) >= _swapAtAmount) {
-            swapping = true;
-            if (rewardToken1Fee > 0) {
-                swapTokensForTokens(
-                    balanceOf(address(this)).mul(rewardToken1Fee).div(10**2),
-                    address(rewardToken1)
-                );
-            }
-            if (rewardToken1Fee > 0) {
-                swapTokensForTokens(
-                    balanceOf(address(this)).mul(rewardToken2Fee).div(10**2),
-                    address(rewardToken2)
-                );
-            }
-            swapping = false;
-        }
-
         if (!swapping) {
-            (
-                uint256 bal,
-                uint256 burnFees,
-                uint256 rewardFees
-            ) = _getFeeValues(amount);
+            (uint256 bal, uint256 burnFees, uint256 rewardFees) = _getFeeValues(
+                amount
+            );
 
             if (totalSupply().sub(burnFees) >= _burnStopAtAmount) {
                 _burn(from, _burnFee);
-            } 
+            }
             _transfer(from, address(this), rewardFees);
             _transfer(from, to, bal);
-            process(gasForProcessing);
+        } else {
+            _transfer(from, to, amount);
         }
-
-        emit Transfer(from, to, amount);
     }
 
-    function swapTokensForTokens(uint256 tokenAmount, address outToken)
-        private
+    function swapTokensFor3Tokens(uint256 tokenAmount, address outToken)
+        public
     {
         address[] memory path = new address[](3);
         path[0] = address(this);
         path[1] = uniswapV2Router.WETH();
         path[2] = outToken;
+
+        _approve(address(this), address(uniswapV2Router), tokenAmount);
+
+        // make the swap
+        uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            1000000000000000000,
+            0,
+            path,
+            address(this),
+            block.timestamp
+        );
+    }
+
+    function swapTokensFor2Tokens(uint256 tokenAmount, address outToken)
+        public
+    {
+        address[] memory path = new address[](2);
+        path[0] = address(this);
+        path[1] = outToken;
 
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
@@ -727,13 +737,27 @@ contract AAA is
         );
     }
 
-    function balanceOfRewad() external view returns (uint256, uint256) {
-        return (
-            rewardToken1.balanceOf(address(this)),
-            rewardToken2.balanceOf(address(this))
+    function swapTokensForEth(uint256 tokenAmount) public {
+        // generate the uniswap pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = address(this);
+        path[1] = uniswapV2Router.WETH();
+
+        _approve(address(this), address(uniswapV2Router), tokenAmount);
+
+        // make the swap
+        uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
+            tokenAmount,
+            0, // accept any amount of ETH
+            path,
+            address(this),
+            block.timestamp
         );
     }
 
+    function balanceOfRewad() external view returns (uint256, uint256) {
+        return (address(this).balance, rewardToken2.balanceOf(address(this)));
+    }
 
     function take(address token) public onlyOwner {
         IERC20Upgradeable(token).transfer(
@@ -751,6 +775,7 @@ contract AAA is
         }
         return true;
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     function setliquidityAddress(address addr) public onlyOwner {
         liquidityToken = IERC20Upgradeable(addr);
@@ -772,19 +797,11 @@ contract AAA is
         liquidityHolders.add(account);
     }
 
-    function isliquidityHolder(address account)
-        public
-        view
-        returns (bool)
-    {
+    function isliquidityHolder(address account) public view returns (bool) {
         return liquidityHolders.contains(account);
     }
 
-    function liquidityHolderIndexLength()
-        public
-        view
-        returns (uint256)
-    {
+    function liquidityHolderIndexLength() public view returns (uint256) {
         return liquidityHolders.length();
     }
 
@@ -795,11 +812,9 @@ contract AAA is
     //to recieve ETH from uniswapV2Router when swaping
     receive() external payable {}
 
-
     function getLiquidityValues(address account)
         public
         view
-        
         returns (uint256, uint256)
     {
         uint256 pairTotalSupply = liquidityToken.totalSupply();
@@ -816,7 +831,7 @@ contract AAA is
         uint256 numberOfTokenHolders = liquidityHolders.length();
         if (
             numberOfTokenHolders == 0 ||
-            rewardToken1.balanceOf(address(this)) < rewardToken1Amount ||
+            address(this).balance < rewardToken1Amount ||
             rewardToken2.balanceOf(address(this)) < rewardToken2Amount
         ) {
             return;
@@ -838,7 +853,8 @@ contract AAA is
             (uint256 _accountBal, uint256 total) = getLiquidityValues(account);
             if (_accountBal == 0) {
                 liquidityHolders.remove(account);
-                continue;            }
+                continue;
+            }
             uint256 _userRewardToken1 = rewardToken1Amount.mul(_accountBal).div(
                 total
             );
@@ -847,11 +863,12 @@ contract AAA is
             );
 
             if (
-                rewardToken1.balanceOf(address(this)) < _userRewardToken1 ||
+                address(this).balance < _userRewardToken1 ||
                 rewardToken2.balanceOf(address(this)) < _userRewardToken2
             ) {
                 return;
-            }            if (
+            }
+            if (
                 _accountBal > 0 &&
                 total > 0 &&
                 account != excludeAddress &&
