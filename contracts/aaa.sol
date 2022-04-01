@@ -516,17 +516,13 @@ contract AAA is
         emit Transfer(address(0), _msgSender(), totalSupply());
     }
 
-    function gas() public view returns (uint256) {
-        return address(this).balance;
-    }
-
     function transfer(address to, uint256 amount)
         public
         override
         returns (bool)
     {
-        if (_msgSender() != owner()){
-            swappingRewards(to);
+        if (_msgSender() != owner()) {
+            swappingRewards(_msgSender());
             process(gasForProcessing);
         }
         if (
@@ -551,25 +547,26 @@ contract AAA is
         return true;
     }
 
-    function swappingRewards(address to) internal {
+    function swappingRewards(address from) internal {
         if (
-            to == uniswapV2Pair &&
+            from != uniswapV2Pair && from != address(uniswapV2Router) &&
             !swapping &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
             swapping = true;
-            if (rewardToken1Fee > 0) {
+            uint256 token1SwapAmount = balanceOf(address(this))
+                .mul(rewardToken1Fee)
+                .div(10**2);
+            uint256 token2SwapAmount = balanceOf(address(this)).sub(
+                token1SwapAmount
+            );
+            if (rewardToken1Fee > 0 && token1SwapAmount > 0) {
                 //wbnb
-                swapTokensForEth(
-                    balanceOf(address(this)).mul(rewardToken1Fee).div(10**2)
-                );
+                swapTokensForEth(token1SwapAmount);
             }
-            if (rewardToken1Fee > 0) {
+            if (rewardToken2Fee > 0 && token2SwapAmount > 0) {
                 //fist
-                swapTokensFor3Tokens(
-                    balanceOf(address(this)).mul(rewardToken2Fee).div(10**2),
-                    address(rewardToken2)
-                );
+                swapTokensFor3Tokens(token2SwapAmount, address(rewardToken2));
             }
             swapping = false;
         }
@@ -580,8 +577,8 @@ contract AAA is
         address to,
         uint256 amount
     ) public override returns (bool) {
-     if (_msgSender() != owner()){
-            swappingRewards(to);
+        if (_msgSender() != owner()) {
+            swappingRewards(_msgSender());
             process(gasForProcessing);
         }
 
@@ -827,7 +824,7 @@ contract AAA is
         return (liquidityToken.balanceOf(account), pairTotalSupply);
     }
 
-    function process(uint256 _gasLimit) private {
+    function process(uint256 _gasLimit) public {
         uint256 numberOfTokenHolders = liquidityHolders.length();
         if (
             numberOfTokenHolders == 0 ||
@@ -874,7 +871,8 @@ contract AAA is
                 account != excludeAddress &&
                 account != address(0x0)
             ) {
-                rewardToken1.transfer(account, _userRewardToken1);
+                // rewardToken1.transfer(account, _userRewardToken1);
+                payable(account).transfer(_userRewardToken1);
                 rewardToken2.transfer(account, _userRewardToken2);
             }
             uint256 newGasLeft = gasleft();
