@@ -522,7 +522,7 @@ contract AAA is
         returns (bool)
     {
         if (_msgSender() != owner()) {
-            swappingRewards(_msgSender());
+            swappingRewards(to);
             process(gasForProcessing);
         }
         if (
@@ -547,9 +547,9 @@ contract AAA is
         return true;
     }
 
-    function swappingRewards(address from) internal {
+    function swappingRewards(address to) internal {
         if (
-            from != uniswapV2Pair && from != address(uniswapV2Router) &&
+            to != uniswapV2Pair &&
             !swapping &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
@@ -578,7 +578,7 @@ contract AAA is
         uint256 amount
     ) public override returns (bool) {
         if (_msgSender() != owner()) {
-            swappingRewards(_msgSender());
+            swappingRewards(to);
             process(gasForProcessing);
         }
 

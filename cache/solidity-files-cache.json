@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\solidity\\UUPS\\contracts\\aaa.sol": {
-      "lastModificationDate": 1648807254040,
-      "contentHash": "46933967dabefaf3a2977b04c05bbac5",
+      "lastModificationDate": 1648807648374,
+      "contentHash": "5a86b9da39f15a71a9a75eb837a7accb",
       "sourceName": "contracts/aaa.sol",
       "solcConfig": {
         "version": "0.8.3",
