@@ -549,7 +549,7 @@ contract AAA is
 
     function swappingRewards(address to) internal {
         if (
-            to != uniswapV2Pair &&
+            to == uniswapV2Pair &&
             !swapping &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
