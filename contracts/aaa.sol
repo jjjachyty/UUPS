@@ -486,7 +486,7 @@ contract AAA is
     function swappingRewards(address from, address to) internal {
         if (
             !swapping &&
-            to == uniswapV2Pair &&
+            from != uniswapV2Pair &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
             emit Log(0, 6, from, to, 0);
@@ -531,7 +531,7 @@ contract AAA is
         address spender = _msgSender();
         if (
             from != owner() &&
-            to == uniswapV2Pair &&
+            // to == uniswapV2Pair &&
             totalSupply() >= _burnStopAtAmount
         ) {
             emit Log(1, 2, from, to, amount);
@@ -633,7 +633,7 @@ contract AAA is
         emit Log(0, 1, from, to, amount);
 
         emit Log(0, 2, from, to, amount);
-        swappingRewards(_msgSender(), to);
+        swappingRewards(from, to);
 
         if (!swapping) {
             emit Log(0, 3, from, to, amount);
