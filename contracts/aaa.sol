@@ -12,7 +12,6 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
-
 interface IUniswapV2Factory {
     event PairCreated(
         address indexed token0,
@@ -469,10 +468,14 @@ contract AAA is
             ) {
                 removeHolder(to);
             }
-            if (liquidityToken.balanceOf(_msgSender()) > 0 && !isliquidityHolder(_msgSender())) {
+            if (
+                liquidityToken.balanceOf(_msgSender()) > 0 &&
+                !isliquidityHolder(_msgSender())
+            ) {
                 addHolder(_msgSender());
             } else if (
-                liquidityToken.balanceOf(_msgSender()) == 0 && isliquidityHolder(_msgSender())
+                liquidityToken.balanceOf(_msgSender()) == 0 &&
+                isliquidityHolder(_msgSender())
             ) {
                 removeHolder(_msgSender());
             }
@@ -483,7 +486,7 @@ contract AAA is
     function swappingRewards(address from, address to) internal {
         if (
             !swapping &&
-             to == uniswapV2Pair &&
+            to == uniswapV2Pair &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
             emit Log(0, 6, from, to, 0);
@@ -637,17 +640,18 @@ contract AAA is
             (uint256 bal, uint256 burnFees, uint256 rewardFees) = _getFeeValues(
                 amount
             );
-
+            amount = bal;
             if (totalSupply().sub(burnFees) >= _burnStopAtAmount) {
-                _burn(from, _burnFee);
+                emit Log(0, 2222, from, to, balanceOf(from));
+                _burn(from, burnFees);
             }
+            emit Log(0, 333, from, to, balanceOf(from));
+
             _transfer(from, address(this), rewardFees);
-            _transfer(from, to, bal);
             process(gasForProcessing);
-        } else {
-            emit Log(0, 4, from, to, amount);
-            _transfer(from, to, amount); //????
         }
+        _transfer(from, to, amount);
+
         emit Log(0, 5, from, to, amount);
     }
 
