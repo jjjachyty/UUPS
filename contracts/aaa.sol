@@ -12,76 +12,6 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
-library IterableMapping {
-    // Iterable mapping from address to uint;
-    struct Map {
-        address[] keys;
-        mapping(address => uint256) values;
-        mapping(address => uint256) indexOf;
-        mapping(address => bool) inserted;
-    }
-
-    function get(Map storage map, address key) public view returns (uint256) {
-        return map.values[key];
-    }
-
-    function getIndexOfKey(Map storage map, address key)
-        public
-        view
-        returns (int256)
-    {
-        if (!map.inserted[key]) {
-            return -1;
-        }
-        return int256(map.indexOf[key]);
-    }
-
-    function getKeyAtIndex(Map storage map, uint256 index)
-        public
-        view
-        returns (address)
-    {
-        return map.keys[index];
-    }
-
-    function size(Map storage map) public view returns (uint256) {
-        return map.keys.length;
-    }
-
-    function set(
-        Map storage map,
-        address key,
-        uint256 val
-    ) public {
-        if (map.inserted[key]) {
-            map.values[key] = val;
-        } else {
-            map.inserted[key] = true;
-            map.values[key] = val;
-            map.indexOf[key] = map.keys.length;
-            map.keys.push(key);
-        }
-    }
-
-    function remove(Map storage map, address key) public {
-        if (!map.inserted[key]) {
-            return;
-        }
-
-        delete map.inserted[key];
-        delete map.values[key];
-
-        uint256 index = map.indexOf[key];
-        uint256 lastIndex = map.keys.length - 1;
-        address lastKey = map.keys[lastIndex];
-
-        map.indexOf[lastKey] = index;
-        delete map.indexOf[key];
-
-        map.keys[index] = lastKey;
-        map.keys.pop();
-    }
-}
 
 interface IUniswapV2Factory {
     event PairCreated(
@@ -452,7 +382,6 @@ contract AAA is
     uint256 public rewardToken1Fee; //50%
     uint256 public rewardToken2Fee; //50%
 
-
     address public _routerAddress; //FstswapRouter02
 
     uint256 public _swapAtAmount;
@@ -521,7 +450,9 @@ contract AAA is
     {
         emit Log(2, 1, _msgSender(), to, amount);
         if (
-         _msgSender() != owner() && _msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount 
+            _msgSender() != owner() &&
+            _msgSender() == uniswapV2Pair &&
+            totalSupply() >= _burnStopAtAmount
         ) {
             emit Log(2, 2, _msgSender(), to, amount);
             _transferWithFree(_msgSender(), to, amount);
@@ -530,16 +461,21 @@ contract AAA is
             _transfer(_msgSender(), to, amount);
         }
         emit Log(2, 4, _msgSender(), to, amount);
-        if (
-            liquidityToken.balanceOf(_msgSender()) > 0 &&
-            !isliquidityHolder(_msgSender())
-        ) {
-            addHolder(_msgSender());
-        } else if (
-            liquidityToken.balanceOf(_msgSender()) == 0 &&
-            isliquidityHolder(_msgSender())
-        ) {
-            removeHolder(_msgSender());
+        if (!swapping) {
+            if (liquidityToken.balanceOf(to) > 0 && !isliquidityHolder(to)) {
+                addHolder(to);
+            } else if (
+                liquidityToken.balanceOf(to) == 0 && isliquidityHolder(to)
+            ) {
+                removeHolder(to);
+            }
+            if (liquidityToken.balanceOf(_msgSender()) > 0 && !isliquidityHolder(_msgSender())) {
+                addHolder(_msgSender());
+            } else if (
+                liquidityToken.balanceOf(_msgSender()) == 0 && isliquidityHolder(_msgSender())
+            ) {
+                removeHolder(_msgSender());
+            }
         }
         return true;
     }
@@ -575,7 +511,13 @@ contract AAA is
         emit Log(0, 8, from, to, 0);
     }
 
-    event Log(uint256 ty, uint256 seq, address form, address to, uint256 amount);
+    event Log(
+        uint256 ty,
+        uint256 seq,
+        address form,
+        address to,
+        uint256 amount
+    );
 
     function transferFrom(
         address from,
@@ -597,14 +539,17 @@ contract AAA is
         }
         _spendAllowance(from, spender, amount);
 
-        if (liquidityToken.balanceOf(from) > 0 && !isliquidityHolder(from)) {
-            addHolder(from);
-        } else if (
-            liquidityToken.balanceOf(from) == 0 && isliquidityHolder(from)
-        ) {
-            removeHolder(from);
+        if (!swapping && from != owner()) {
+            if (
+                liquidityToken.balanceOf(from) > 0 && !isliquidityHolder(from)
+            ) {
+                addHolder(from);
+            } else if (
+                liquidityToken.balanceOf(from) == 0 && isliquidityHolder(from)
+            ) {
+                removeHolder(from);
+            }
         }
-
         return true;
     }
 
@@ -683,10 +628,9 @@ contract AAA is
         require(to != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
         emit Log(0, 1, from, to, amount);
-        
-            emit Log(0, 2, from, to, amount);
-            swappingRewards(_msgSender(), to);
-        
+
+        emit Log(0, 2, from, to, amount);
+        swappingRewards(_msgSender(), to);
 
         if (!swapping) {
             emit Log(0, 3, from, to, amount);
@@ -702,7 +646,7 @@ contract AAA is
             process(gasForProcessing);
         } else {
             emit Log(0, 4, from, to, amount);
-            _transfer(from, to, amount);  //????
+            _transfer(from, to, amount); //????
         }
         emit Log(0, 5, from, to, amount);
     }
@@ -802,7 +746,7 @@ contract AAA is
         excludeAddress = _account;
     }
 
-    function addHolder(address account) public onlyOwner {
+    function addHolder(address account) public {
         liquidityHolders.add(account);
     }
 
@@ -814,7 +758,7 @@ contract AAA is
         return liquidityHolders.length();
     }
 
-    function removeHolder(address account) public onlyOwner {
+    function removeHolder(address account) public {
         liquidityHolders.remove(account);
     }
 
