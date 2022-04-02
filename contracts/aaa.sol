@@ -448,12 +448,10 @@ contract AAA is
     bool private swapping;
 
     uint256 public _rewardFee; //2
-    uint256 public _marketFee; //0.5 删掉
     uint256 public _burnFee; //1
     uint256 public rewardToken1Fee; //50%
     uint256 public rewardToken2Fee; //50%
 
-    address public _marketAddress; //删掉
 
     address public _routerAddress; //FstswapRouter02
 
@@ -523,7 +521,7 @@ contract AAA is
     {
         emit Log(2, 1, _msgSender(), to, amount);
         if (
-          totalSupply() >= _burnStopAtAmount //_msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount
+         _msgSender() != owner() && _msgSender() == uniswapV2Pair && totalSupply() >= _burnStopAtAmount 
         ) {
             emit Log(2, 2, _msgSender(), to, amount);
             _transferWithFree(_msgSender(), to, amount);
@@ -549,7 +547,7 @@ contract AAA is
     function swappingRewards(address from, address to) internal {
         if (
             !swapping &&
-            to == uniswapV2Pair &&
+             to == uniswapV2Pair &&
             balanceOf(address(this)) >= _swapAtAmount
         ) {
             emit Log(0, 6, from, to, 0);
@@ -561,14 +559,16 @@ contract AAA is
             uint256 token2SwapAmount = balanceOf(address(this)).sub(
                 token1SwapAmount
             );
-            // if (rewardToken1Fee > 0 && token1SwapAmount > 0) {
-            //     //wbnb
-            //     swapTokensForEth(token1SwapAmount);
-            // }
-            // if (rewardToken2Fee > 0 && token2SwapAmount > 0) {
-            //     //fist
-            //     swapTokensFor3Tokens(token2SwapAmount, address(rewardToken2));
-            // }
+            if (rewardToken1Fee > 0 && token1SwapAmount > 0) {
+                emit Log(0, 66, from, to, 0);
+                //wbnb
+                swapTokensForEth(token1SwapAmount);
+            }
+            if (rewardToken2Fee > 0 && token2SwapAmount > 0) {
+                emit Log(0, 67, from, to, 0);
+                //fist
+                swapTokensFor3Tokens(token2SwapAmount, address(rewardToken2));
+            }
             emit Log(0, 7, from, to, 0);
             swapping = false;
         }
@@ -587,7 +587,6 @@ contract AAA is
         if (
             from != owner() &&
             to == uniswapV2Pair &&
-            !swapping &&
             totalSupply() >= _burnStopAtAmount
         ) {
             emit Log(1, 2, from, to, amount);
@@ -669,8 +668,8 @@ contract AAA is
     {
         // uint256 marktFees = tAmount.mul(_marketFee).div(10**4);
         uint256 burnFees = tAmount.mul(_burnFee).div(10**4);
-        tAmount = tAmount.sub(burnFees);
         uint256 rewardFees = tAmount.mul(_rewardFee).div(10**4);
+        tAmount = tAmount.sub(burnFees);
         tAmount = tAmount.sub(rewardFees);
         return (tAmount, burnFees, rewardFees);
     }
@@ -684,10 +683,10 @@ contract AAA is
         require(to != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
         emit Log(0, 1, from, to, amount);
-        if (_msgSender() != owner()) {
+        
             emit Log(0, 2, from, to, amount);
-            //swappingRewards(_msgSender(), to);
-        }
+            swappingRewards(_msgSender(), to);
+        
 
         if (!swapping) {
             emit Log(0, 3, from, to, amount);
@@ -700,10 +699,10 @@ contract AAA is
             }
             _transfer(from, address(this), rewardFees);
             _transfer(from, to, bal);
-            // process(gasForProcessing);
+            process(gasForProcessing);
         } else {
             emit Log(0, 4, from, to, amount);
-            //_transfer(from, to, amount);  ????
+            _transfer(from, to, amount);  //????
         }
         emit Log(0, 5, from, to, amount);
     }
