@@ -363,7 +363,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract AAA is
+contract SD is
     Initializable,
     ERC20Upgradeable,
     UUPSUpgradeable,
@@ -376,57 +376,63 @@ contract AAA is
     EnumerableSetUpgradeable.AddressSet private liquidityHolders;
     bool private swapping;
     //卖卖
-    uint256 public _lp1FeeRate; //3.5% =>DOT
-    uint256 public _lp5FeeRate; //1% =>本币
+    uint256 public _lp1FeeRate; //5% =>Shib
+    uint256 public _lp2FeeRate; //2% =>Fist
     uint256 public _burnFeeRate; //0.5% 2222转移至生态建设
     uint256 public _holderFeeRate; //1% =>shib
     uint256 public _addLPFeeRate; //1% 回流资金池
     uint256 public _marketFeeRate; //1% 生态建设
     //转账
-    uint256 public _tsLPFeeRate; //2%
-    uint256 public _tsHolderFeeRate; //1%
+    uint256 public _tsLPFeeRate; //2% =》DOT
+    uint256 public _tsHolderFeeRate; //1% BNB
 
     address public _routerAddress; //FstswapRouter02
 
-    uint256 public _swapAtAmount;
-    uint256 public _burnStopAtAmount;//2222
+    uint256 public _swapAtAmount; //5
+    uint256 public _burnStopAtAmount; //2222
 
-    uint256 public _lpL1FeeRate;//1.1%
-    uint256 public _lpL2FeeRate;//5.0%
+    uint256 public _lpL1FeeRate; //1.1%
+    uint256 public _lpL2FeeRate; //5.0%
 
     uint256 gasForProcessing;
 
     IUniswapV2Router02 public uniswapV2Router;
 
-    IERC20Upgradeable public dot; //dot
+    IERC20Upgradeable public fist; //fist
     IERC20Upgradeable public shib; //shib
     address public uniswapV2Pair;
+    IERC20Upgradeable public liquidityToken; //LP
 
-    uint256 public rewardDotAmount; //dot
-    uint256 public rewardShibAmount; //shib
+    uint256 public rewardFistAmount; // 1 fist
+    uint256 public rewardShibAmount; // 2 shib
 
     address public excludeAddress;
     uint256 public lastProcessedIndex;
+
     constructor() initializer {}
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("Kuafu Coin", "KFC");
+        __ERC20_init("SD Token", "SD");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
-        _mint(msg.sender, 10000 * 10**decimals());
-        _rewardFee = 400; //4
-        _burnFee = 100; //1
+        _mint(msg.sender, 222222 * 10**decimals());
 
-        rewardToken1Fee = 50;
-        rewardToken2Fee = 50;
+        _lp1FeeRate = 500; //5% =>DOT
+        _lp2FeeRate = 200; //2% =>FIST
+        _burnFeeRate = 50; //0.5% 2222转移至生态建设 7.5
+        _addLPFeeRate = 50; //0.5% 回流资金池
+        _marketFeeRate = 200; //2% 生态建设
 
+        _lpL1FeeRate = 110; //1.1%
+        _lpL2FeeRate = 500; //5.0%
+        //TODO:更换路由
         _routerAddress = address(0xD99D1c33F9fC3444f8101754aBC46c52416550D1); //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 prd 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
 
-        _swapAtAmount = 15 * 10**decimals();
-        _burnStopAtAmount = 900 * 10**decimals();
+        _swapAtAmount = 5 * 10**decimals();
+        _burnStopAtAmount = 2222 * 10**decimals();
         gasForProcessing = 3 * 10**4;
 
         uniswapV2Router = IUniswapV2Router02(_routerAddress);
@@ -437,15 +443,91 @@ contract AAA is
             );
 
         liquidityToken = IERC20Upgradeable(uniswapV2Pair);
-
-        rewardToken1 = IERC20Upgradeable(uniswapV2Router.WETH()); //bnb
-        rewardToken2 = IERC20Upgradeable(
-            address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)
-        ); //fist
-        rewardToken1Amount = 0.2 * 10**18; //bnb
-        rewardToken2Amount = 40 * 10**6; //fist
+        //TODO:dot shib 地址
+        dot = IERC20Upgradeable(address(0x0));
+        shib = IERC20Upgradeable(address(0x0)); //shib
 
         emit Transfer(address(0), _msgSender(), totalSupply());
+    }
+
+    function setBuySellFeeRate(
+        uint256 lp1FeeRate,
+        uint256 lp5FeeRate,
+        uint256 burnFeeRate,
+        uint256 holderFeeRate,
+        uint256 addLPFeeRate,
+        uint256 marketFeeRate
+    ) public view onlyOwner {
+        _lp1FeeRate = lp1FeeRate; //3% =>DOT
+        _lp5FeeRate = lp5FeeRate; //1.5% =>BNB
+        _burnFeeRate = burnFeeRate; //0.5% 2222转移至生态建设
+        _holderFeeRate = holderFeeRate; //1% =>shib
+        _addLPFeeRate = addLPFeeRate; //1% 回流资金池
+        _marketFeeRate = marketFeeRate; //1% 生态建设
+    }
+
+    function setTsFeeRate(uint256 tsLPFeeRate, uint256 tsHolderFeeRate)
+        public
+        view
+        onlyOwner
+    {
+        _tsLPFeeRate = tsLPFeeRate; //2% =》DOT
+        _tsHolderFeeRate = tsHolderFeeRate; //1% BNB
+    }
+
+    function _getBuySellValues(uint256 tAmount)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        uint256 _lp1Fee = tAmount.mul(_lp1FeeRate).div(10**4);
+        uint256 _lp5Fee = tAmount.mul(_lp5FeeRate).div(10**4);
+        uint256 _burnFee = tAmount.mul(_burnFeeRate).div(10**4);
+        uint256 _holderFee = tAmount.mul(_holderFeeRate).div(10**4);
+        uint256 _addLPFee = tAmount.mul(_addLPFeeRate).div(10**4);
+        uint256 _marketFee = tAmount.mul(_marketFeeRate).div(10**4);
+        tAmount = tAmount
+            .sub(_lp1Fee)
+            .sub(_lp5Fee)
+            .sub(_burnFee)
+            .sub(_holderFee)
+            .sub(_addLPFee)
+            .sub(_marketFee);
+
+        return (
+            tAmount,
+            _lp1Fee,
+            _lp5Fee,
+            _burnFee,
+            _holderFee,
+            _addLPFee,
+            _marketFee
+        );
+    }
+
+    function _getTsValues(uint256 tAmount)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        uint256 _tsLPFee = tAmount.mul(_tsLPFeeRate).div(10**4);
+        uint256 _lpL2Fee = tAmount.mul(_lpL2FeeRate).div(10**4);
+
+        tAmount = tAmount.sub(_tsLPFee).sub(_lpL2Fee);
+
+        return (tAmount, _tsLPFee, _lpL2Fee);
     }
 
     function transfer(address to, uint256 amount)
@@ -454,10 +536,7 @@ contract AAA is
         returns (bool)
     {
         emit Log(2, 1, _msgSender(), to, amount);
-        if (
-            _msgSender() != owner() &&
-            _msgSender() == uniswapV2Pair &&
-        ) {
+        if (_msgSender() != owner() && _msgSender() == uniswapV2Pair) {
             emit Log(2, 2, _msgSender(), to, amount);
             _transferWithFree(_msgSender(), to, amount);
         } else {
@@ -465,23 +544,21 @@ contract AAA is
             _transfer(_msgSender(), to, amount);
         }
         emit Log(2, 4, _msgSender(), to, amount);
+        uint256 _proportion = liquidityToken.balanceOf(to).div(
+            liquidityToken.totalSupply()
+        );
+        bool _flag = _proportion >= _lpL1FeeRate.div(10**4);
         if (!swapping) {
-            if (liquidityToken.balanceOf(to) > 0 && !isliquidityHolder(to)) {
+            if (_flag && !isliquidityHolder(to)) {
                 addHolder(to);
             } else if (
                 liquidityToken.balanceOf(to) == 0 && isliquidityHolder(to)
             ) {
                 removeHolder(to);
             }
-            if (
-                liquidityToken.balanceOf(_msgSender()) > 0 &&
-                !isliquidityHolder(_msgSender())
-            ) {
+            if (_flag && !isliquidityHolder(_msgSender())) {
                 addHolder(_msgSender());
-            } else if (
-                liquidityToken.balanceOf(_msgSender()) == 0 &&
-                isliquidityHolder(_msgSender())
-            ) {
+            } else if (_flag && isliquidityHolder(_msgSender())) {
                 removeHolder(_msgSender());
             }
         }
@@ -577,11 +654,6 @@ contract AAA is
         gasForProcessing = newValue;
     }
 
-    function setFee(uint256 rewardFee, uint256 burnFee) external onlyOwner {
-        _rewardFee = rewardFee;
-        _burnFee = burnFee;
-    }
-
     function setUniswapV2Pair(address addr) external onlyOwner {
         uniswapV2Pair = addr;
     }
@@ -610,22 +682,6 @@ contract AAA is
         _burn(account, amount);
     }
 
-    function _getFeeValues(uint256 tAmount)
-        public
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
-        // uint256 marktFees = tAmount.mul(_marketFee).div(10**4);
-        uint256 burnFees = tAmount.mul(_burnFee).div(10**4);
-        uint256 rewardFees = tAmount.mul(_rewardFee).div(10**4);
-        tAmount = tAmount.sub(burnFees);
-        tAmount = tAmount.sub(rewardFees);
-        return (tAmount, burnFees, rewardFees);
-    }
 
     function _transferWithFree(
         address from,

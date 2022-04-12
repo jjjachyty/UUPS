@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\solidity\\UUPS\\contracts\\aaa.sol": {
-      "lastModificationDate": 1648892604205,
-      "contentHash": "9de909c18ec2d72f21952a51ecd567dd",
+      "lastModificationDate": 1649747876207,
+      "contentHash": "bd8095391c66a36feffc90c4a11d476b",
       "sourceName": "contracts/aaa.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -660,6 +660,54 @@
       ],
       "artifacts": [
         "MyTokenV1"
+      ]
+    },
+    "D:\\solidity\\UUPS\\contracts\\meixue.sol": {
+      "lastModificationDate": 1649747923121,
+      "contentHash": "a32ed70be8990f5b7573736c8d0505cb",
+      "sourceName": "contracts/meixue.sol",
+      "solcConfig": {
+        "version": "0.8.3",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IUniswapV2Factory",
+        "IUniswapV2Pair",
+        "IUniswapV2Router01",
+        "IUniswapV2Router02"
       ]
     }
   }
