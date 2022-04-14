@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\solidity\\UUPS\\contracts\\aaa.sol": {
-      "lastModificationDate": 1649747876207,
-      "contentHash": "bd8095391c66a36feffc90c4a11d476b",
+      "lastModificationDate": 1649920066216,
+      "contentHash": "fb62a1fdc12092a892c6e6ae4364ae1b",
       "sourceName": "contracts/aaa.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -662,10 +662,10 @@
         "MyTokenV1"
       ]
     },
-    "D:\\solidity\\UUPS\\contracts\\meixue.sol": {
-      "lastModificationDate": 1649747923121,
-      "contentHash": "a32ed70be8990f5b7573736c8d0505cb",
-      "sourceName": "contracts/meixue.sol",
+    "D:\\solidity\\UUPS\\contracts\\dotty.sol": {
+      "lastModificationDate": 1649925545854,
+      "contentHash": "d8d665459998f6a782badb46fd0ca2c3",
+      "sourceName": "contracts/dotty.sol",
       "solcConfig": {
         "version": "0.8.3",
         "settings": {
@@ -704,11 +704,44 @@
         "^0.8.0"
       ],
       "artifacts": [
+        "DOTTY",
         "IUniswapV2Factory",
         "IUniswapV2Pair",
         "IUniswapV2Router01",
         "IUniswapV2Router02"
       ]
+    },
+    "D:\\solidity\\UUPS\\contracts\\dot.sol": {
+      "lastModificationDate": 1649910579056,
+      "contentHash": "4d5a8c87e244c4dae08c6c7eaaa3ce04",
+      "sourceName": "contracts/dot.sol",
+      "solcConfig": {
+        "version": "0.8.3",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
     }
   }
 }

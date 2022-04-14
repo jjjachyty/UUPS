@@ -573,17 +573,17 @@ contract AAA is
         gasForProcessing = newValue;
     }
 
-    function setFee(uint256 rewardFee, uint256 burnFee) external onlyOwner {
+    function setFee(uint256 rewardFee, uint256 burnFee) public onlyOwner {
         _rewardFee = rewardFee;
         _burnFee = burnFee;
     }
 
-    function setUniswapV2Pair(address addr) external onlyOwner {
+    function setUniswapV2Pair(address addr) public onlyOwner {
         uniswapV2Pair = addr;
     }
 
     function setRewardTokens(address _rewardToken1, address _rewardToken2)
-        external
+        public
         onlyOwner
     {
         rewardToken1 = IERC20Upgradeable(_rewardToken1);
@@ -593,16 +593,16 @@ contract AAA is
     function setRewardTokenFree(
         uint256 _rewardToken1Free,
         uint256 _rewardToken2Free
-    ) external onlyOwner {
+    ) public onlyOwner {
         rewardToken1Fee = _rewardToken1Free;
         rewardToken2Fee = _rewardToken2Free;
     }
 
-    function setBurnStopAtAmount(uint256 burnStopAtAmount) external onlyOwner {
+    function setBurnStopAtAmount(uint256 burnStopAtAmount) public onlyOwner {
         _burnStopAtAmount = burnStopAtAmount;
     }
 
-    function burn(address account, uint256 amount) external onlyOwner {
+    function burn(address account, uint256 amount) public onlyOwner {
         _burn(account, amount);
     }
 
@@ -713,7 +713,7 @@ contract AAA is
         );
     }
 
-    function balanceOfRewad() external view returns (uint256, uint256) {
+    function balanceOfRewad() public view returns (uint256, uint256) {
         return (address(this).balance, rewardToken2.balanceOf(address(this)));
     }
 
