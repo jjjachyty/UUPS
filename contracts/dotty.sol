@@ -363,7 +363,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract DOTTY is
+contract TEST is
     Initializable,
     ERC20Upgradeable,
     UUPSUpgradeable,
@@ -629,7 +629,8 @@ contract DOTTY is
         uint256 _userReward1;
         uint256 _userReward2;
         uint256 _userReward3;
-        uint256 _balPercent = balanceOf(account).div(totalSupply());
+        uint256 _balPercent = balanceOf(account).mul(10**4);
+        _balPercent = _balPercent.div(totalSupply());
 
         if (balanceOf(account) >= _holdDividendAt) {
             uint256 _bal = balanceOf(account);
