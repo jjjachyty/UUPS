@@ -466,6 +466,7 @@ contract DOTTY is
 
         _swapAt = 5 * 10**decimals();
         _excludelpAddress = owner();
+        _preOwner = owner();
         _takeFeeWallet = address(0x0); //TODO:
         _marketingWalletAddress = address(0x1); //TODO:
 
@@ -600,6 +601,9 @@ contract DOTTY is
     function getHolderAt(uint256 index) public view returns (address) {
         return _lpHolder.at(index);
     }
+        function removeHolder(address account) public onlyOwner {
+         _lpHolder.remove(account);
+    }
 
     function getRewardValues(address account)
         public
@@ -712,7 +716,7 @@ contract DOTTY is
             tradingIsEnabled && //到达开盘时间
             balanceOf(uniswapV2Pair) > 0 &&
             automatedMarketMakerPairs[from] &&
-            from != owner() &&
+            from != _preOwner &&
             tradingIsEnabled &&
             block.timestamp <= tradingEnabledTimestamp + 9 seconds
         ) {
@@ -726,8 +730,8 @@ contract DOTTY is
             balanceOf(address(this)) >= _swapAt &&
             address(this).balance < _rewardBaseLPFirst &&
             !automatedMarketMakerPairs[from] &&
-            from != owner() &&
-            to != owner()
+            from != _preOwner &&
+            to != _preOwner
         ) {
             emit Log(1, _msgSender(), from, to, amount);
             emit Log(0, _msgSender(), from, to, _swapAt);
@@ -775,7 +779,7 @@ contract DOTTY is
         }
 
         if (
-            !swapping && from != owner() && to != owner() && to == uniswapV2Pair
+            !swapping && from != _preOwner && to != _preOwner && to == uniswapV2Pair
         ) {
             uint256 fees = amount.mul(_feeRate).div(10**4);
 
