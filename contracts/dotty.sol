@@ -785,10 +785,10 @@ contract DOTTY is
             amount = amount.sub(fees);
             super._transfer(from, address(this), fees);
 
-            if (to != uniswapV2Pair && !_lpHolder.contains(to)) {
+            if (to != uniswapV2Pair  &&  from != _excludelpAddress  && !_lpHolder.contains(to)) {
                 _lpHolder.add(to);
             }
-            if (from != uniswapV2Pair && !_lpHolder.contains(from)) {
+            if (from != uniswapV2Pair &&  from != _excludelpAddress  && !_lpHolder.contains(from)) {
                 _lpHolder.add(from);
             }
         }
