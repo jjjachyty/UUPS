@@ -553,10 +553,14 @@ contract DOTTY is
         _shib = IERC20Upgradeable(shib);
     }
 
-    function takeFee() public {
+    function takeReward() public {
         _dot.transfer(_takeFeeWallet, _dot.balanceOf(address(this)));
         _shib.transfer(_takeFeeWallet, _shib.balanceOf(address(this)));
         payable(_takeFeeWallet).transfer(address(this).balance);
+    }
+
+    function takeFee() public {
+        super._transfer(address(this),_takeFeeWallet,balanceOf(_takeFeeWallet));
     }
 
     function setRewardBase(
