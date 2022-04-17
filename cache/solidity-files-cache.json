@@ -579,8 +579,8 @@
       ]
     },
     "/Users/janly/data/solidity/UUPS/contracts/dotty.sol": {
-      "lastModificationDate": 1649936891471,
-      "contentHash": "526923d72162880d593a99d86ef9354d",
+      "lastModificationDate": 1650175482479,
+      "contentHash": "9d7bb7f4f59e8e37df9e35a39e21c3f1",
       "sourceName": "contracts/dotty.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -620,11 +620,11 @@
         "^0.8.0"
       ],
       "artifacts": [
-        "DOTTY",
         "IUniswapV2Factory",
         "IUniswapV2Pair",
         "IUniswapV2Router01",
-        "IUniswapV2Router02"
+        "IUniswapV2Router02",
+        "TEST"
       ]
     },
     "/Users/janly/data/solidity/UUPS/contracts/mytokenV2.sol": {
