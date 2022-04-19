@@ -95,6 +95,11 @@
       "address": "0x7fddd80da340e6348586b5237bDCe6ec135DB1b3",
       "txHash": "0xd69de83cd8ccf679de79bb7f5a7cd3797783161b9ef902c7f14bacedf520b36d",
       "kind": "uups"
+    },
+    {
+      "address": "0x26DCE78e28b7251278f30387B6686cec7D5850F2",
+      "txHash": "0xfce4a27f3befe97ee3bfe9c05408148c03921277149666f3ab884d871ae44549",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -86706,6 +86711,3102 @@
             "type": "t_uint256",
             "contract": "TEST",
             "src": "contracts/dotty.sol:427"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5740": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "a7a1aa8ab99a378d71e0275ca3f4e98c993cd58db1fb87f8205641eed4321dd9": {
+      "address": "0x9Ca760A021FE882030f63853Fd99C1b5aBe33e93",
+      "txHash": "0x79e30601f6410fbfbf51b67c4a501e153edd0d4d261754b919b07f4e9eeb5fb1",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_lpHolder",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:376"
+          },
+          {
+            "label": "swapEnabled",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:377"
+          },
+          {
+            "label": "removeLiquidityTakeFee",
+            "offset": 1,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:378"
+          },
+          {
+            "label": "_swapOrDividend",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:379"
+          },
+          {
+            "label": "_burnStopAt",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:381"
+          },
+          {
+            "label": "_swapAt",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:382"
+          },
+          {
+            "label": "_lpFeeRate",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:383"
+          },
+          {
+            "label": "_lp2FeeRate",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:384"
+          },
+          {
+            "label": "_burnFeeRate",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:385"
+          },
+          {
+            "label": "_holderFeeRate",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:386"
+          },
+          {
+            "label": "_backFeeRate",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:387"
+          },
+          {
+            "label": "_marketFeeRate",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:388"
+          },
+          {
+            "label": "_liquidityFee",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:390"
+          },
+          {
+            "label": "_market1FeeSum",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:391"
+          },
+          {
+            "label": "_market2FeeSum",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:392"
+          },
+          {
+            "label": "_feeRate",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:394"
+          },
+          {
+            "label": "_lpDividendFirstAt",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:396"
+          },
+          {
+            "label": "_lpDividendSecondAt",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:397"
+          },
+          {
+            "label": "_holdDividendAt",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:398"
+          },
+          {
+            "label": "_holdDividendEnd",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:399"
+          },
+          {
+            "label": "_swapAndLiquifyAt",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:400"
+          },
+          {
+            "label": "_marketFeeSwapAt",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:401"
+          },
+          {
+            "label": "_rewardBaseLPFirst",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:403"
+          },
+          {
+            "label": "_rewardBaseLPSecond",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:404"
+          },
+          {
+            "label": "_rewardBaseHolder",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:405"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:407"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:409"
+          },
+          {
+            "label": "_marketingWalletAddress",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:410"
+          },
+          {
+            "label": "_marketing1WalletAddress",
+            "offset": 0,
+            "slot": "279",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:411"
+          },
+          {
+            "label": "_excludelpAddress",
+            "offset": 0,
+            "slot": "280",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:413"
+          },
+          {
+            "label": "_takeFeeWallet",
+            "offset": 0,
+            "slot": "281",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:415"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "282",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:417"
+          },
+          {
+            "label": "deadWallet",
+            "offset": 0,
+            "slot": "283",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:418"
+          },
+          {
+            "label": "swapping",
+            "offset": 20,
+            "slot": "283",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:419"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "284",
+            "type": "t_contract(IUniswapV2Router02)5740",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:421"
+          },
+          {
+            "label": "_whitelist",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:422"
+          },
+          {
+            "label": "_dot",
+            "offset": 0,
+            "slot": "286",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:424"
+          },
+          {
+            "label": "_shib",
+            "offset": 0,
+            "slot": "287",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:425"
+          },
+          {
+            "label": "tradingEnabledTimestamp",
+            "offset": 0,
+            "slot": "288",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:427"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5740": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "3a26b34bb89f542d7a0243d3f2f093007f215cb9f6d06c51983fcc9529b37ff5": {
+      "address": "0x627dE418B25E13Da8814513f94363C7F9460BfA1",
+      "txHash": "0x0911f2e95fe16602f5683da6649d9261214ea7622fcd192950cd013a04725536",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_lpHolder",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:376"
+          },
+          {
+            "label": "swapEnabled",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:377"
+          },
+          {
+            "label": "removeLiquidityTakeFee",
+            "offset": 1,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:378"
+          },
+          {
+            "label": "_swapOrDividend",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:379"
+          },
+          {
+            "label": "_burnStopAt",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:381"
+          },
+          {
+            "label": "_swapAt",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:382"
+          },
+          {
+            "label": "_lpFeeRate",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:383"
+          },
+          {
+            "label": "_lp2FeeRate",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:384"
+          },
+          {
+            "label": "_burnFeeRate",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:385"
+          },
+          {
+            "label": "_holderFeeRate",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:386"
+          },
+          {
+            "label": "_backFeeRate",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:387"
+          },
+          {
+            "label": "_marketFeeRate",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:388"
+          },
+          {
+            "label": "_liquidityFee",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:390"
+          },
+          {
+            "label": "_market1FeeSum",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:391"
+          },
+          {
+            "label": "_market2FeeSum",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:392"
+          },
+          {
+            "label": "_feeRate",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:394"
+          },
+          {
+            "label": "_lpDividendFirstAt",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:396"
+          },
+          {
+            "label": "_lpDividendSecondAt",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:397"
+          },
+          {
+            "label": "_holdDividendAt",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:398"
+          },
+          {
+            "label": "_holdDividendEnd",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:399"
+          },
+          {
+            "label": "_swapAndLiquifyAt",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:400"
+          },
+          {
+            "label": "_marketFeeSwapAt",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:401"
+          },
+          {
+            "label": "_rewardBaseLPFirst",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:403"
+          },
+          {
+            "label": "_rewardBaseLPSecond",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:404"
+          },
+          {
+            "label": "_rewardBaseHolder",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:405"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:407"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:409"
+          },
+          {
+            "label": "_marketingWalletAddress",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:410"
+          },
+          {
+            "label": "_marketing1WalletAddress",
+            "offset": 0,
+            "slot": "279",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:411"
+          },
+          {
+            "label": "_excludelpAddress",
+            "offset": 0,
+            "slot": "280",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:413"
+          },
+          {
+            "label": "_takeFeeWallet",
+            "offset": 0,
+            "slot": "281",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:415"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "282",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:417"
+          },
+          {
+            "label": "deadWallet",
+            "offset": 0,
+            "slot": "283",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:418"
+          },
+          {
+            "label": "swapping",
+            "offset": 20,
+            "slot": "283",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:419"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "284",
+            "type": "t_contract(IUniswapV2Router02)5740",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:421"
+          },
+          {
+            "label": "_whitelist",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:422"
+          },
+          {
+            "label": "_dot",
+            "offset": 0,
+            "slot": "286",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:424"
+          },
+          {
+            "label": "_shib",
+            "offset": 0,
+            "slot": "287",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:425"
+          },
+          {
+            "label": "tradingEnabledTimestamp",
+            "offset": 0,
+            "slot": "288",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:427"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5740": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "d608dde31b4d8357e661bd2b5de1d1e30c8b52f3800e381b71dccaba67a700a7": {
+      "address": "0xF3406ED4D479ea865AB8f32B68B5B0E4E05b2786",
+      "txHash": "0x73d6abf9ee31eb421b6b628cdc64bc4a08f2afa56bddd25d06ce27bd6951b8ac",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_lpHolder",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:376"
+          },
+          {
+            "label": "swapEnabled",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:377"
+          },
+          {
+            "label": "removeLiquidityTakeFee",
+            "offset": 1,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:378"
+          },
+          {
+            "label": "_swapOrDividend",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:379"
+          },
+          {
+            "label": "_burnStopAt",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:381"
+          },
+          {
+            "label": "_swapAt",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:382"
+          },
+          {
+            "label": "_lpFeeRate",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:383"
+          },
+          {
+            "label": "_lp2FeeRate",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:384"
+          },
+          {
+            "label": "_burnFeeRate",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:385"
+          },
+          {
+            "label": "_holderFeeRate",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:386"
+          },
+          {
+            "label": "_backFeeRate",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:387"
+          },
+          {
+            "label": "_marketFeeRate",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:388"
+          },
+          {
+            "label": "_liquidityFee",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:390"
+          },
+          {
+            "label": "_market1FeeSum",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:391"
+          },
+          {
+            "label": "_market2FeeSum",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:392"
+          },
+          {
+            "label": "_feeRate",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:394"
+          },
+          {
+            "label": "_lpDividendFirstAt",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:396"
+          },
+          {
+            "label": "_lpDividendSecondAt",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:397"
+          },
+          {
+            "label": "_holdDividendAt",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:398"
+          },
+          {
+            "label": "_holdDividendEnd",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:399"
+          },
+          {
+            "label": "_swapAndLiquifyAt",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:400"
+          },
+          {
+            "label": "_marketFeeSwapAt",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:401"
+          },
+          {
+            "label": "_rewardBaseLPFirst",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:403"
+          },
+          {
+            "label": "_rewardBaseLPSecond",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:404"
+          },
+          {
+            "label": "_rewardBaseHolder",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:405"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:407"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:409"
+          },
+          {
+            "label": "_marketingWalletAddress",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:410"
+          },
+          {
+            "label": "_marketing1WalletAddress",
+            "offset": 0,
+            "slot": "279",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:411"
+          },
+          {
+            "label": "_excludelpAddress",
+            "offset": 0,
+            "slot": "280",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:413"
+          },
+          {
+            "label": "_takeFeeWallet",
+            "offset": 0,
+            "slot": "281",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:415"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "282",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:417"
+          },
+          {
+            "label": "deadWallet",
+            "offset": 0,
+            "slot": "283",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:418"
+          },
+          {
+            "label": "swapping",
+            "offset": 20,
+            "slot": "283",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:419"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "284",
+            "type": "t_contract(IUniswapV2Router02)5740",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:421"
+          },
+          {
+            "label": "_whitelist",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:422"
+          },
+          {
+            "label": "_dot",
+            "offset": 0,
+            "slot": "286",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:424"
+          },
+          {
+            "label": "_shib",
+            "offset": 0,
+            "slot": "287",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:425"
+          },
+          {
+            "label": "tradingEnabledTimestamp",
+            "offset": 0,
+            "slot": "288",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:427"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5740": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "6ed2ce0e8abaa64005b9fabdddbc7171d14417e42dbe4ce10b19f3fc5faec8be": {
+      "address": "0xEC01234311832D4Edc36C3946c64019184a5cD8D",
+      "txHash": "0xee4e79de130848c6c39dfd1e6ab50366a9fe59897d6684cf03a58158f0b1b1e9",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_lpHolder",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:376"
+          },
+          {
+            "label": "swapEnabled",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:377"
+          },
+          {
+            "label": "removeLiquidityTakeFee",
+            "offset": 1,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:378"
+          },
+          {
+            "label": "_swapOrDividend",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:379"
+          },
+          {
+            "label": "_burnStopAt",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:381"
+          },
+          {
+            "label": "_swapAt",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:382"
+          },
+          {
+            "label": "_lpFeeRate",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:383"
+          },
+          {
+            "label": "_lp2FeeRate",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:384"
+          },
+          {
+            "label": "_burnFeeRate",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:385"
+          },
+          {
+            "label": "_holderFeeRate",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:386"
+          },
+          {
+            "label": "_backFeeRate",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:387"
+          },
+          {
+            "label": "_marketFeeRate",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:388"
+          },
+          {
+            "label": "_liquidityFee",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:390"
+          },
+          {
+            "label": "_market1FeeSum",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:391"
+          },
+          {
+            "label": "_market2FeeSum",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:392"
+          },
+          {
+            "label": "_feeRate",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:394"
+          },
+          {
+            "label": "_lpDividendFirstAt",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:396"
+          },
+          {
+            "label": "_lpDividendSecondAt",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:397"
+          },
+          {
+            "label": "_holdDividendAt",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:398"
+          },
+          {
+            "label": "_holdDividendEnd",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:399"
+          },
+          {
+            "label": "_swapAndLiquifyAt",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:400"
+          },
+          {
+            "label": "_marketFeeSwapAt",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:401"
+          },
+          {
+            "label": "_rewardBaseLPFirst",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:403"
+          },
+          {
+            "label": "_rewardBaseLPSecond",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:404"
+          },
+          {
+            "label": "_rewardBaseHolder",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:405"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:407"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:409"
+          },
+          {
+            "label": "_marketingWalletAddress",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:410"
+          },
+          {
+            "label": "_marketing1WalletAddress",
+            "offset": 0,
+            "slot": "279",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:411"
+          },
+          {
+            "label": "_excludelpAddress",
+            "offset": 0,
+            "slot": "280",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:413"
+          },
+          {
+            "label": "_takeFeeWallet",
+            "offset": 0,
+            "slot": "281",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:415"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "282",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:417"
+          },
+          {
+            "label": "deadWallet",
+            "offset": 0,
+            "slot": "283",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:418"
+          },
+          {
+            "label": "swapping",
+            "offset": 20,
+            "slot": "283",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:419"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "284",
+            "type": "t_contract(IUniswapV2Router02)5740",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:421"
+          },
+          {
+            "label": "_whitelist",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:422"
+          },
+          {
+            "label": "_dot",
+            "offset": 0,
+            "slot": "286",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:424"
+          },
+          {
+            "label": "_shib",
+            "offset": 0,
+            "slot": "287",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:425"
+          },
+          {
+            "label": "tradingEnabledTimestamp",
+            "offset": 0,
+            "slot": "288",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:427"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5740": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "9180cab98af94eca97509ff9701a63b9056c5f577c2f4a3c21d22e8407c8db09": {
+      "address": "0x2622491fAa22CB9C609B45435456597bF47B0089",
+      "txHash": "0xfa2bdfc2ce3474acff5526ef6bbf1de9a48438653cffca022a71c59383e09466",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_lpHolder",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:376"
+          },
+          {
+            "label": "swapEnabled",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:377"
+          },
+          {
+            "label": "removeLiquidityTakeFee",
+            "offset": 1,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:378"
+          },
+          {
+            "label": "_swapOrDividend",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:379"
+          },
+          {
+            "label": "_burnStopAt",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:381"
+          },
+          {
+            "label": "_swapAt",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:382"
+          },
+          {
+            "label": "_lpFeeRate",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:383"
+          },
+          {
+            "label": "_lp2FeeRate",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:384"
+          },
+          {
+            "label": "_burnFeeRate",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:385"
+          },
+          {
+            "label": "_holderFeeRate",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:386"
+          },
+          {
+            "label": "_backFeeRate",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:387"
+          },
+          {
+            "label": "_marketFeeRate",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:388"
+          },
+          {
+            "label": "_liquidityFee",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:390"
+          },
+          {
+            "label": "_market1FeeSum",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:391"
+          },
+          {
+            "label": "_market2FeeSum",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:392"
+          },
+          {
+            "label": "_feeRate",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:394"
+          },
+          {
+            "label": "_lpDividendFirstAt",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:396"
+          },
+          {
+            "label": "_lpDividendSecondAt",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:397"
+          },
+          {
+            "label": "_holdDividendAt",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:398"
+          },
+          {
+            "label": "_holdDividendEnd",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:399"
+          },
+          {
+            "label": "_swapAndLiquifyAt",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:400"
+          },
+          {
+            "label": "_marketFeeSwapAt",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:401"
+          },
+          {
+            "label": "_rewardBaseLPFirst",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:403"
+          },
+          {
+            "label": "_rewardBaseLPSecond",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:404"
+          },
+          {
+            "label": "_rewardBaseHolder",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:405"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:407"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:409"
+          },
+          {
+            "label": "_marketingWalletAddress",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:410"
+          },
+          {
+            "label": "_marketing1WalletAddress",
+            "offset": 0,
+            "slot": "279",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:411"
+          },
+          {
+            "label": "_excludelpAddress",
+            "offset": 0,
+            "slot": "280",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:413"
+          },
+          {
+            "label": "_takeFeeWallet",
+            "offset": 0,
+            "slot": "281",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:415"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "282",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:417"
+          },
+          {
+            "label": "deadWallet",
+            "offset": 0,
+            "slot": "283",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:418"
+          },
+          {
+            "label": "swapping",
+            "offset": 20,
+            "slot": "283",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:419"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "284",
+            "type": "t_contract(IUniswapV2Router02)5740",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:421"
+          },
+          {
+            "label": "_whitelist",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:422"
+          },
+          {
+            "label": "_dot",
+            "offset": 0,
+            "slot": "286",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:424"
+          },
+          {
+            "label": "_shib",
+            "offset": 0,
+            "slot": "287",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:425"
+          },
+          {
+            "label": "tradingEnabledTimestamp",
+            "offset": 0,
+            "slot": "288",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:427"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1413": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5740": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)2407_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)2106_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)2106_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "5e38079a68cc03bf63f54afe26fa2d517d3163f21f043fc751c66e257e4faf73": {
+      "address": "0x4Db7f8723aC1c6c09dA804ABb5eB32D174070A0c",
+      "txHash": "0xcb761bd07ff9b90478ec055ec2878c69f482e70e292cf0c86cc812bfa508a6dd",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_lpHolder",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(AddressSet)2407_storage",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:376"
+          },
+          {
+            "label": "swapEnabled",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:377"
+          },
+          {
+            "label": "removeLiquidityTakeFee",
+            "offset": 1,
+            "slot": "253",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:378"
+          },
+          {
+            "label": "_swapOrDividend",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:379"
+          },
+          {
+            "label": "_burnStopAt",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:381"
+          },
+          {
+            "label": "_swapAt",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:382"
+          },
+          {
+            "label": "_lpFeeRate",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:383"
+          },
+          {
+            "label": "_lp2FeeRate",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:384"
+          },
+          {
+            "label": "_burnFeeRate",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:385"
+          },
+          {
+            "label": "_holderFeeRate",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:386"
+          },
+          {
+            "label": "_backFeeRate",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:387"
+          },
+          {
+            "label": "_marketFeeRate",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:388"
+          },
+          {
+            "label": "_liquidityFee",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:390"
+          },
+          {
+            "label": "_market1FeeSum",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:391"
+          },
+          {
+            "label": "_market2FeeSum",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:392"
+          },
+          {
+            "label": "_feeRate",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:394"
+          },
+          {
+            "label": "_lpDividendFirstAt",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:396"
+          },
+          {
+            "label": "_lpDividendSecondAt",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:397"
+          },
+          {
+            "label": "_holdDividendAt",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:398"
+          },
+          {
+            "label": "_holdDividendEnd",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:399"
+          },
+          {
+            "label": "_swapAndLiquifyAt",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:400"
+          },
+          {
+            "label": "_marketFeeSwapAt",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:401"
+          },
+          {
+            "label": "_rewardBaseLPFirst",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:403"
+          },
+          {
+            "label": "_rewardBaseLPSecond",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:404"
+          },
+          {
+            "label": "_rewardBaseHolder",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:405"
+          },
+          {
+            "label": "lastProcessedIndex",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:407"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:409"
+          },
+          {
+            "label": "_marketingWalletAddress",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:410"
+          },
+          {
+            "label": "_marketing1WalletAddress",
+            "offset": 0,
+            "slot": "279",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:411"
+          },
+          {
+            "label": "_excludelpAddress",
+            "offset": 0,
+            "slot": "280",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:413"
+          },
+          {
+            "label": "_takeFeeWallet",
+            "offset": 0,
+            "slot": "281",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:415"
+          },
+          {
+            "label": "gasForProcessing",
+            "offset": 0,
+            "slot": "282",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:417"
+          },
+          {
+            "label": "deadWallet",
+            "offset": 0,
+            "slot": "283",
+            "type": "t_address",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:418"
+          },
+          {
+            "label": "swapping",
+            "offset": 20,
+            "slot": "283",
+            "type": "t_bool",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:419"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "284",
+            "type": "t_contract(IUniswapV2Router02)5740",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:421"
+          },
+          {
+            "label": "_whitelist",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:422"
+          },
+          {
+            "label": "_dot",
+            "offset": 0,
+            "slot": "286",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:424"
+          },
+          {
+            "label": "_shib",
+            "offset": 0,
+            "slot": "287",
+            "type": "t_contract(IERC20Upgradeable)1413",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:425"
+          },
+          {
+            "label": "tradingEnabledTimestamp",
+            "offset": 0,
+            "slot": "288",
+            "type": "t_uint256",
+            "contract": "TEST",
+            "src": "contracts\\dotty.sol:427"
           }
         ],
         "types": {
