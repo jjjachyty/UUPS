@@ -744,22 +744,22 @@ contract TEST is
 
             uint256 _dotAmount = _swapAt.mul(dotSwapRate).div(totalRate);
 
-            swapTokensFor3Tokens(
-                address(this),
-                address(this),
-                _dotAmount,
-                address(_dot)
-            );
+            // swapTokensFor3Tokens(
+            //     address(this),
+            //     address(this),
+            //     _dotAmount,
+            //     address(_dot)
+            // );
             uint256 _wbnbAmount = _swapAt.mul(_lp2FeeRate).div(totalRate);
-            swapTokensForEth(_wbnbAmount);
+            // swapTokensForEth(_wbnbAmount);
 
             uint256 _shibAmount = _swapAt.mul(_holderFeeRate).div(totalRate);
-            swapTokensFor3Tokens(
-                address(this),
-                address(this),
-                _shibAmount,
-                address(_shib)
-            );
+            // swapTokensFor3Tokens(
+            //     address(this),
+            //     address(this),
+            //     _shibAmount,
+            //     address(_shib)
+            // );
             _swapOrDividend++;
         }
         swapping = false;
