@@ -426,8 +426,6 @@ contract TEST is
 
     uint256 public tradingEnabledTimestamp;
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
