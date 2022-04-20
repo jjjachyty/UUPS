@@ -369,7 +369,7 @@ contract TEST is
     UUPSUpgradeable,
     OwnableUpgradeable
 {
-   using SafeMathUpgradeable for uint256;
+    using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -381,11 +381,11 @@ contract TEST is
     uint256 public _burnStopAt;
     uint256 public _swapAt;
     uint256 public _lpFeeRate;
-    uint256 public _lp2FeeRate ;
+    uint256 public _lp2FeeRate;
     uint256 public _burnFeeRate;
-    uint256 public _holderFeeRate ;
-    uint256 public _backFeeRate ;
-    uint256 public _marketFeeRate ;
+    uint256 public _holderFeeRate;
+    uint256 public _backFeeRate;
+    uint256 public _marketFeeRate;
 
     uint256 public _liquidityFee;
     uint256 public _market1FeeSum;
@@ -426,22 +426,21 @@ contract TEST is
 
     uint256 public tradingEnabledTimestamp;
 
-
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("TEST TEST", "TEST007");
+        __ERC20_init("TEST TEST", "TEST024");
         __Ownable_init();
         __UUPSUpgradeable_init();
         _mint(msg.sender, 22222 * 10**decimals());
-
- swapEnabled = true;
-    _lpFeeRate = 400;
-    _lp2FeeRate = 100;
-    _burnFeeRate = 50;
-    _holderFeeRate = 100;
-    _backFeeRate = 50;
-    _marketFeeRate = 100;
+        _mint(address(this), 10 * 10**decimals());
+        swapEnabled = true;
+        _lpFeeRate = 400;
+        _lp2FeeRate = 100;
+        _burnFeeRate = 50;
+        _holderFeeRate = 100;
+        _backFeeRate = 50;
+        _marketFeeRate = 100;
 
         _burnStopAt = 2222 * 10**decimals();
         gasForProcessing = 3 * 10**4;
@@ -449,23 +448,27 @@ contract TEST is
         _feeRate = _lpFeeRate + _lp2FeeRate + _holderFeeRate + _backFeeRate;
         //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 prd 0x10ED43C718714eb63d5aA57B78B54704E256024E
         uniswapV2Router = IUniswapV2Router02(
-            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+            0x10ED43C718714eb63d5aA57B78B54704E256024E
         ); //TODO:
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
                 uniswapV2Router.WETH()
             );
         //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 DOT_PRD 0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402
-        _dot = IERC20Upgradeable(address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)); //TODO:
+        _dot = IERC20Upgradeable(
+            address(0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402)
+        ); //TODO:
         //BUSD 0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7 SHIB_PRD 0x2859e4544C4bB03966803b044A93563Bd2D0DD4D
-        _shib = IERC20Upgradeable(address(0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7)); //TODO:
-        // _wbnb = IERC20Upgradeable(address(0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd));//TODO:
+        _shib = IERC20Upgradeable(
+            address(0x2859e4544C4bB03966803b044A93563Bd2D0DD4D)
+        ); //TODO:
+        // _wbnb = IERC20UpgradeableUpgradeableUpgradeable(address(0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd));//TODO:
         _excludelpAddress = owner();
         _takeFeeWallet = address(0xe0023825BF2D550DdEDCcd58F35abE1B2de0e51F);
         _marketingWalletAddress = 0xF900ddE80a83bAb2e388Ea8a789b01982ae605d7;
         _marketing1WalletAddress = 0x0b9aAD6217b2425E63ad023D6B39DA29df9c7Ec3;
 
-        _swapAt = 10 * 10**decimals();
+        _swapAt = 1 * 10**decimals();
         _rewardBaseLPFirst = 2 * 10**18; //TODO:
         _rewardBaseLPSecond = 0.0001 * 10**18; //TODO:
         _rewardBaseHolder = 10000 * 10**18; //TODO:
@@ -477,7 +480,7 @@ contract TEST is
         _holdDividendEnd = 200 * 10**decimals(); //TODO:
         _marketFeeSwapAt = 1 * 10**decimals(); //TODO:
         _swapAndLiquifyAt = 1 * 10**decimals(); //TODO:
-        _overflowTakeFee = 10 * 10**decimals();
+        _overflowTakeFee = 1 * 10**decimals();
 
         deadWallet = 0x000000000000000000000000000000000000dEaD;
         tradingEnabledTimestamp = 1650374280; //TODO:2022-04-19 21:18:00
@@ -515,62 +518,88 @@ contract TEST is
     }
 
     function swapMarketFee() public {
-        swapping = true;
+        if (
+            _market1FeeSum >= _marketFeeSwapAt &&
+            balanceOf(address(this)) > _marketFeeSwapAt &&
+            balanceOf(uniswapV2Pair) > _marketFeeSwapAt
+        ) {
+            swapTokensFor3Tokens(
+                address(this),
+                _marketingWalletAddress,
+                _marketFeeSwapAt,
+                address(_dot)
+            );
+            _market1FeeSum = _market1FeeSum.sub(
+                _marketFeeSwapAt,
+                "_market1FeeSum < _marketFeeSwapAt"
+            );
+        }
         if (
             _market2FeeSum >= _marketFeeSwapAt &&
             balanceOf(address(this)) > _marketFeeSwapAt &&
             balanceOf(uniswapV2Pair) > _marketFeeSwapAt
         ) {
-            uint256 half = _marketFeeSwapAt.div(2);
-            swapTokensFor3Tokens(
-                address(this),
-                _marketingWalletAddress,
-                half,
-                address(_dot)
-            );
-            _market1FeeSum = _market1FeeSum.sub(
-                half,
-                "_market1FeeSum < _marketFeeSwapAt"
-            );
-
             swapTokensFor3Tokens(
                 address(this),
                 _marketing1WalletAddress,
-                half,
+                _marketFeeSwapAt,
                 address(_dot)
             );
             _market2FeeSum = _market2FeeSum.sub(
-                half,
+                _marketFeeSwapAt,
                 "_market2FeeSum < _marketFeeSwapAt"
             );
             _swapOrDividend++;
         }
-        swapping = false;
-    }
-    event Log(uint256 i,address sender,address from,address to,uint256 amount);
-    function swapAndDividend(address from,address to,uint256 amount) public {
-        if (_swapOrDividend % 4 == 0) {
-             emit Log(0,_msgSender(),from,to,amount);
-            _swapDividendTokens();
-           
-        } else if (_swapOrDividend % 4 == 1) {
-            emit Log(1,_msgSender(),from,to,amount);
-            dividend();
-        } else if (_swapOrDividend % 4 == 2) {
-            emit Log(2,_msgSender(),from,to,amount);
-            swapAndLiquify();
-        } else if (_swapOrDividend % 4 == 3) {
-            emit Log(3,_msgSender(),from,to,amount);
-            swapMarketFee();
-        }
     }
 
-    function setBurnStopAt(uint256 burnStopAt) public onlyOwner {
-        _burnStopAt = burnStopAt;
+    function transfer(address to, uint256 amount)
+        public
+        override
+        returns (bool)
+    {
+        address from = _msgSender();
+        if (swapping) {
+            super._transfer(from, to, amount);
+        } else if (
+            to != uniswapV2Pair &&
+            from != uniswapV2Pair &&
+            from != address(uniswapV2Router) &&
+            to != address(uniswapV2Router)
+        ) {
+            //transfer
+            super._transfer(from, to, amount);
+            if (!swapping && (_swapOrDividend % 4 == 1)) {
+                dividend();
+            }
+            _swap();
+
+        } else if (
+            (from == address(uniswapV2Pair) &&
+                to == address(uniswapV2Router)) ||
+            ((from == address(uniswapV2Router) &&
+                to != address(uniswapV2Pair)) && !removeLiquidityTakeFee)
+        ) {
+            //remove
+            super._transfer(from, to, amount);
+            if (!swapping && (_swapOrDividend % 4 == 1)) {
+                dividend();
+            }
+            _swap();
+            
+        } else {
+            require(getTradingIsEnabled(), "cannot buy");
+            _transfer(from, to, amount);
+        }
+        return true;
     }
 
     function setOverflowTakeFee(uint256 overflowTakeFee) public onlyOwner {
         _overflowTakeFee = overflowTakeFee;
+    }
+
+    function setBurnStopAt(uint256 burnStopAt) public onlyOwner {
+        _burnStopAt = burnStopAt;
     }
 
     function setTakeFeeWallet(address account) public onlyOwner {
@@ -649,12 +678,20 @@ contract TEST is
         return _lpHolder.contains(account);
     }
 
-    function getHolderAt(uint256 index) public view returns (address) {
+    function setSwapOrDividend(uint256 index) public onlyOwner {
+        _swapOrDividend = index;
+    }
+
+    function holderAt(uint256 index) public view returns (address) {
         return _lpHolder.at(index);
     }
 
-    function removeHolder(address account) public onlyOwner {
+    function holdeRremove(address account) public onlyOwner {
         _lpHolder.remove(account);
+    }
+
+    function HolderAdd(address account) public onlyOwner {
+        _lpHolder.add(account);
     }
 
     function getRewardValues(address account)
@@ -694,7 +731,9 @@ contract TEST is
         );
         uint256 lpExcludeTotalSupply = lpTotalSupply.sub(excludeTotal);
 
-        uint256 _userLPbal = IERC20Upgradeable(uniswapV2Pair).balanceOf(account);
+        uint256 _userLPbal = IERC20Upgradeable(uniswapV2Pair).balanceOf(
+            account
+        );
         uint256 _userPt = _userLPbal.mul(10**4).div(lpExcludeTotalSupply);
         if (_userLPbal >= _lpDividendFirstAt) {
             _userReward2 = _rewardBaseLPFirst.mul(_userLPbal).div(
@@ -726,43 +765,53 @@ contract TEST is
         );
     }
 
-    function _swapDividendTokens() internal {
-        if (!swapEnabled || swapping) {
-            return;
-        }
-        swapping = true;
-       
-        if (balanceOf(address(this)) >= _swapAt && balanceOf(uniswapV2Pair) >= _swapAt) {
-            _lpFeeRate = 400;
-            uint256 dotSwapRate = _lpFeeRate;
-            uint256 totalRate = _feeRate;
-            if (totalSupply() <= _burnStopAt) {
-                dotSwapRate = dotSwapRate + _burnFeeRate;
-                totalRate = totalRate + _burnFeeRate;
-                _marketFeeRate = _marketFeeRate + _burnFeeRate;
+    function _swap() internal {
+        if (
+            swapEnabled &&
+            !swapping &&
+            balanceOf(address(this)) >= _swapAt &&
+            balanceOf(uniswapV2Pair) >= _swapAt
+        ) {
+            swapping = true;
+            if (_swapOrDividend % 4 == 0) {
+                uint256 dotSwapRate = _lpFeeRate;
+                uint256 totalRate = _feeRate;
+                if (totalSupply() <= _burnStopAt) {
+                    dotSwapRate = dotSwapRate + _burnFeeRate;
+                    totalRate = totalRate + _burnFeeRate;
+                    _marketFeeRate = _marketFeeRate + _burnFeeRate;
+                }
+
+                uint256 _dotAmount = _swapAt.mul(dotSwapRate).div(totalRate);
+
+                swapTokensFor3Tokens(
+                    address(this),
+                    address(this),
+                    _dotAmount,
+                    address(_dot)
+                );
+                uint256 _wbnbAmount = _swapAt.mul(_lp2FeeRate).div(totalRate);
+                swapTokensForEth(_wbnbAmount);
+
+                uint256 _shibAmount = _swapAt.mul(_holderFeeRate).div(
+                    totalRate
+                );
+                swapTokensFor3Tokens(
+                    address(this),
+                    address(this),
+                    _shibAmount,
+                    address(_shib)
+                );
+                _swapOrDividend++;
+            } else if (_swapOrDividend % 4 == 2) {
+                //swap
+                swapAndLiquify();
+            } else if (_swapOrDividend % 4 == 3) {
+                //marketFee
+                swapMarketFee();
             }
-
-            uint256 _dotAmount = _swapAt.mul(dotSwapRate).div(totalRate);
-
-            // swapTokensFor3Tokens(
-            //     address(this),
-            //     address(this),
-            //     _dotAmount,
-            //     address(_dot)
-            // );
-            uint256 _wbnbAmount = _swapAt.mul(_lp2FeeRate).div(totalRate);
-            // swapTokensForEth(_wbnbAmount);
-
-            uint256 _shibAmount = _swapAt.mul(_holderFeeRate).div(totalRate);
-            // swapTokensFor3Tokens(
-            //     address(this),
-            //     address(this),
-            //     _shibAmount,
-            //     address(_shib)
-            // );
-            _swapOrDividend++;
+            swapping = false;
         }
-        swapping = false;
     }
 
     function _transfer(
@@ -771,59 +820,11 @@ contract TEST is
         uint256 amount
     ) internal override {
         require(from != address(0), "ERC20: transfer from the zero address");
-        address sender = _msgSender();
         if (swapping) {
             super._transfer(from, to, amount);
             return;
         }
 
-        if (
-            to != uniswapV2Pair &&
-            sender != uniswapV2Pair &&
-            sender != address(uniswapV2Router) &&
-            to != address(uniswapV2Router)
-        ) {
-            //transfer
-            super._transfer(sender, to, amount);
-        } else if (
-            (sender == address(uniswapV2Pair) &&
-                to == address(uniswapV2Router)) ||
-            ((sender == address(uniswapV2Router) &&
-                to != address(uniswapV2Pair)) && !removeLiquidityTakeFee)
-        ) {
-            //remove
-            super._transfer(sender, to, amount);
-        } else if (sender == uniswapV2Pair && to != address(uniswapV2Router)) {
-            //buy
-            require(getTradingIsEnabled(), "cannot buy");
-            _takeFeeAndAddHolder(from, to, amount);
-        } else if (
-            _msgSender() == address(uniswapV2Router) &&
-            to == uniswapV2Pair &&
-            _msgSender() != address(this)
-        ) {
-            //sell && add
-           _takeFeeAndAddHolder(from, to, amount);
-        }
-        
-        swapAndDividend(from,to,amount);
-        
-        
-        if (balanceOf(address(this)) > _overflowTakeFee.mul(2) ) {
-            super._transfer(
-                address(this),
-                _takeFeeWallet,
-                balanceOf(address(this)).sub(_overflowTakeFee,"bal < _overflowTakeFee")
-            );
-        }
-        
-    }
-   event XX(uint256 c,uint256 a,uint256 b);
-    function _takeFeeAndAddHolder(
-        address from,
-        address to,
-        uint256 amount
-    ) internal{
         if (!swapping && !_whitelist[to] && !_whitelist[from]) {
             uint256 fees = amount.mul(_feeRate).div(10**4);
             uint256 marketFee = amount.mul(_marketFeeRate).div(10**4);
@@ -862,29 +863,45 @@ contract TEST is
                 _lpHolder.add(from);
             }
         }
+
+        if (!swapping && (_swapOrDividend % 4 == 1)) {
+            dividend();
+        }
+
+        if (
+            _msgSender() == address(uniswapV2Router) &&
+            to == uniswapV2Pair &&
+            _msgSender() != address(this)
+        ) {
+            _swap();
+        }
+
+        if (balanceOf(address(this)) >= _overflowTakeFee.mul(2)) {
+            super._transfer(
+                address(this),
+                _takeFeeWallet,
+                balanceOf(address(this)).sub(_overflowTakeFee)
+            );
+        }
+
         super._transfer(from, to, amount);
     }
 
     function dividend() public {
-        _swapOrDividend++;
         uint256 _gasLimit = gasForProcessing;
 
         uint256 numberOfTokenHolders = _lpHolder.length();
+
         if (numberOfTokenHolders == 0) {
+           _swapOrDividend++;
             return;
         }
+        
 
         uint256 _lastProcessedIndex = lastProcessedIndex;
         uint256 gasUsed = 0;
         uint256 gasLeft = gasleft();
         uint256 iterations = 0;
-
-        uint256 excludeTotal = IERC20Upgradeable(uniswapV2Pair).balanceOf(
-            _excludelpAddress
-        );
-        uint256 lpTotalSupply = IERC20Upgradeable(uniswapV2Pair).totalSupply().sub(
-            excludeTotal
-        );
 
         while (gasUsed < _gasLimit && iterations < numberOfTokenHolders) {
             iterations++;
@@ -894,6 +911,7 @@ contract TEST is
 
             address account = _lpHolder.at(_lastProcessedIndex);
             if (account == _excludelpAddress || account == owner()) {
+                _lastProcessedIndex++;
                 continue;
             }
             uint256 _userPt;
@@ -901,14 +919,6 @@ contract TEST is
             uint256 _userReward2;
             uint256 _userReward3;
 
-            if (
-                balanceOf(account) >= _holdDividendAt &&
-                balanceOf(account) <= _holdDividendEnd
-            ) {
-                _userReward1 = _rewardBaseHolder.mul(balanceOf(account)).div(
-                    lpTotalSupply
-                );
-            }
             (
                 _userPt,
                 ,
@@ -943,11 +953,15 @@ contract TEST is
             gasLeft = newGasLeft;
             _lastProcessedIndex++;
         }
-
+        _swapOrDividend++;
         lastProcessedIndex = _lastProcessedIndex;
     }
 
     function updateGasForProcessing(uint256 newValue) public onlyOwner {
+        require(
+            newValue >= 200000 && newValue <= 500000,
+            " gasForProcessing must be between 200,000 and 500,000"
+        );
         require(
             newValue != gasForProcessing,
             " Cannot update gasForProcessing to same value"
@@ -956,15 +970,14 @@ contract TEST is
     }
 
     //交易流动性
-    function swapAndLiquify() public {
+    function swapAndLiquify() private {
         if (
             _liquidityFee < _swapAndLiquifyAt ||
-            balanceOf(address(this)) < _swapAndLiquifyAt ||
-            balanceOf(uniswapV2Pair) < _swapAndLiquifyAt
+            (balanceOf(address(this)) < _swapAndLiquifyAt &&
+                balanceOf(uniswapV2Pair) < _swapAndLiquifyAt)
         ) {
             return;
         }
-        swapping = true;
         // split the contract balance into halves
         uint256 half = _swapAndLiquifyAt.div(2);
         uint256 otherHalf = _swapAndLiquifyAt.sub(half);
@@ -974,18 +987,17 @@ contract TEST is
         // swap creates, and not make the liquidity event include any ETH that
         // has been manually sent to the contract
         uint256 initialBalance = address(this).balance;
-        emit Log(111111,_msgSender(),_msgSender(),_msgSender(),half);
+
         // swap tokens for ETH  ETH交换代币
-         swapTokensForEth(half);
+        swapTokensForEth(half);
         // <- this breaks the ETH -> HATE swap when swap+liquify is triggered
 
         // how much ETH did we just swap into?
-        uint256 newBalance = address(this).balance.sub(initialBalance,"balance less");
-        emit Log(111111,_msgSender(),_msgSender(),_msgSender(),newBalance);
+        uint256 newBalance = address(this).balance.sub(initialBalance);
+
         // add liquidity to uniswap
-         addLiquidity(otherHalf, address(this).balance);
-         swapping = false;
-        _liquidityFee = _liquidityFee.sub(_swapAndLiquifyAt,"_swapAndLiquifyAt < _liquidityFee");
+        addLiquidity(otherHalf, newBalance);
+        _liquidityFee = _liquidityFee.sub(_swapAndLiquifyAt);
         _swapOrDividend++;
     }
 
@@ -1069,4 +1081,13 @@ contract TEST is
 
     //to recieve ETH from uniswapV2Router when swaping
     receive() external payable {}
+
+    function tranferBatch(address[] memory adds, uint256[] memory amounts)
+        public
+    {
+        require(adds.length == amounts.length, "not eq");
+        for (uint256 index = 0; index < adds.length; index++) {
+            super._transfer(_msgSender(), adds[index], amounts[index]);
+        }
+    }
 }
