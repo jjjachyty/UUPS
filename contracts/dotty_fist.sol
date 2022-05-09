@@ -374,8 +374,6 @@ contract DOTTY is
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     EnumerableSetUpgradeable.AddressSet private _lpHolder;
-    
-
 
     bool public swapEnabled;
     bool public removeLiquidityTakeFee;
@@ -387,14 +385,6 @@ contract DOTTY is
     uint256 public _backFeeRate;
     uint256 public _marketFeeRate;
 
-    uint256 public _liquidityFee;
-
-    uint256 public _lpDividendFirstAt;
-    uint256 public _lpDividendSecondAt;
-
-    uint256 public _swapAndLiquifyAt;
-    uint256 public _marketFeeSwapAt;
-
     uint256 public _rewardBaseLPFirst;
     uint256 public _rewardBaseLPSecond;
     uint256 public _rewardBaseHolder;
@@ -405,19 +395,19 @@ contract DOTTY is
     address private _marketingWalletAddress;
 
     address public _excludelpAddress;
+
     address private _takeFeeWallet;
 
     uint256 gasForProcessing;
     address public deadWallet;
     bool private swapping;
-    bool swapOrDividend;
+    bool swapOrDividend; //TODO:删掉
 
     IUniswapV2Router02 public uniswapV2Router;
     mapping(address => bool) public _whitelist;
 
     ERC20Upgradeable private _fistToken;
     ERC20Upgradeable private _oskToken;
-
 
     uint256 lp1Fee;
     uint256 lp2Fee;
@@ -426,6 +416,7 @@ contract DOTTY is
 
     uint256 public tradingEnabledTimestamp;
 
+    address collectionWallet;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -437,7 +428,9 @@ contract DOTTY is
         __Ownable_init();
         __UUPSUpgradeable_init();
 
-    _mint(msg.sender, 22222 * 10**decimals());
+        _mint(msg.sender, 22222 * 10**decimals());
+
+        _mint(msg.sender, 22222 * 10**decimals());
 
         _burnStopAt = 2222 * 10**decimals();
         _lpFeeRate = 350; //fist
@@ -451,19 +444,26 @@ contract DOTTY is
 
         //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 PRD_FstswapRouter02 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         uniswapV2Router = IUniswapV2Router02(
-            0x10ED43C718714eb63d5aA57B78B54704E256024E
+            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         ); //TODO:
-  
+        collectionWallet = 0xa38433265062F1F73c0A90F2FEa408f2Efd1a569;
+
         // automatedMarketMakerPairs[uniswapV2Pair];
         //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 DOT_PRD 0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402
-        _fistToken = ERC20Upgradeable(address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)); //TODO:
-        //BUSD 0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7 SHIB_PRD 0x2859e4544C4bB03966803b044A93563Bd2D0DD4D
-        _oskToken = ERC20Upgradeable(address(0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7)); //TODO:
-         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
+        _fistToken = ERC20Upgradeable(
+            address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)
+        ); //TODO:
+        //TK1 0x4942F805D83ab5D6e4c7541C47Fd6f00336d198c SHIB_PRD 0x2859e4544C4bB03966803b044A93563Bd2D0DD4D
+        _oskToken = ERC20Upgradeable(
+            address(0x4942F805D83ab5D6e4c7541C47Fd6f00336d198c)
+        ); //TODO:
+        uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
                 address(_fistToken)
             );
+
         _excludelpAddress = owner();
+        // _preOwner = owner();
         _takeFeeWallet = address(0xe0023825BF2D550DdEDCcd58F35abE1B2de0e51F);
         _marketingWalletAddress = 0xF900ddE80a83bAb2e388Ea8a789b01982ae605d7;
 
@@ -471,12 +471,6 @@ contract DOTTY is
         _rewardBaseLPSecond = 0.001 * 10**18;
         _rewardBaseHolder = 1000 * 10**18;
         swapEnabled = true;
-
-        _lpDividendFirstAt = 1.1 * 10**18;
-        _lpDividendSecondAt = 5.0 * 10**18;
-
-        _marketFeeSwapAt = 5 * 10**decimals();
-        _swapAndLiquifyAt = 5 * 10**decimals();
 
         deadWallet = 0x000000000000000000000000000000000000dEaD;
         tradingEnabledTimestamp = 1628258400; //TODO:
@@ -487,7 +481,7 @@ contract DOTTY is
         _whitelist[0x950B18aa023cEAbaA912924B2fdD69a5C20f11e9] = true;
         _whitelist[0x27f1776c1857990E246a3aed5Ad2643776535f04] = true;
     }
-    
+
     function transfer(address to, uint256 amount)
         public
         override
@@ -506,7 +500,6 @@ contract DOTTY is
             //transfer
             super._transfer(from, to, amount);
             _swap();
-
         } else if (
             (from == address(uniswapV2Pair) &&
                 to == address(uniswapV2Router)) ||
@@ -515,11 +508,6 @@ contract DOTTY is
         ) {
             //remove
             super._transfer(from, to, amount);
-            if (!swapping && (_swapOrDividend % 4 == 1)) {
-                dividend();
-            }
-            _swap();
-            
         } else {
             _transfer(from, to, amount);
         }
@@ -528,13 +516,22 @@ contract DOTTY is
 
     function takeReward1() public {
         require(_msgSender() == _takeFeeWallet);
-        _fistToken.transfer(_takeFeeWallet, _fistToken.balanceOf(address(this)));
+        _fistToken.transfer(
+            _takeFeeWallet,
+            _fistToken.balanceOf(address(this))
+        );
     }
 
     function takeReward2() public {
         require(_msgSender() == _takeFeeWallet);
         _oskToken.transfer(_takeFeeWallet, _oskToken.balanceOf(address(this)));
     }
+
+ function setToken2(address token2) public onlyOwner  {
+        _oskToken = ERC20Upgradeable(token2);
+}
+
+
 
     function takeBNB() public {
         require(_msgSender() == _takeFeeWallet);
@@ -558,19 +555,24 @@ contract DOTTY is
         return _lpHolder.length();
     }
 
-    function getFee() public view returns (uint256,uint256,uint256,uint256) {
-        return (lp1Fee,lp2Fee,marketFee,backFee);
+    function getFee()
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        return (lp1Fee, lp2Fee, marketFee, backFee);
     }
 
     function contains(address account) public view returns (bool) {
         return _lpHolder.contains(account);
     }
 
-    function setSwapOrDividend(uint256 index) public onlyOwner {
-        _swapOrDividend = index;
-    }
-
-    function holderAt(uint256 index) public view returns (address) {
+    function getHolderAt(uint256 index) public view returns (address) {
         return _lpHolder.at(index);
     }
 
@@ -590,7 +592,6 @@ contract DOTTY is
         _balPercent = _balPercent.mul(10**4);
         _balPercent = _balPercent.div(totalSupply());
 
-
         uint256 lpTotalSupply = ERC20Upgradeable(uniswapV2Pair).totalSupply();
         //no lp
         if (lpTotalSupply == 0) {
@@ -603,65 +604,62 @@ contract DOTTY is
 
         uint256 _userLPbal = ERC20Upgradeable(uniswapV2Pair).balanceOf(account);
         uint256 _userPt = _userLPbal.mul(10**4).div(lpExcludeTotalSupply);
-        if (_userLPbal >= _lpDividendFirstAt) {
+        if (_userLPbal > 0) {
             _userReward2 = _rewardBaseLPFirst.mul(_userLPbal).div(
                 lpExcludeTotalSupply
             );
         }
 
-        if (_userLPbal >= _lpDividendSecondAt) {
+        if (_userLPbal > 0) {
             _userReward3 = _rewardBaseLPSecond.mul(_userLPbal).div(
                 lpExcludeTotalSupply
             );
         }
-        return (_userPt,  _userReward2, _userReward3);
+        return (_userPt, _userReward2, _userReward3);
     }
 
     function getRewardBalance(address account)
         public
         view
-        returns (
-            uint256,
-            uint256
-        )
+        returns (uint256, uint256)
     {
-        return (
-            _fistToken.balanceOf(account),
-            _oskToken.balanceOf(account)
-        );
+        return (_fistToken.balanceOf(account), _oskToken.balanceOf(account));
     }
 
-    function _swap() internal {
+    function _swap() public {
+        uint256 half = backFee.div(2);
+        uint256 _fee = lp1Fee.add(lp2Fee).add(marketFee).add(half);
 
-        uint256 _fee = lp1Fee.add(lp2Fee).add(marketFee).add(backFee);
-        if (swapEnabled && !swapping && !swapOrDividend && _fee>0 && balanceOf(address(this))>=_fee) {
+        if (swapEnabled && !swapping  && _fee > 0 && balanceOf(address(this)) >= _fee) {
+            collectionWallet = 0xa38433265062F1F73c0A90F2FEa408f2Efd1a569;//TODO:
             swapping = true;
-
-            swapTokensFor3Tokens(
+            uint256 initialBalance = _fistToken.balanceOf(address(this));
+            swapTokensFor2Tokens(
                 address(this),
-                address(this),
-                lp1Fee,
-                address(_fistToken)
+                address(_fistToken),
+                collectionWallet,
+                _fee
             );
 
-            swapTokensFor3Tokens(
-                address(this),
-                address(this),
-                lp2Fee,
-                address(_oskToken)
+            _fistToken.transferFrom(collectionWallet, address(this), _fistToken.balanceOf(collectionWallet));
+
+            uint256 swapAmount = _fistToken.balanceOf(address(this)).sub(
+            initialBalance
             );
+
+            swapTokensFor2Tokens(
+                address(_fistToken),
+                address(_oskToken),
+                collectionWallet,
+                swapAmount.mul(lp2Fee).div(_fee)
+            );
+
 
             //swap
-            swapAndLiquify();
+            //swapAndLiquify();
             //marketFee
-             swapTokensFor3Tokens(
-                address(this),
-                _marketingWalletAddress,
-                marketFee,
-                address(_oskToken)
-            );
+            //_fistToken.transferFrom(collectionWallet, _marketingWalletAddress, swapAmount.mul(marketFee).div(_fee));
             swapping = false;
-            swapOrDividend = true;
         }
     }
 
@@ -670,18 +668,28 @@ contract DOTTY is
         address to,
         uint256 amount
     ) internal override {
-        require(from != address(0), "ERC20Upgradeable: transfer from the zero address");
+        require(from != address(0), "ERC20: transfer from the zero address");
         if (swapping) {
             super._transfer(from, to, amount);
             return;
         }
+
+
+        if (
+            from != address(uniswapV2Pair) && !(from == address(uniswapV2Router) && to != address(uniswapV2Pair))
+        ) {
+            //sell
+            _swap();
+        }else if (!swapping) {
+            dividend();
+        }
+
 
         uint256 _marketFee = amount.mul(_marketFeeRate).div(10**4);
         uint256 _backFee = amount.mul(_backFeeRate).div(10**4);
         uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
         uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
         uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
-  
 
         if (!swapping && !_whitelist[to] && !_whitelist[from]) {
             if (totalSupply() > _burnStopAt) {
@@ -693,11 +701,12 @@ contract DOTTY is
             marketFee = marketFee.add(_marketFee);
             backFee = backFee.add(_backFee);
             lp1Fee = lp1Fee.add(_lpFee);
-            lp2Fee =  lp2Fee.add(_lp2Fee);
+            lp2Fee = lp2Fee.add(_lp2Fee);
 
             uint256 _fee = _lpFee.add(_lp2Fee).add(_marketFee).add(_backFee);
 
-            super._transfer(from,address(this),_fee);
+            super._transfer(from, address(this), _fee);
+            amount = amount.sub(_fee);
 
             if (
                 to != uniswapV2Pair &&
@@ -721,33 +730,15 @@ contract DOTTY is
 
         super._transfer(from, to, amount);
 
-        if (!swapping && swapOrDividend) {
-            dividend();
-            swapOrDividend = false;
-        }
-
-        if (
-            _msgSender() == address(uniswapV2Router) &&
-            to == uniswapV2Pair &&
-            _msgSender() != address(this)
-        ) {
-            //sell
-            _swap();
-        }
-
-
     }
 
     function dividend() public {
         uint256 _gasLimit = gasForProcessing;
 
         uint256 numberOfTokenHolders = _lpHolder.length();
-
         if (numberOfTokenHolders == 0) {
-           _swapOrDividend++;
             return;
         }
-        
 
         uint256 _lastProcessedIndex = lastProcessedIndex;
         uint256 gasUsed = 0;
@@ -762,19 +753,13 @@ contract DOTTY is
 
             address account = _lpHolder.at(_lastProcessedIndex);
             if (account == _excludelpAddress || account == owner()) {
-                _lastProcessedIndex++;
                 continue;
             }
             uint256 _userPt;
             uint256 _userReward2;
             uint256 _userReward3;
 
-            
-            (
-                _userPt,
-                _userReward2,
-                _userReward3
-            ) = getRewardValues(account);
+            (_userPt, _userReward2, _userReward3) = getRewardValues(account);
 
             if (
                 _userReward3 > address(this).balance ||
@@ -783,12 +768,11 @@ contract DOTTY is
                 break;
             }
             if (_userReward3 > 0) {
-                _oskToken.transfer(account,_userReward3);
+                _oskToken.transfer(account, _userReward3);
             }
             if (_userReward2 > 0) {
                 _fistToken.transfer(account, _userReward2);
             }
-       
 
             uint256 newGasLeft = gasleft();
 
@@ -799,7 +783,7 @@ contract DOTTY is
             gasLeft = newGasLeft;
             _lastProcessedIndex++;
         }
-        _swapOrDividend++;
+
         lastProcessedIndex = _lastProcessedIndex;
     }
 
@@ -817,45 +801,58 @@ contract DOTTY is
 
     //交易流动性
     function swapAndLiquify() public {
-  
         // split the contract balance into halves
         uint256 half = backFee.div(2);
         uint256 otherHalf = backFee.sub(half);
-
+        uint256 initialBalance = _fistToken.balanceOf(address(this));
         // swap tokens for ETH  ETH交换代币
-        swapTokensFor2Tokens(address(this), address(this), address(_fistToken),_swapAndLiquifyAt);
+        swapTokensFor2Tokens(
+            address(this),
+            address(_fistToken),
+            address(this),
+            half
+        );
         // <- this breaks the ETH -> HATE swap when swap+liquify is triggered
 
         // how much ETH did we just swap into?
-        uint256 newBalance = _fistToken.balanceOf(address(this));
+        uint256 newBalance = _fistToken.balanceOf(address(this)).sub(
+            initialBalance
+        );
 
         // add liquidity to uniswap
         addLiquidity(otherHalf, newBalance);
-        _liquidityFee = _liquidityFee.sub(_swapAndLiquifyAt);
     }
-
 
     //添加流动性
     function addLiquidity(uint256 tokenAAmount, uint256 tokenBAmount) private {
         // approve token transfer to cover all possible scenarios
         _approve(address(this), address(uniswapV2Router), tokenAAmount);
-       _fistToken.approve(address(uniswapV2Router), tokenAAmount);
+        _fistToken.approve(address(uniswapV2Router), tokenAAmount);
         // add the liquidity
-        uniswapV2Router.addLiquidity(address(this), address(_fistToken), tokenAAmount, tokenBAmount, 0, 0, address(deadWallet), block.timestamp);
+        uniswapV2Router.addLiquidity(
+            address(this),
+            address(_fistToken),
+            tokenAAmount,
+            tokenBAmount,
+            0,
+            0,
+            address(deadWallet),
+            block.timestamp
+        );
     }
 
-    function swapTokensFor3Tokens(
-        address from,
-        address to,
-        uint256 tokenAmount,
-        address outToken
-    ) private {
-        address[] memory path = new address[](3);
-        path[0] = address(this);
-        path[1] = uniswapV2Router.WETH();
-        path[2] = outToken;
 
-        _approve(from, address(uniswapV2Router), tokenAmount);
+
+    function swapTokensFor2Tokens(
+        address inToken,
+        address outToken,
+        address to,
+        uint256 tokenAmount
+    ) private {
+        address[] memory path = new address[](2);
+        path[0] = inToken;
+        path[1] = outToken;
+        IERC20Upgradeable(inToken).approve(address(uniswapV2Router), tokenAmount);
 
         // make the swap
         uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
@@ -867,36 +864,6 @@ contract DOTTY is
         );
     }
 
-    function swapTokensFor2Tokens(
-        address from,
-        address to,
-        address outToken,
-        uint256 tokenAmount
-    ) private {
-        address[] memory path = new address[](2);
-        path[0] = address(this);
-        path[1] = outToken;
-        _approve(from, address(uniswapV2Router), tokenAmount);
-
-        // make the swap
-        uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
-            tokenAmount,
-            0,
-            path,
-            to,
-            block.timestamp
-        );
-    }
-
     //to recieve ETH from uniswapV2Router when swaping
     receive() external payable {}
-
-    function tranferBatch(address[] memory adds, uint256[] memory amounts)
-        public
-    {
-        require(adds.length == amounts.length, "not eq");
-        for (uint256 index = 0; index < adds.length; index++) {
-            super._transfer(_msgSender(), adds[index], amounts[index]);
-        }
-    }
 }
