@@ -578,55 +578,6 @@
         "StorageSlotUpgradeable"
       ]
     },
-    "D:\\solidity\\UUPS\\contracts\\dotty.sol": {
-      "lastModificationDate": 1650357556444,
-      "contentHash": "b39b2ec04e52af62ed0beaf9ccd1689e",
-      "sourceName": "contracts/dotty.sol",
-      "solcConfig": {
-        "version": "0.8.3",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IUniswapV2Factory",
-        "IUniswapV2Pair",
-        "IUniswapV2Router01",
-        "IUniswapV2Router02",
-        "TEST"
-      ]
-    },
     "D:\\solidity\\UUPS\\contracts\\mytokenV2.sol": {
       "lastModificationDate": 1648708811380,
       "contentHash": "fa3c6f2cb214a03fc3c88edceac3d000",
@@ -742,6 +693,55 @@
       "imports": [],
       "versionPragmas": [],
       "artifacts": []
+    },
+    "D:\\solidity\\UUPS\\contracts\\dotty_fist.sol": {
+      "lastModificationDate": 1652088702034,
+      "contentHash": "35782dd63958fc5efc188fa9e2f2ea1a",
+      "sourceName": "contracts/dotty_fist.sol",
+      "solcConfig": {
+        "version": "0.8.3",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "DOTTY",
+        "IUniswapV2Factory",
+        "IUniswapV2Pair",
+        "IUniswapV2Router01",
+        "IUniswapV2Router02"
+      ]
     }
   }
 }
