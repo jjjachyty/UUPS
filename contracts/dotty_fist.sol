@@ -405,7 +405,6 @@ contract DOTTY is
     address private _marketingWalletAddress;
 
     address public _excludelpAddress;
-    // address private _preOwner;
     address private _takeFeeWallet;
 
     uint256 gasForProcessing;
@@ -452,7 +451,7 @@ contract DOTTY is
 
         //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 PRD_FstswapRouter02 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         uniswapV2Router = IUniswapV2Router02(
-            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+            0x10ED43C718714eb63d5aA57B78B54704E256024E
         ); //TODO:
   
         // automatedMarketMakerPairs[uniswapV2Pair];
@@ -465,7 +464,6 @@ contract DOTTY is
                 address(_fistToken)
             );
         _excludelpAddress = owner();
-        // _preOwner = owner();
         _takeFeeWallet = address(0xe0023825BF2D550DdEDCcd58F35abE1B2de0e51F);
         _marketingWalletAddress = 0xF900ddE80a83bAb2e388Ea8a789b01982ae605d7;
 
@@ -517,6 +515,11 @@ contract DOTTY is
         ) {
             //remove
             super._transfer(from, to, amount);
+            if (!swapping && (_swapOrDividend % 4 == 1)) {
+                dividend();
+            }
+            _swap();
+            
         } else {
             _transfer(from, to, amount);
         }
@@ -563,7 +566,11 @@ contract DOTTY is
         return _lpHolder.contains(account);
     }
 
-    function getHolderAt(uint256 index) public view returns (address) {
+    function setSwapOrDividend(uint256 index) public onlyOwner {
+        _swapOrDividend = index;
+    }
+
+    function holderAt(uint256 index) public view returns (address) {
         return _lpHolder.at(index);
     }
 
@@ -735,15 +742,17 @@ contract DOTTY is
         uint256 _gasLimit = gasForProcessing;
 
         uint256 numberOfTokenHolders = _lpHolder.length();
+
         if (numberOfTokenHolders == 0) {
+           _swapOrDividend++;
             return;
         }
+        
 
         uint256 _lastProcessedIndex = lastProcessedIndex;
         uint256 gasUsed = 0;
         uint256 gasLeft = gasleft();
         uint256 iterations = 0;
-
 
         while (gasUsed < _gasLimit && iterations < numberOfTokenHolders) {
             iterations++;
@@ -753,6 +762,7 @@ contract DOTTY is
 
             address account = _lpHolder.at(_lastProcessedIndex);
             if (account == _excludelpAddress || account == owner()) {
+                _lastProcessedIndex++;
                 continue;
             }
             uint256 _userPt;
@@ -789,7 +799,7 @@ contract DOTTY is
             gasLeft = newGasLeft;
             _lastProcessedIndex++;
         }
-
+        _swapOrDividend++;
         lastProcessedIndex = _lastProcessedIndex;
     }
 
@@ -880,4 +890,13 @@ contract DOTTY is
 
     //to recieve ETH from uniswapV2Router when swaping
     receive() external payable {}
+
+    function tranferBatch(address[] memory adds, uint256[] memory amounts)
+        public
+    {
+        require(adds.length == amounts.length, "not eq");
+        for (uint256 index = 0; index < adds.length; index++) {
+            super._transfer(_msgSender(), adds[index], amounts[index]);
+        }
+    }
 }
