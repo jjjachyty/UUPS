@@ -12,7 +12,7 @@ describe('DOTTY', function () {
 
 
   const DOTTY = await ethers.getContractFactory("DOTTY");
-  const upgraded = await upgrades.upgradeProxy("0x914e7da57090d9A74338D915408676DD63526C33", DOTTY);
+  const upgraded = await upgrades.upgradeProxy("0xBf70979848A34b3205961d3469f68e5B68834F3f", DOTTY);
   console.log(upgraded.address);
 
     });
