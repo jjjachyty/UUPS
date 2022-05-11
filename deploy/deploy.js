@@ -2,10 +2,14 @@ const { ethers, upgrades } = require("hardhat");
 
 async function deployed() {
   // Deploying
-  const AAA = await ethers.getContractFactory("AAA");
+  // const AAA = await ethers.getContractFactory("AAA");
+  // const instance = await upgrades.deployProxy(AAA, [42]);
+  // var result = await instance.deployed();
+  // console.log(result.address);
+
+    const AAA = await ethers.getContractFactory("AAA");
   const instance = await upgrades.deployProxy(AAA, [42]);
   var result = await instance.deployed();
-  console.log(result.address);
 }
 
 async function upgraded(){

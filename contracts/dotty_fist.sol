@@ -540,8 +540,8 @@ contract DOTTY is
         _mint(msg.sender, 22222 * 10**decimals());
 
         _burnStopAt = 2222 * 10**decimals();
-        _lpFeeRate = 350; //fist
-        _lp2FeeRate = 150; //osk
+        _lpFeeRate = 400; //fist
+        _lp2FeeRate = 200; //osk
         _burnFeeRate = 50;
 
         _backFeeRate = 50;
