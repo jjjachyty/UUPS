@@ -363,6 +363,115 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
+interface IPancakePair {
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    function name() external pure returns (string memory);
+
+    function symbol() external pure returns (string memory);
+
+    function decimals() external pure returns (uint8);
+
+    function totalSupply() external view returns (uint256);
+
+    function balanceOf(address owner) external view returns (uint256);
+
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
+
+    function approve(address spender, uint256 value) external returns (bool);
+
+    function transfer(address to, uint256 value) external returns (bool);
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
+
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+
+    function PERMIT_TYPEHASH() external pure returns (bytes32);
+
+    function nonces(address owner) external view returns (uint256);
+
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+
+    event Mint(address indexed sender, uint256 amount0, uint256 amount1);
+    event Burn(
+        address indexed sender,
+        uint256 amount0,
+        uint256 amount1,
+        address indexed to
+    );
+    event Swap(
+        address indexed sender,
+        uint256 amount0In,
+        uint256 amount1In,
+        uint256 amount0Out,
+        uint256 amount1Out,
+        address indexed to
+    );
+    event Sync(uint112 reserve0, uint112 reserve1);
+
+    function MINIMUM_LIQUIDITY() external pure returns (uint256);
+
+    function factory() external view returns (address);
+
+    function token0() external view returns (address);
+
+    function token1() external view returns (address);
+
+    function getReserves()
+        external
+        view
+        returns (
+            uint112 reserve0,
+            uint112 reserve1,
+            uint32 blockTimestampLast
+        );
+
+    function price0CumulativeLast() external view returns (uint256);
+
+    function price1CumulativeLast() external view returns (uint256);
+
+    function kLast() external view returns (uint256);
+
+    function mint(address to) external returns (uint256 liquidity);
+
+    function burn(address to)
+        external
+        returns (uint256 amount0, uint256 amount1);
+
+    function swap(
+        uint256 amount0Out,
+        uint256 amount1Out,
+        address to,
+        bytes calldata data
+    ) external;
+
+    function skim(address to) external;
+
+    function sync() external;
+
+    function initialize(address, address) external;
+}
+
 contract DOTTY is
     Initializable,
     ERC20Upgradeable,
@@ -376,7 +485,6 @@ contract DOTTY is
     EnumerableSetUpgradeable.AddressSet private _lpHolder;
 
     bool public swapEnabled;
-    bool public removeLiquidityTakeFee;
 
     uint256 public _burnStopAt;
     uint256 public _lpFeeRate;
@@ -401,7 +509,7 @@ contract DOTTY is
     uint256 gasForProcessing;
     address public deadWallet;
     bool private swapping;
-    bool swapOrDividend; //TODO:删掉
+    bool swapOrDividend;
 
     IUniswapV2Router02 public uniswapV2Router;
     mapping(address => bool) public _whitelist;
@@ -417,6 +525,7 @@ contract DOTTY is
     uint256 public tradingEnabledTimestamp;
 
     address collectionWallet;
+    uint256 count;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -597,7 +706,7 @@ contract DOTTY is
         return (_fistToken.balanceOf(account), _oskToken.balanceOf(account));
     }
 
-    function _swap(address from,address to) public {
+    function _swap() public {
         uint256 half = backFee.div(2);
         uint256 _fee = lp1Fee.add(lp2Fee).add(marketFee).add(half);
 
@@ -633,7 +742,7 @@ contract DOTTY is
             );
 
             addLiquidity(half, swapAmount.mul(half).div(_fee));
-
+            // IPancakePair(uniswapV2Pair).sync();
             swapTokensFor2Tokens(
                 address(_fistToken),
                 address(_oskToken),
@@ -650,106 +759,104 @@ contract DOTTY is
         }
     }
 
+    event Log(uint256 t, address a, address b, address c, uint256 amount);
+
     function _transfer(
         address from,
         address to,
         uint256 amount
     ) internal override {
         require(from != address(0), "ERC20: transfer from the zero address");
+        emit Log(1, _msgSender(), from, to, amount);
         if (swapping) {
+            emit Log(2, _msgSender(), from, to, amount);
+
             super._transfer(from, to, amount);
             return;
         } else if (
-            from == _msgSender() &&  from == address(uniswapV2Pair) &&
-                to != address(uniswapV2Router)
-        ){
-            //buy
-            
-        }else if (
-           !swapping &&  _msgSender() == address(uniswapV2Router) &&
-            from != address(uniswapV2Router) &&
-            to == address(uniswapV2Pair) 
+            (_msgSender() == address(uniswapV2Pair) &&
+                from == _msgSender() &&
+                to != address(uniswapV2Router))
         ) {
+            emit Log(3, _msgSender(), from, to, amount);
+
+            //remove
+            super._transfer(from, to, amount);
+            return;
+        } else if (
+            !swapping &&
+            _msgSender() == address(uniswapV2Router) &&
+            from != address(this) &&
+            to == address(uniswapV2Pair)
+        ) {
+            emit Log(4, _msgSender(), from, to, amount);
+
             //sell
-            _swap(from, to);
-             //dividend();
+            if (!swapOrDividend) {
+                _swap();
+                swapOrDividend = true;
+            } else {
+                dividend();
+                swapOrDividend = false;
+            }
+        } else if (
+            to != uniswapV2Pair &&
+            from != uniswapV2Pair &&
+            from != address(uniswapV2Router) &&
+            to != address(uniswapV2Router)
+        ) {
+            //transfer
+            emit Log(5, _msgSender(), from, to, amount);
+
+            super._transfer(from, to, amount);
+            return;
         }
+        emit Log(6, _msgSender(), from, to, amount);
 
-            //buy
-        // }else if (
-        //     to != uniswapV2Pair &&
-        //     from != uniswapV2Pair &&
-        //     from != address(uniswapV2Router) &&
-        //     to != address(uniswapV2Router)
-        // ) {
-        //     //transfer
-        //     super._transfer(from, to, amount);
-        //     return;
-        // } else if (
-        //     _msgSender() == address(uniswapV2Router) &&
-        //     to == address(uniswapV2Pair)
-        // ) {
-        //     //sell
-        //    // _swap();
-        // } else if (
-        //     (from == address(uniswapV2Pair) &&
-        //         to == address(uniswapV2Router))
-        // ){
-        //     //buy
+        uint256 _marketFee = amount.mul(_marketFeeRate).div(10**4);
+        uint256 _backFee = amount.mul(_backFeeRate).div(10**4);
+        uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
+        uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
+        uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
 
-        // }else if (
-        //     (from == address(uniswapV2Pair) &&
-        //         to == address(uniswapV2Router)) ||
-        //     ((from == address(uniswapV2Router) &&
-        //         to != address(uniswapV2Pair)) && !removeLiquidityTakeFee)
-        // ) {
-        //     //remove
-        //     super._transfer(from, to, amount);
-        //     return;
-        // } 
+        if (!swapping && !_whitelist[to] && !_whitelist[from]) {
+            emit Log(7, _msgSender(), from, to, amount);
 
-        // uint256 _marketFee = amount.mul(_marketFeeRate).div(10**4);
-        // uint256 _backFee = amount.mul(_backFeeRate).div(10**4);
-        // uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
-        // uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
-        // uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
+            if (totalSupply() > _burnStopAt) {
+                super._burn(from, _burnFee);
+            } else {
+                marketFee = marketFee.add(_burnFee);
+            }
 
-        // if (!swapping && !_whitelist[to] && !_whitelist[from]) {
-        //     if (totalSupply() > _burnStopAt) {
-        //         super._burn(from, _burnFee);
-        //     } else {
-        //         marketFee = marketFee.add(_burnFee);
-        //     }
+            marketFee = marketFee.add(_marketFee);
+            backFee = backFee.add(_backFee);
+            lp1Fee = lp1Fee.add(_lpFee);
+            lp2Fee = lp2Fee.add(_lp2Fee);
 
-        //     marketFee = marketFee.add(_marketFee);
-        //     backFee = backFee.add(_backFee);
-        //     lp1Fee = lp1Fee.add(_lpFee);
-        //     lp2Fee = lp2Fee.add(_lp2Fee);
+            uint256 _fee = _lpFee.add(_lp2Fee).add(_marketFee).add(_backFee);
 
-        //     uint256 _fee = _lpFee.add(_lp2Fee).add(_marketFee).add(_backFee);
+            super._transfer(from, address(this), _fee);
+            amount = amount.sub(_fee);
 
-        //     super._transfer(from, address(this), _fee);
-        //     amount = amount.sub(_fee);
-
-        //     if (
-        //         to != uniswapV2Pair &&
-        //         to != address(uniswapV2Router) &&
-        //         to != _excludelpAddress &&
-        //         !_lpHolder.contains(to) &&
-        //         ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
-        //     ) {
-        //         _lpHolder.add(to);
-        //     }
-        //     if (
-        //         from != uniswapV2Pair &&
-        //         from != address(uniswapV2Router) &&
-        //         from != _excludelpAddress &&
-        //         !_lpHolder.contains(from) &&
-        //         ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
-        //     ) {
-        //         _lpHolder.add(from);
-        //     }
-        // }
+            if (
+                to != uniswapV2Pair &&
+                to != address(uniswapV2Router) &&
+                to != _excludelpAddress &&
+                !_lpHolder.contains(to) &&
+                ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
+            ) {
+                _lpHolder.add(to);
+            }
+            if (
+                from != uniswapV2Pair &&
+                from != address(uniswapV2Router) &&
+                from != _excludelpAddress &&
+                !_lpHolder.contains(from) &&
+                ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
+            ) {
+                _lpHolder.add(from);
+            }
+        }
 
         super._transfer(from, to, amount);
     }
@@ -873,8 +980,10 @@ contract DOTTY is
         path[0] = inToken;
         path[1] = outToken;
 
-        _approve(address(this), address(uniswapV2Router), tokenAmount);
-        _approve(address(this), address(uniswapV2Pair), tokenAmount);
+        ERC20Upgradeable(inToken).approve(
+            address(uniswapV2Router),
+            tokenAmount
+        );
 
         // make the swap
         uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(

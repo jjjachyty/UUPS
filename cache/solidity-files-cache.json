@@ -579,8 +579,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\dotty_fist.sol": {
-      "lastModificationDate": 1652174321916,
-      "contentHash": "fd550a27fbc08da1c813e845f4dfa034",
+      "lastModificationDate": 1652241615618,
+      "contentHash": "a145cbf308c052c4f97768d84382bc87",
       "sourceName": "contracts/dotty_fist.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -621,6 +621,7 @@
       ],
       "artifacts": [
         "DOTTY",
+        "IPancakePair",
         "IUniswapV2Factory",
         "IUniswapV2Pair",
         "IUniswapV2Router01",
