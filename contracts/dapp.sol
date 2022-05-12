@@ -16,6 +16,7 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ERC20Upgradeable token0;
     ERC20Upgradeable token1;
     mapping(address => mapping(address => uint256)) refTokens;
+    event Swap(address fromToken,address toToken,uint256 amount);
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
@@ -81,16 +82,22 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         require(_rate > 0 || _reverseRate > 0, "no token relation");
         uint256 _bal = fromToken.balanceOf(sender);
         require(_bal >= amount, "no balance");
+  
 
         uint256 toAmount;
 
         if (_rate > 0) {
             toAmount = amount.mul(_rate).div(10**4);
         } else if (_reverseRate > 0) {
-            toAmount = amount.div(_rate).div(10**4);
+            toAmount = amount.div(_reverseRate).mul(10**4);
         }
+        require(toAmount >= 0, "exchange amount must be greater than 0");
+        require(toToken.balanceOf(address(this)) >= toAmount, "Amount overflow");
+
 
         fromToken.transferFrom(sender, address(this), amount);
         toToken.transfer(sender, toAmount);
+
+        emit Swap(address(fromToken),address(toToken),amount);
     }
 }

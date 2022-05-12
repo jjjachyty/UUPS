@@ -794,8 +794,8 @@
       "artifacts": []
     },
     "D:\\solidity\\UUPS\\contracts\\dapp.sol": {
-      "lastModificationDate": 1652263790877,
-      "contentHash": "444e842437c59044eca631c52f118800",
+      "lastModificationDate": 1652322547815,
+      "contentHash": "560331a4e815e47511615301e8cdd90f",
       "sourceName": "contracts/dapp.sol",
       "solcConfig": {
         "version": "0.8.3",
