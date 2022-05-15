@@ -30,14 +30,14 @@ describe('DOTTY', function () {
 describe('DOTTY', function () {
   it('deploys', async function () {
 
-    //   const DOTTY = await ethers.getContractFactory('DOTTY');
-    // const result=  await upgrades.deployProxy(DOTTY, { kind: 'uups' });
-    // console.log("address>>>>>>>>>>",result.address)
+      const DOTTY = await ethers.getContractFactory('DOTTY');
+    const result=  await upgrades.deployProxy(DOTTY, { kind: 'uups' });
+    console.log("address>>>>>>>>>>",result.address)
 
 
-    const DOTTY = await ethers.getContractFactory("DOTTY");
-    const upgraded = await upgrades.upgradeProxy("0xF42A11B5d008635346FB0828531C72482d4a8e92", DOTTY);
-    console.log(upgraded.address);
+    // const DOTTY = await ethers.getContractFactory("DOTTY");
+    // const upgraded = await upgrades.upgradeProxy("0xC7729532303bdFFEbDfFc43D3176D9EB115De291", DOTTY);
+    // console.log(upgraded.address);
 
     // const DAPP = await ethers.getContractFactory('DAPP');
     // const result = await upgrades.deployProxy(DAPP, { kind: 'uups' });

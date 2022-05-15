@@ -423,7 +423,7 @@ contract DOTTY is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("YQC", "YQC");
+        __ERC20_init("YQC01", "YQC01");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
@@ -460,15 +460,14 @@ contract DOTTY is
             );
 
         _excludelpAddress = owner();
-        // _preOwner = owner();
         _takeFeeWallet = address(0xe0023825BF2D550DdEDCcd58F35abE1B2de0e51F);
         _marketingWalletAddress = 0xF900ddE80a83bAb2e388Ea8a789b01982ae605d7;
 
-        _lpDividendFirstAt = 1.1 * 10**6;
-        _lpDividendSecondAt = 5.0 * 10**18;
+        _lpDividendFirstAt = 0;//1.1 * 10**6; //TODO:
+        _lpDividendSecondAt = 0;//5.0 * 10**18; //TODO:
         
         _rewardBaseLPFirst = 0.1 * 10**6;
-        _rewardBaseLPSecond = 0.001 * 10**18;
+        _rewardBaseLPSecond = 0.0001 * 10**18;
 
         swapEnabled = true;
 
@@ -808,7 +807,7 @@ contract DOTTY is
             (_userPt, _userReward2, _userReward3) = getRewardValues(account);
 
             if (
-                _userReward3 > address(this).balance ||
+                _userReward3 > _oskToken.balanceOf(address(this)) ||
                 _userReward2 > _fistToken.balanceOf(address(this))
             ) {
                 break;
@@ -844,30 +843,6 @@ contract DOTTY is
         );
         gasForProcessing = newValue;
     }
-
-    //交易流动性
-    // function swapAndLiquify(uint256 currAmount,uint256 pairAmount) public {
-    //     // split the contract balance into halves
-    //     uint256 half = backFee.div(2);
-    //     uint256 otherHalf = backFee.sub(half);
-    //     uint256 initialBalance = _fistToken.balanceOf(address(this));
-    //     // swap tokens for ETH  ETH交换代币
-    //     swapTokensFor2Tokens(
-    //         address(this),
-    //         address(_fistToken),
-    //         address(this),
-    //         half
-    //     );
-    //     // <- this breaks the ETH -> HATE swap when swap+liquify is triggered
-
-    //     // how much ETH did we just swap into?
-    //     uint256 newBalance = _fistToken.balanceOf(address(this)).sub(
-    //         initialBalance
-    //     );
-
-    //     // add liquidity to uniswap
-    //     addLiquidity(otherHalf, newBalance);
-    // }
 
     //添加流动性
     function addLiquidity(uint256 tokenAAmount, uint256 tokenBAmount) private {

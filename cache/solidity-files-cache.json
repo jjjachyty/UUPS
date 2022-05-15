@@ -579,8 +579,8 @@
       ]
     },
     "/Users/janly/data/solidity/UUPS/contracts/dotty_fist.sol": {
-      "lastModificationDate": 1652582259505,
-      "contentHash": "66b1ad5ebafdabcc9168bdd1f4133ff0",
+      "lastModificationDate": 1652605957429,
+      "contentHash": "d3483c749e2d8a119cf2b4f78d293fdf",
       "sourceName": "contracts/dotty_fist.sol",
       "solcConfig": {
         "version": "0.8.3",
