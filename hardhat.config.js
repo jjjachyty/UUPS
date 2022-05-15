@@ -42,7 +42,7 @@ module.exports = {
       url: "https://bsc-dataseed.binance.org/",
       chainId: 56,
       gasPrice: 20000000000,
-      accounts: ["6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f"]
+      accounts: ["83b1a7a82b20860c4f14328e11ed46ee827da1c5698768ae74900cb2c5baf6aa"]
     }
   },
 };

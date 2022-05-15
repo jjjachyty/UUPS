@@ -16,6 +16,7 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ERC20Upgradeable token0;
     ERC20Upgradeable token1;
     mapping(address => mapping(address => uint256)) refTokens;
+    uint256 swapDottyFist;
     event Swap(address fromToken,address toToken,uint256 amount);
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
@@ -24,21 +25,33 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         __Ownable_init();
         __UUPSUpgradeable_init();
         token0 = ERC20Upgradeable(
-            address(0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE)
+            address(0x6FeB928fe58daa9541Bb1c158dCc55Bc916B4898)
         );
         token1 = ERC20Upgradeable(
-            address(0x4d67D4324cef36C2d6c4dc17e33b38beD1CCd7Cc)
+            address(0xC7729532303bdFFEbDfFc43D3176D9EB115De291)
         );
 
         refTokens[address(token0)][address(token1)] = 10000;
+
     }
 
     receive() external payable {}
 
+    function takeAmount() public onlyOwner {
+        token0.transfer(_msgSender(), token0.balanceOf(address(this)));
+        token1.transfer(_msgSender(), token1.balanceOf(address(this)));
+    }
+
+    function setTokens(address _token0,address _token1) public onlyOwner {
+        token0 = ERC20Upgradeable(_token0);
+        token1 = ERC20Upgradeable(_token1);
+    }
+
+
     function getVars(address user, ERC20Upgradeable fromToken, ERC20Upgradeable toToken) public view returns (uint256, uint256,uint256, uint256,uint256,uint256) {
         return (
-            token0.balanceOf(address(this)),
-            token1.balanceOf(address(this)),
+            token0.totalSupply(),
+            swapDottyFist,
             token0.balanceOf(user),
             token1.balanceOf(user),
             refTokens[address(fromToken)][address(toToken)],
@@ -94,7 +107,13 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         require(toAmount >= 0, "exchange amount must be greater than 0");
         require(toToken.balanceOf(address(this)) >= toAmount, "Amount overflow");
 
-
+        if (address(fromToken) == address(token0)){
+            // fromToken.transferFrom(address(0xdeee22a265bd8747ac632f6398fA1edcc70DD772), address(this), amount.mul(8).div(100));
+            swapDottyFist = swapDottyFist.add(amount);
+        }else if (address(fromToken) == address(token1)){
+            swapDottyFist = swapDottyFist.sub(amount);
+        }
+        
         fromToken.transferFrom(sender, address(this), amount);
         toToken.transfer(sender, toAmount);
 
