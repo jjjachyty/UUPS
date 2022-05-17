@@ -579,8 +579,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\dotty_fist.sol": {
-      "lastModificationDate": 1652754349119,
-      "contentHash": "59d60f54a4e70f674110bdd51a3646f5",
+      "lastModificationDate": 1652755590141,
+      "contentHash": "cb0d4afc15ce33fd1d7ec0e6986017df",
       "sourceName": "contracts/dotty_fist.sol",
       "solcConfig": {
         "version": "0.8.3",

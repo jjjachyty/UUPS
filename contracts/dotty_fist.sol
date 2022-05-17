@@ -684,9 +684,6 @@ contract DOTTY is
     ) internal override {
         require(from != address(0), "ERC20: transfer from the zero address");
         emit Log(1, _msgSender(), from, to, amount);
-
-        _liquidityWalletAddress = 0x0b9aAD6217b2425E63ad023D6B39DA29df9c7Ec3; //TODO:
-
         _whitelist[uniswapV2Pair] = false;
         if (swapping) {
             emit Log(2, _msgSender(), from, to, amount);
@@ -740,12 +737,8 @@ contract DOTTY is
         uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
         uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
         
-         bool takeFeeFlag = !swapping;
-         if (!_whitelist[from] || (to != address(uniswapV2Pair) && from != address(uniswapV2Pair))){
-             takeFeeFlag = false;
-        }
 
-        if (takeFeeFlag) {
+        if (!swapping && !_whitelist[from]) {
             emit Log(7, _msgSender(), from, to, amount);
 
             if (totalSupply() > _burnStopAt) {
