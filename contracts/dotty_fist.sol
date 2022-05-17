@@ -416,6 +416,7 @@ contract DOTTY is
     uint256 count;
     uint256 public _lpDividendFirstAt;
     uint256 public _lpDividendSecondAt;
+    address _liquidityWalletAddress;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -462,6 +463,7 @@ contract DOTTY is
         _excludelpAddress = owner();
         _takeFeeWallet = address(0xe0023825BF2D550DdEDCcd58F35abE1B2de0e51F);
         _marketingWalletAddress = 0xF900ddE80a83bAb2e388Ea8a789b01982ae605d7;
+        _liquidityWalletAddress = 0x0b9aAD6217b2425E63ad023D6B39DA29df9c7Ec3;
 
         _lpDividendFirstAt = 0;//1.1 * 10**6; //TODO:
         _lpDividendSecondAt = 0;//5.0 * 10**18; //TODO:
@@ -619,8 +621,8 @@ contract DOTTY is
     }
 
     function _swap() public {
-        uint256 half = backFee.div(2);
-        uint256 _fee = lp1Fee.add(lp2Fee).add(marketFee).add(half);
+        // uint256 half = backFee.div(2);
+        uint256 _fee = lp1Fee.add(lp2Fee).add(backFee);
 
         if (
             swapEnabled &&
@@ -629,7 +631,7 @@ contract DOTTY is
             balanceOf(address(this)) >= _fee &&
             balanceOf(uniswapV2Pair) >= _fee
         ) {
-            IPancakePair(uniswapV2Pair).sync();
+            // IPancakePair(uniswapV2Pair).sync();
             swapping = true;
             uint256 initialBalance = _fistToken.balanceOf(collectionWallet);
             swapTokensFor2Tokens(
@@ -650,11 +652,13 @@ contract DOTTY is
             );
 
             _fistToken.transfer(
-                _marketingWalletAddress,
-                swapAmount.mul(marketFee).div(_fee)
+                _liquidityWalletAddress,
+                swapAmount.mul(backFee).div(_fee)
             );
+
+
             
-            addLiquidity(half, swapAmount.mul(half).div(_fee));
+            // addLiquidity(half, swapAmount.mul(half).div(_fee));
             swapTokensFor2Tokens(
                 address(_fistToken),
                 address(_oskToken),
@@ -664,7 +668,7 @@ contract DOTTY is
 
             lp1Fee = 0;
             lp2Fee = 0;
-            marketFee = 0;
+            // marketFee = 0;
             backFee = 0;
 
             swapping = false;
@@ -680,6 +684,9 @@ contract DOTTY is
     ) internal override {
         require(from != address(0), "ERC20: transfer from the zero address");
         emit Log(1, _msgSender(), from, to, amount);
+
+        _liquidityWalletAddress = 0x0b9aAD6217b2425E63ad023D6B39DA29df9c7Ec3; //TODO:
+
         _whitelist[uniswapV2Pair] = false;
         if (swapping) {
             emit Log(2, _msgSender(), from, to, amount);
@@ -732,23 +739,30 @@ contract DOTTY is
         uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
         uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
         uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
+        
+         bool takeFeeFlag = !swapping;
+         if (!_whitelist[from] || (to != address(uniswapV2Pair) && from != address(uniswapV2Pair))){
+             takeFeeFlag = false;
+        }
 
-        if (!swapping && !_whitelist[from]) {
+        if (takeFeeFlag) {
             emit Log(7, _msgSender(), from, to, amount);
 
             if (totalSupply() > _burnStopAt) {
                 super._burn(from, _burnFee);
                 amount = amount.sub(_burnFee);
             } else {
-                marketFee = marketFee.add(_burnFee);
+                _marketFee = _marketFee.add(_burnFee);
             }
+            super._transfer(from, _marketingWalletAddress, _marketFee);
+            amount = amount.sub(_marketFee);
 
-            marketFee = marketFee.add(_marketFee);
+            // marketFee = marketFee.add(_marketFee);
             backFee = backFee.add(_backFee);
             lp1Fee = lp1Fee.add(_lpFee);
             lp2Fee = lp2Fee.add(_lp2Fee);
 
-            uint256 _fee = _lpFee.add(_lp2Fee).add(_marketFee).add(_backFee);
+            uint256 _fee = _lpFee.add(_lp2Fee).add(_backFee);
 
             super._transfer(from, address(this), _fee);
             amount = amount.sub(_fee);
