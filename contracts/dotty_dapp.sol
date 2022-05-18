@@ -28,7 +28,7 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             address(0x6FeB928fe58daa9541Bb1c158dCc55Bc916B4898)
         );
         token1 = ERC20Upgradeable(
-            address(0xC7729532303bdFFEbDfFc43D3176D9EB115De291)
+            address(0x13C51701F770E2ABAd626594365976259d312aF6)
         );
 
         refTokens[address(token0)][address(token1)] = 10000;
@@ -63,7 +63,7 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         ERC20Upgradeable fromToken,
         ERC20Upgradeable toToken,
         uint256 _rate
-    ) public {
+    ) public onlyOwner{
         refTokens[address(fromToken)][address(toToken)] = _rate;
     }
 

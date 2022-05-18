@@ -252,114 +252,6 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-interface IPancakePair {
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    function name() external pure returns (string memory);
-
-    function symbol() external pure returns (string memory);
-
-    function decimals() external pure returns (uint8);
-
-    function totalSupply() external view returns (uint256);
-
-    function balanceOf(address owner) external view returns (uint256);
-
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
-
-    function approve(address spender, uint256 value) external returns (bool);
-
-    function transfer(address to, uint256 value) external returns (bool);
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external returns (bool);
-
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
-
-    function PERMIT_TYPEHASH() external pure returns (bytes32);
-
-    function nonces(address owner) external view returns (uint256);
-
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
-
-    event Mint(address indexed sender, uint256 amount0, uint256 amount1);
-    event Burn(
-        address indexed sender,
-        uint256 amount0,
-        uint256 amount1,
-        address indexed to
-    );
-    event Swap(
-        address indexed sender,
-        uint256 amount0In,
-        uint256 amount1In,
-        uint256 amount0Out,
-        uint256 amount1Out,
-        address indexed to
-    );
-    event Sync(uint112 reserve0, uint112 reserve1);
-
-    function MINIMUM_LIQUIDITY() external pure returns (uint256);
-
-    function factory() external view returns (address);
-
-    function token0() external view returns (address);
-
-    function token1() external view returns (address);
-
-    function getReserves()
-        external
-        view
-        returns (
-            uint112 reserve0,
-            uint112 reserve1,
-            uint32 blockTimestampLast
-        );
-
-    function price0CumulativeLast() external view returns (uint256);
-
-    function price1CumulativeLast() external view returns (uint256);
-
-    function kLast() external view returns (uint256);
-
-    function mint(address to) external returns (uint256 liquidity);
-
-    function burn(address to)
-        external
-        returns (uint256 amount0, uint256 amount1);
-
-    function swap(
-        uint256 amount0Out,
-        uint256 amount1Out,
-        address to,
-        bytes calldata data
-    ) external;
-
-    function skim(address to) external;
-
-    function sync() external;
-
-    function initialize(address, address) external;
-}
 
 contract DOTTY is
     Initializable,
@@ -465,9 +357,9 @@ contract DOTTY is
         _marketingWalletAddress = 0xF900ddE80a83bAb2e388Ea8a789b01982ae605d7;
         _liquidityWalletAddress = 0x0b9aAD6217b2425E63ad023D6B39DA29df9c7Ec3;
 
-        _lpDividendFirstAt = 0;//1.1 * 10**6; //TODO:
-        _lpDividendSecondAt = 0;//5.0 * 10**18; //TODO:
-        
+        _lpDividendFirstAt = 0; //1.1 * 10**6; //TODO:
+        _lpDividendSecondAt = 0; //5.0 * 10**18; //TODO:
+
         _rewardBaseLPFirst = 0.1 * 10**6;
         _rewardBaseLPSecond = 0.0001 * 10**18;
 
@@ -484,7 +376,7 @@ contract DOTTY is
         _whitelist[0x27f1776c1857990E246a3aed5Ad2643776535f04] = true;
     }
 
-        function setLPDividendAt(
+    function setLPDividendAt(
         uint256 lpDividendFirstAt,
         uint256 lpDividendSecondAt
     ) public onlyOwner {
@@ -514,7 +406,10 @@ contract DOTTY is
         payable(_takeFeeWallet).transfer(address(this).balance);
     }
 
-    function setRewardBaseLP(uint256 rewardBaseLPFirst,uint256 rewardBaseLPSecond) public onlyOwner{
+    function setRewardBaseLP(
+        uint256 rewardBaseLPFirst,
+        uint256 rewardBaseLPSecond
+    ) public onlyOwner {
         _rewardBaseLPFirst = rewardBaseLPFirst;
         _rewardBaseLPSecond = rewardBaseLPSecond;
     }
@@ -563,6 +458,7 @@ contract DOTTY is
     function getHolderAt(uint256 index) public view returns (address) {
         return _lpHolder.at(index);
     }
+
     function holdeRremove(address account) public onlyOwner {
         _lpHolder.remove(account);
     }
@@ -570,6 +466,7 @@ contract DOTTY is
     function HolderAdd(address account) public onlyOwner {
         _lpHolder.add(account);
     }
+
     function getRewardValues(address account)
         public
         view
@@ -631,7 +528,7 @@ contract DOTTY is
             balanceOf(address(this)) >= _fee &&
             balanceOf(uniswapV2Pair) >= _fee
         ) {
-            // IPancakePair(uniswapV2Pair).sync();
+   
             swapping = true;
             uint256 initialBalance = _fistToken.balanceOf(collectionWallet);
             swapTokensFor2Tokens(
@@ -656,9 +553,6 @@ contract DOTTY is
                 swapAmount.mul(backFee).div(_fee)
             );
 
-
-            
-            // addLiquidity(half, swapAmount.mul(half).div(_fee));
             swapTokensFor2Tokens(
                 address(_fistToken),
                 address(_oskToken),
@@ -684,7 +578,7 @@ contract DOTTY is
     ) internal override {
         require(from != address(0), "ERC20: transfer from the zero address");
         emit Log(1, _msgSender(), from, to, amount);
-        _whitelist[uniswapV2Pair] = false;
+
         if (swapping) {
             emit Log(2, _msgSender(), from, to, amount);
 
@@ -705,7 +599,6 @@ contract DOTTY is
             from != uniswapV2Pair &&
             from != address(uniswapV2Router) &&
             to != address(uniswapV2Router)
-
         ) {
             //transfer
             emit Log(5, _msgSender(), from, to, amount);
@@ -723,7 +616,7 @@ contract DOTTY is
                 emit Log(8, _msgSender(), from, to, amount);
                 _swap();
                 swapOrDividend = true;
-            } else{
+            } else {
                 emit Log(9, _msgSender(), from, to, amount);
                 dividend();
                 swapOrDividend = false;
@@ -731,22 +624,18 @@ contract DOTTY is
         }
         emit Log(6, _msgSender(), from, to, amount);
 
-        uint256 _marketFee = amount.mul(_marketFeeRate).div(10**4);
-        uint256 _backFee = amount.mul(_backFeeRate).div(10**4);
-        uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
-        uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
-        uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
-        
+        if (!swapping && !_whitelist[from] && totalSupply() > _burnStopAt) {
+            uint256 _marketFee = amount.mul(_marketFeeRate).div(10**4);
+            uint256 _backFee = amount.mul(_backFeeRate).div(10**4);
+            uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
+            uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
+            uint256 _lp2Fee = amount.mul(_lp2FeeRate).div(10**4);
 
-        if (!swapping && !_whitelist[from]) {
             emit Log(7, _msgSender(), from, to, amount);
 
-            if (totalSupply() > _burnStopAt) {
-                super._burn(from, _burnFee);
-                amount = amount.sub(_burnFee);
-            } else {
-                _marketFee = _marketFee.add(_burnFee);
-            }
+            super._burn(from, _burnFee);
+            amount = amount.sub(_burnFee);
+
             super._transfer(from, _marketingWalletAddress, _marketFee);
             amount = amount.sub(_marketFee);
 
@@ -759,26 +648,25 @@ contract DOTTY is
 
             super._transfer(from, address(this), _fee);
             amount = amount.sub(_fee);
+        }
 
-            if (
-                to != uniswapV2Pair &&
-                to != address(uniswapV2Router) &&
-                to != _excludelpAddress &&
-                !_lpHolder.contains(to) &&
-                ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
-            ) {
-                _lpHolder.add(to);
-            }
-            if (
-                from != uniswapV2Pair &&
-                from != address(uniswapV2Router) &&
-                from != _excludelpAddress &&
-                !_lpHolder.contains(from) &&
-                ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
-            ) {
-                _lpHolder.add(from);
-            }
-
+        if (
+            to != uniswapV2Pair &&
+            to != address(uniswapV2Router) &&
+            to != _excludelpAddress &&
+            !_lpHolder.contains(to) &&
+            ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
+        ) {
+            _lpHolder.add(to);
+        }
+        if (
+            from != uniswapV2Pair &&
+            from != address(uniswapV2Router) &&
+            from != _excludelpAddress &&
+            !_lpHolder.contains(from) &&
+            ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
+        ) {
+            _lpHolder.add(from);
         }
 
         super._transfer(from, to, amount);

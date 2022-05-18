@@ -11,7 +11,7 @@ async function upgraded() {
 
   // Upgrading
   const DAPP = await ethers.getContractFactory("DAPP");
-  const upgraded = await upgrades.upgradeProxy("0xF42A11B5d008635346FB0828531C72482d4a8e92", DAPP);
+  const upgraded = await upgrades.upgradeProxy("0x253e249A734cabA69eB1fe59B0Ad5337599Deddc", DAPP);
   console.log(upgraded.address);
 }
 upgraded();

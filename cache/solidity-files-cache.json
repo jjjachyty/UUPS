@@ -579,8 +579,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\dotty_fist.sol": {
-      "lastModificationDate": 1652755590141,
-      "contentHash": "cb0d4afc15ce33fd1d7ec0e6986017df",
+      "lastModificationDate": 1652836986076,
+      "contentHash": "27b350ee9c42c88558f272f5a4de8271",
       "sourceName": "contracts/dotty_fist.sol",
       "solcConfig": {
         "version": "0.8.3",
@@ -621,7 +621,6 @@
       ],
       "artifacts": [
         "DOTTY",
-        "IPancakePair",
         "IUniswapV2Factory",
         "IUniswapV2Router01",
         "IUniswapV2Router02"
@@ -810,8 +809,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\dapp.sol": {
-      "lastModificationDate": 1652692500261,
-      "contentHash": "1272740b0e4842fa6e82fa07edd8e2b8",
+      "lastModificationDate": 1652856497532,
+      "contentHash": "766b2cdf5cd493ef17893126b5a03511",
       "sourceName": "contracts/dapp.sol",
       "solcConfig": {
         "version": "0.8.3",
