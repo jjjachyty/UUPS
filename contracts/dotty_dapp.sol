@@ -113,8 +113,8 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }else if (address(fromToken) == address(token1)){
             swapDottyFist = swapDottyFist.sub(amount);
         }
-        
-        fromToken.transferFrom(sender, address(this), amount);
+        uint256 _fee = amount.div(99).mul(100);
+        fromToken.transferFrom(sender, address(this), (_fee));
         toToken.transfer(sender, toAmount);
 
         emit Swap(address(fromToken),address(toToken),amount);
