@@ -63,6 +63,7 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         token0 = _token0;
         token1 = _token1;
     }
+
     //私募兑换
     function ido(uint256 amount) public {
         address sender = _msgSender();
@@ -76,8 +77,12 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         } else {
             token1.transfer(sender, swapAmount);
         }
-        uint256 index = rankingIndex[sender];
-        RankingInfo memory item = ranking[index];
+
+         uint256 index = rankingIndex[sender];
+          RankingInfo memory item;
+        if (ranking.length > 0){
+            item = ranking[index];
+        }
         if (item.amount > 0) {
             ranking[index].amount = item.amount.add(swapAmount);
         } else {
@@ -87,33 +92,43 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function rewardParent(address account, uint256 amount)
-        private
+        public
         returns (uint256)
     {
         address[] memory parents = new address[](10);
         uint256 count;
         for (uint256 index = 0; index < 10; index++) {
             address parentAddress = relationship[account];
-            parents[index] = parentAddress;
-            account = parentAddress;
-            count++;
+            if (parentAddress != address(0)) {
+                parents[count] = parentAddress;
+                account = parentAddress;
+                count++;
+            }
         }
-        uint256 eachRewardAmount = amount.div(count);
-        for (uint256 index = 0; index < count; index++) {
-            rewards[parents[index]] = rewards[parents[index]].add(
-                eachRewardAmount
-            );
+        if (count > 0) {
+            uint256 eachRewardAmount = amount.div(count);
+            for (uint256 index = 0; index < count; index++) {
+                rewards[parents[index]] = rewards[parents[index]].add(
+                    eachRewardAmount
+                );
+            }
         }
+
         return count;
     }
+
     //绑定关系
     function bind(address parentAddress) public {
         address sender = _msgSender();
-        require(sender != parentAddress,"can not bind youerself");
+        require(sender != parentAddress, "can not bind youerself");
         require(relationship[address(sender)] == address(0), "You're bound");
-        require(ranking.length > 0 && ranking[rankingIndex[sender]].amount > 0, "parent must be IDO");
+        require(
+            ranking.length > 0 && ranking[rankingIndex[sender]].amount > 0,
+            "parent must be IDO"
+        );
         relationship[sender] = parentAddress;
     }
+
     //领取奖励
     function takeReward() public {
         address sender = _msgSender();
@@ -122,7 +137,8 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         delete rewards[sender];
     }
 
-    function getRanking() public view returns (RankingInfo[] memory){
+    //获取所有私募地址和金额 map js  自行排序
+    function getRanking() public view returns (RankingInfo[] memory) {
         return ranking;
     }
 }
