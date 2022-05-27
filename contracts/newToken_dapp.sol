@@ -109,8 +109,9 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     //绑定关系
     function bind(address parentAddress) public {
         address sender = _msgSender();
-        require(ranking[rankingIndex[sender]].amount > 0, "parent must be IDO");
+        require(sender != parentAddress,"can not bind youerself");
         require(relationship[address(sender)] == address(0), "You're bound");
+        require(ranking.length > 0 && ranking[rankingIndex[sender]].amount > 0, "parent must be IDO");
         relationship[sender] = parentAddress;
     }
     //领取奖励
@@ -119,5 +120,9 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         require(rewards[sender] > 0, "no rewards");
         token1.transfer(sender, rewards[sender]);
         delete rewards[sender];
+    }
+
+    function getRanking() public view returns (RankingInfo[] memory){
+        return ranking;
     }
 }

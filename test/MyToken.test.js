@@ -36,7 +36,7 @@ describe('DOTTY', function () {
 
 
     const NewTokenDAPP = await ethers.getContractFactory("NewTokenDAPP");
-    const upgraded = await upgrades.upgradeProxy("0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0", DOTTY);
+    const upgraded = await upgrades.upgradeProxy("0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0", NewTokenDAPP);
     console.log(upgraded.address);
 
     // const DAPP = await ethers.getContractFactory('DAPP');
