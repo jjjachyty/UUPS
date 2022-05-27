@@ -627,8 +627,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\newToken_dapp.sol": {
-      "lastModificationDate": 1653555064808,
-      "contentHash": "5afccc4050569542f18523774a75270e",
+      "lastModificationDate": 1653616950337,
+      "contentHash": "f67de5037cbadde0a74d71d1d3af4625",
       "sourceName": "contracts/newToken_dapp.sol",
       "solcConfig": {
         "version": "0.8.3",

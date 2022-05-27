@@ -40,6 +40,11 @@
       "address": "0x52b0B3BD1538f36771463F627Fc4f4694cF77a7d",
       "txHash": "0x4c71a6f1c9dffdc54e27b76d96c55181834a5fe20028e7e291470f56a0a26830",
       "kind": "uups"
+    },
+    {
+      "address": "0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0",
+      "txHash": "0xc05d170a7ef4084303ab7d79d9ebf5f86247fcd61987619ff063a7d99b464927",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -60278,6 +60283,190 @@
               {
                 "label": "_indexes",
                 "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "9ae6b259df0a7139be6486f75c736223dec8025e0486333f34d386e36754c4ef": {
+      "address": "0x9BF638Eb194042B7462A177FAd903EB4976D1De3",
+      "txHash": "0x4a4389b46ec83edaaad26bc01345618d29cf7db7f18ab7bbc3136baa56ed8c91",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "token0",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ERC20Upgradeable)1335",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:21"
+          },
+          {
+            "label": "token1",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(ERC20Upgradeable)1335",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:22"
+          },
+          {
+            "label": "relationship",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:23"
+          },
+          {
+            "label": "rewards",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:24"
+          },
+          {
+            "label": "ranking",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_array(t_struct(RankingInfo)14821_storage)dyn_storage",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:26"
+          },
+          {
+            "label": "rankingIndex",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:27"
+          },
+          {
+            "label": "swapRate",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_uint256",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:29"
+          },
+          {
+            "label": "parentRewardRate",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_uint256",
+            "contract": "NewTokenDAPP",
+            "src": "contracts\\newToken_dapp.sol:30"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(RankingInfo)14821_storage)dyn_storage": {
+            "label": "struct NewTokenDAPP.RankingInfo[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ERC20Upgradeable)1335": {
+            "label": "contract ERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RankingInfo)14821_storage": {
+            "label": "struct NewTokenDAPP.RankingInfo",
+            "members": [
+              {
+                "label": "account",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
                 "offset": 0,
                 "slot": "1"
               }

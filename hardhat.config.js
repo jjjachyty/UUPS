@@ -33,7 +33,7 @@ module.exports = {
       url: "http://127.0.0.1:8545"
     },
     testnet: {
-      url: "https://data-seed-prebsc-2-s3.binance.org:8545",
+      url: "https://speedy-nodes-nyc.moralis.io/b5bb25b626b3c7d865fdcdc1/bsc/testnet",
       chainId: 97,
       gasPrice: 20000000000,
       accounts: ["6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f"]
