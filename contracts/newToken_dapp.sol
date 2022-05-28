@@ -43,7 +43,7 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             address(0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE)
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
-        parentRewardRate = 10 * 10**4; //10%
+        parentRewardRate = 1000; //10%
     }
 
     receive() external payable {}
@@ -83,7 +83,7 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         if (ranking.length > 0){
             item = ranking[index];
         }
-        if (item.amount > 0) {
+        if (item.account == address(this) && item.amount > 0) {
             ranking[index].amount = item.amount.add(swapAmount);
         } else {
             ranking.push(RankingInfo(sender, swapAmount));
