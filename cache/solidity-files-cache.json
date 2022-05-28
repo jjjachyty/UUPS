@@ -627,8 +627,8 @@
       ]
     },
     "/Users/janly/data/solidity/UUPS/contracts/newToken_dapp.sol": {
-      "lastModificationDate": 1653742202500,
-      "contentHash": "126eaa6ced4cf0fcfc9cb497e0c5d89c",
+      "lastModificationDate": 1653748304285,
+      "contentHash": "ae9d16d1fd2aa4048153cff6dbc13807",
       "sourceName": "contracts/newToken_dapp.sol",
       "solcConfig": {
         "version": "0.8.3",

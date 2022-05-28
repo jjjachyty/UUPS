@@ -92,7 +92,7 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             rankingIndex[sender] = ranking.length - 1;
         }
         totalIDOCount++;
-        totalIDOAmount = totalIDOAmount+amount;
+        totalIDOAmount = totalIDOAmount.add(amount);
     }
 
     function rewardParent(address account, uint256 amount)
