@@ -28,6 +28,8 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     uint256 swapRate;
     uint256 parentRewardRate;
+    uint256 totalIDOCount;
+    uint256 totalIDOAmount;
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
@@ -89,6 +91,8 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             ranking.push(RankingInfo(sender, swapAmount));
             rankingIndex[sender] = ranking.length - 1;
         }
+        totalIDOCount++;
+        totalIDOAmount = totalIDOAmount+amount;
     }
 
     function rewardParent(address account, uint256 amount)
@@ -140,5 +144,9 @@ contract NewTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     //获取所有私募地址和金额 map js  自行排序
     function getRanking() public view returns (RankingInfo[] memory) {
         return ranking;
+    }
+    //获取统计信息 ido次数 ido金额 ido地址数量
+    function getStatistics() public view returns (uint256,uint256,uint256) {
+        return (totalIDOCount,totalIDOAmount,ranking.length);
     }
 }
