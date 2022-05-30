@@ -21,7 +21,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ERC20Upgradeable token0;
     ERC20Upgradeable token1;
     mapping(address => address) public relationship;
-    mapping(address => uint256[10]) public relationinfos;
+    // mapping(address => uint256[10]) public relationinfos;
     mapping(address => uint256) public rewards;
 
     RankingInfo[] public ranking;
@@ -31,7 +31,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint256 parentRewardRate;
     uint256 totalIDOCount;
     uint256 totalIDOAmount;
-
+    mapping(address => uint256[10]) public relationinfos;
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
