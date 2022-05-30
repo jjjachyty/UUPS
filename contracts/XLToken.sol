@@ -253,7 +253,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
 }
 
 
-contract NewToken is
+contract XLToken is
     Initializable,
     ERC20Upgradeable,
     UUPSUpgradeable,
@@ -294,7 +294,7 @@ contract NewToken is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("TEST", "TEST");
+        __ERC20_init("XL", "XL");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
