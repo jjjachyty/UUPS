@@ -252,7 +252,6 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-
 contract XLToken is
     Initializable,
     ERC20Upgradeable,
@@ -275,7 +274,6 @@ contract XLToken is
     address public _excludelpAddress;
 
     uint256 gasForProcessing;
-    address public deadWallet;
     bool private swapping;
     bool public swapOrDividend;
 
@@ -283,7 +281,6 @@ contract XLToken is
     mapping(address => bool) public _whitelist;
 
     ERC20Upgradeable private _fonToken;
-
 
     uint256 public tradingEnabledTimestamp;
     address collectionWallet;
@@ -294,7 +291,7 @@ contract XLToken is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("XL", "XL");
+        __ERC20_init("XTEST01L", "XTEST01L");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
@@ -303,7 +300,6 @@ contract XLToken is
         _lpFeeRate = 300; //fist
         _burnFeeRate = 100;
 
-
         gasForProcessing = 30 * 10**4;
 
         //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 PRD_FstswapRouter02 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
@@ -311,9 +307,7 @@ contract XLToken is
             0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         ); //TODO:
         collectionWallet = owner();
-
-        // automatedMarketMakerPairs[uniswapV2Pair];
-        //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 FIST_PRD 0x12a055d95855b4ec2cd70c1a5eadb1ed43eaef65
+        //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 FON_PRD 0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65
         _fonToken = ERC20Upgradeable(
             address(0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65)
         ); //TODO:
@@ -324,37 +318,26 @@ contract XLToken is
             );
 
         _excludelpAddress = owner();
-        _rewardBaseLP = 0.1 * 10**6;
-        deadWallet = 0x000000000000000000000000000000000000dEaD;
-        tradingEnabledTimestamp = 1628258400; //TODO:
-
+        _rewardBaseLP = 1 * 10**18;
         _whitelist[owner()] = true;
     }
 
-
-
-    function setRewardBaseLP(
-        uint256 rewardBaseLP
-    ) public onlyOwner {
+    function setRewardBaseLP(uint256 rewardBaseLP) public onlyOwner {
         _rewardBaseLP = rewardBaseLP;
     }
 
-    function setFee(
-        uint256 lpFeeRate,
-        uint256 burnFeeRate
-    ) public onlyOwner {
-        _lpFeeRate = lpFeeRate;
-        _burnFeeRate = burnFeeRate;
+    function setExcludelpAddress(address excludelpAddress) public onlyOwner {
+        _excludelpAddress = excludelpAddress;
     }
 
-    function getTradingIsEnabled() public view returns (bool) {
-        return block.timestamp >= tradingEnabledTimestamp;
+    function setFee(uint256 lpFeeRate, uint256 burnFeeRate) public onlyOwner {
+        _lpFeeRate = lpFeeRate;
+        _burnFeeRate = burnFeeRate;
     }
 
     function getHolderLength() public view returns (uint256) {
         return _lpHolder.length();
     }
-
 
     function contains(address account) public view returns (bool) {
         return _lpHolder.contains(account);
@@ -375,10 +358,7 @@ contract XLToken is
     function getRewardValues(address account)
         public
         view
-        returns (
-            uint256,
-            uint256
-        )
+        returns (uint256, uint256)
     {
         uint256 _userReward;
         uint256 _balPercent = balanceOf(account);
@@ -404,7 +384,6 @@ contract XLToken is
             );
         }
 
-
         return (_userPt, _userReward);
     }
 
@@ -417,11 +396,7 @@ contract XLToken is
     }
 
     function _swap() public {
-        if (
-            !swapping &&
-            balanceOf(address(this)) > 0
-        ) {
-   
+        if (!swapping && balanceOf(address(this)) > 0) {
             swapping = true;
             uint256 initialBalance = _fonToken.balanceOf(collectionWallet);
             swapTokensFor2Tokens(
@@ -435,11 +410,7 @@ contract XLToken is
                 initialBalance
             );
 
-            _fonToken.transferFrom(
-                collectionWallet,
-                address(this),
-                swapAmount
-            );
+            _fonToken.transferFrom(collectionWallet, address(this), swapAmount);
             swapping = false;
         }
     }
@@ -492,7 +463,6 @@ contract XLToken is
         if (!swapping && !_whitelist[from]) {
             uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
             uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
-  
 
             emit Log(7, _msgSender(), from, to, amount);
 
@@ -550,19 +520,15 @@ contract XLToken is
             }
             uint256 _userPt;
             uint256 _userReward;
-  
 
             (_userPt, _userReward) = getRewardValues(account);
 
-            if (
-                _userReward > _fonToken.balanceOf(address(this))
-            ) {
+            if (_userReward > _fonToken.balanceOf(address(this))) {
                 break;
             }
             if (_userReward > 0) {
                 _fonToken.transfer(account, _userReward);
             }
-        
 
             uint256 newGasLeft = gasleft();
 
@@ -588,7 +554,6 @@ contract XLToken is
         );
         gasForProcessing = newValue;
     }
-
 
     function swapTokensFor2Tokens(
         address inToken,

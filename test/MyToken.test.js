@@ -30,14 +30,14 @@ describe('DOTTY', function () {
 describe('DOTTY', function () {
   it('deploys', async function () {
 
-    // const NewTokenDAPP = await ethers.getContractFactory('NewTokenDAPP');
-    // const result=  await upgrades.deployProxy(NewTokenDAPP, { kind: 'uups' });
-    // console.log("address>>>>>>>>>>",result.address)
+    const XLToken = await ethers.getContractFactory('XLToken');
+    const result=  await upgrades.deployProxy(XLToken, { kind: 'uups' });
+    console.log("address>>>>>>>>>>",result.address)
 
 
-    const NewTokenDAPP = await ethers.getContractFactory("NewTokenDAPP");
-    const upgraded = await upgrades.upgradeProxy("0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0", NewTokenDAPP);
-    console.log(upgraded.address);
+    // const NewTokenDAPP = await ethers.getContractFactory("NewTokenDAPP");
+    // const upgraded = await upgrades.upgradeProxy("0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0", NewTokenDAPP);
+    // console.log(upgraded.address);
 
     // const DAPP = await ethers.getContractFactory('DAPP');
     // const result = await upgrades.deployProxy(DAPP, { kind: 'uups' });
