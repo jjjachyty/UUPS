@@ -33,6 +33,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint256 totalIDOAmount;
     mapping(address => uint256[10]) public relationinfos;
     address receiveAddress;
+    uint256 public endTime;
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
@@ -50,6 +51,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%
         receiveAddress = 0xD08faF8c348E14B356778A7c9117769523083DDd;
+        endTime = 1654466766; //15 days later
     }
 
     receive() external payable {}
@@ -70,20 +72,17 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         token1 = _token1;
     }
 
-    function setReceiveAddress(address account)
-        public
-        onlyOwner
-    {
+    function setEndTime(uint256 t) public onlyOwner {
+        endTime = t;
+    }
+
+    function setReceiveAddress(address account) public onlyOwner {
         receiveAddress = account;
     }
 
-    function takeFist()
-        public
-        onlyOwner
-    {
+    function takeFist() public onlyOwner {
         token0.transfer(_msgSender(), token0.balanceOf(address(this)));
     }
-
 
     //私募兑换
     function ido(uint256 amount) public {
@@ -91,13 +90,14 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint256 swapAmount = amount.mul(swapRate).mul(10**12).div(10**4); //to xl 6=>18
         token0.transferFrom(sender, receiveAddress, amount);
 
-        uint256 rewadAmount = swapAmount.mul(parentRewardRate).div(10**4);
-        uint256 parentLength = rewardParent(sender, rewadAmount);
+        uint256 rewardAmount = swapAmount.mul(parentRewardRate).div(10**4);
+        uint256 parentLength = rewardParent(sender, rewardAmount);
+        uint256 newSwapAmount = swapAmount;
         if (parentLength > 0) {
-            token1.transfer(sender, swapAmount.sub(rewadAmount));
-        } else {
-            token1.transfer(sender, swapAmount);
+            newSwapAmount = swapAmount.sub(rewardAmount);
         }
+
+        rewards[sender] = rewards[sender].add(newSwapAmount);
 
         uint256 index = rankingIndex[sender];
         RankingInfo memory item;
@@ -105,13 +105,13 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             item = ranking[index];
         }
         if (item.account == address(this) && item.amount > 0) {
-            ranking[index].amount = item.amount.add(swapAmount);
+            ranking[index].amount = item.amount.add(newSwapAmount);
         } else {
-            ranking.push(RankingInfo(sender, swapAmount));
+            ranking.push(RankingInfo(sender, newSwapAmount));
             rankingIndex[sender] = ranking.length - 1;
         }
         totalIDOCount++;
-        totalIDOAmount = totalIDOAmount.add(amount);
+        totalIDOAmount = totalIDOAmount.add(swapAmount);
     }
 
     function rewardParent(address account, uint256 amount)
@@ -164,6 +164,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function takeReward() public {
         address sender = _msgSender();
         require(rewards[sender] > 0, "no rewards");
+        require(block.timestamp > endTime,"can not take reward at this time");
         token1.transfer(sender, rewards[sender]);
         delete rewards[sender];
     }
