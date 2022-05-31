@@ -32,6 +32,8 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint256 totalIDOCount;
     uint256 totalIDOAmount;
     mapping(address => uint256[10]) public relationinfos;
+    address receiveAddress;
+
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
@@ -47,6 +49,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%
+        receiveAddress = 0xD08faF8c348E14B356778A7c9117769523083DDd;
     }
 
     receive() external payable {}
@@ -67,11 +70,26 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         token1 = _token1;
     }
 
+    function setReceiveAddress(address account)
+        public
+        onlyOwner
+    {
+        receiveAddress = account;
+    }
+
+    function takeFist()
+        public
+        onlyOwner
+    {
+        token0.transfer(_msgSender(), token0.balanceOf(address(this)));
+    }
+
+
     //私募兑换
     function ido(uint256 amount) public {
         address sender = _msgSender();
-        uint256 swapAmount = amount.mul(swapRate).div(10**4);
-        token0.transferFrom(sender, address(this), amount);
+        uint256 swapAmount = amount.mul(swapRate).mul(10**12).div(10**4); //to xl 6=>18
+        token0.transferFrom(sender, receiveAddress, amount);
 
         uint256 rewadAmount = swapAmount.mul(parentRewardRate).div(10**4);
         uint256 parentLength = rewardParent(sender, rewadAmount);

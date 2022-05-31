@@ -627,8 +627,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\XL_dapp.sol": {
-      "lastModificationDate": 1653984822194,
-      "contentHash": "3f6090d47a5637c08cb76aed81e94ab0",
+      "lastModificationDate": 1653990685664,
+      "contentHash": "e2ffa743ab29c2d5b1099f997242dd6d",
       "sourceName": "contracts/XL_dapp.sol",
       "solcConfig": {
         "version": "0.8.3",
