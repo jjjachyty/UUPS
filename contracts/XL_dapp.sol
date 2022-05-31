@@ -37,13 +37,13 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function initialize() public initializer {
         __Ownable_init();
         __UUPSUpgradeable_init();
-        //TEST_AJS 0x4d67D4324cef36C2d6c4dc17e33b38beD1CCd7Cc FIST_PRD
+        //TEST_AJS 0x4d67D4324cef36C2d6c4dc17e33b38beD1CCd7Cc FIST_PRD 0xC9882dEF23bc42D53895b8361D0b1EDC7570Bc6A
         token0 = ERC20Upgradeable(
-            address(0x4d67D4324cef36C2d6c4dc17e33b38beD1CCd7Cc)
+            address(0xC9882dEF23bc42D53895b8361D0b1EDC7570Bc6A)
         );
-        //TEST_ADH 0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE
+        //TEST_ADH 0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE XL_PRD 0xF3953F7fd3618B0cD0046C69A8D1FC8987510749
         token1 = ERC20Upgradeable(
-            address(0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE)
+            address(0xF3953F7fd3618B0cD0046C69A8D1FC8987510749)
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%

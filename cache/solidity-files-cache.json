@@ -579,7 +579,7 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\XLToken.sol": {
-      "lastModificationDate": 1653893459448,
+      "lastModificationDate": 1653984565945,
       "contentHash": "c6b146599b24463c80c4c9d6504331d9",
       "sourceName": "contracts/XLToken.sol",
       "solcConfig": {
@@ -627,8 +627,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\XL_dapp.sol": {
-      "lastModificationDate": 1653897095126,
-      "contentHash": "16986295bf2b540461198c02dcfb5f5b",
+      "lastModificationDate": 1653984822194,
+      "contentHash": "3f6090d47a5637c08cb76aed81e94ab0",
       "sourceName": "contracts/XL_dapp.sol",
       "solcConfig": {
         "version": "0.8.3",
