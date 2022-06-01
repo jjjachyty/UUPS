@@ -22,7 +22,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ERC20Upgradeable token1;
     mapping(address => address) public relationship;
     // mapping(address => uint256[10]) public relationinfos;
-    mapping(address => uint256) public rewards;
+    mapping(address => uint256) public rewards; //TODO:
 
     RankingInfo[] public ranking;
     mapping(address => uint256) public rankingIndex;
@@ -97,14 +97,14 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             newSwapAmount = swapAmount.sub(rewardAmount);
         }
 
-        rewards[sender] = rewards[sender].add(newSwapAmount);
+        // rewards[sender] = rewards[sender].add(newSwapAmount);
 
         uint256 index = rankingIndex[sender];
         RankingInfo memory item;
         if (ranking.length > 0) {
             item = ranking[index];
         }
-        if (item.account == address(this) && item.amount > 0) {
+        if (item.account == sender && item.amount > 0) {
             ranking[index].amount = item.amount.add(newSwapAmount);
         } else {
             ranking.push(RankingInfo(sender, newSwapAmount));
@@ -131,7 +131,8 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         if (count > 0) {
             uint256 eachRewardAmount = amount.div(count);
             for (uint256 index = 0; index < count; index++) {
-                rewards[parents[index]] = rewards[parents[index]].add(
+                uint256 _index = rankingIndex[parents[index]];
+                ranking[_index].amount = ranking[_index].amount.add(
                     eachRewardAmount
                 );
             }
@@ -163,10 +164,16 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     //领取奖励
     function takeReward() public {
         address sender = _msgSender();
-        require(rewards[sender] > 0, "no rewards");
-        require(block.timestamp > endTime,"can not take reward at this time");
-        token1.transfer(sender, rewards[sender]);
-        delete rewards[sender];
+        require(block.timestamp > endTime, "can not take reward at this time");
+        RankingInfo memory item = ranking[rankingIndex[sender]];
+        if (item.amount > 0) {
+            token1.transfer(sender, item.amount);
+            ranking[rankingIndex[sender]].amount = 0;
+        }
+    }
+
+    function getReward(address account) public view returns (RankingInfo memory) {
+        return ranking[rankingIndex[account]];
     }
 
     //获取所有私募地址和金额 map js  自行排序
