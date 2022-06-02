@@ -278,7 +278,7 @@ contract XLToken is
     bool public swapOrDividend;
 
     IUniswapV2Router02 public uniswapV2Router;
-    mapping(address => bool) public _whitelist; //remove
+    mapping(address => bool) public _whitelist; //TODO:
 
     ERC20Upgradeable private _fonToken;
 
@@ -305,12 +305,12 @@ contract XLToken is
 
         //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 PRD_FstswapRouter02 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         uniswapV2Router = IUniswapV2Router02(
-            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+            0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         ); //TODO:
         collectionWallet = owner();
         //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 FON_PRD 0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65
         _fonToken = ERC20Upgradeable(
-            address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)
+            address(0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65)
         ); //TODO:
 
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
