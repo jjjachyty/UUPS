@@ -3,14 +3,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface IUniswapV2Factory {
     event PairCreated(
@@ -253,16 +250,14 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
 }
 
 contract XLToken is
-    Initializable,
-    ERC20Upgradeable,
-    UUPSUpgradeable,
-    OwnableUpgradeable
+    ERC20,
+    Ownable
 {
-    using SafeMathUpgradeable for uint256;
-    using AddressUpgradeable for address;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+    using SafeMath for uint256;
+    using Address for address;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
-    EnumerableSetUpgradeable.AddressSet private _lpHolder;
+    EnumerableSet.AddressSet private _lpHolder;
 
     uint256 public _lpFeeRate;
     uint256 public _burnFeeRate;
@@ -278,23 +273,12 @@ contract XLToken is
 
     IUniswapV2Router02 public uniswapV2Router;
 
-    ERC20Upgradeable private _fonToken;
+    ERC20 private _fonToken;
 
     uint256 public tradingEnabledTimestamp;
     address collectionWallet;
 
-    // uint256 testCount;
-
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
-
-    function _authorizeUpgrade(address) internal override onlyOwner {}
-
-    function initialize() public initializer {
-        __ERC20_init("XTEST01L", "XTEST01L");
-        __Ownable_init();
-        __UUPSUpgradeable_init();
-
+    constructor() ERC20("Star Chain Token", "Star Chain") {
         _mint(msg.sender, 10000000 * 10**decimals());
 
         _lpFeeRate = 300; //fist
@@ -308,7 +292,7 @@ contract XLToken is
         ); //TODO:
         collectionWallet = owner();
         //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 FON_PRD 0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65
-        _fonToken = ERC20Upgradeable(
+        _fonToken = ERC20(
             address(0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65)
         ); //TODO:
 
@@ -317,8 +301,7 @@ contract XLToken is
                 address(_fonToken)
             );
 
-        _rewardBaseLP = 1 * 10**18;
-        // _whitelist[owner()] = true;
+        _rewardBaseLP = 10 * 10**18;
     }
 
     function setRewardBaseLP(uint256 rewardBaseLP) public onlyOwner {
@@ -365,17 +348,13 @@ contract XLToken is
         _balPercent = _balPercent.mul(10**4);
         _balPercent = _balPercent.div(totalSupply());
 
-        uint256 lpTotalSupply = ERC20Upgradeable(uniswapV2Pair).totalSupply();
+        uint256 lpTotalSupply = ERC20(uniswapV2Pair).totalSupply();
         //no lp
         if (lpTotalSupply == 0) {
             return (0, 0);
         }
-        // uint256 excludeTotal = ERC20Upgradeable(uniswapV2Pair).balanceOf(
-        //     _excludelpAddress
-        // );
-        // uint256 lpExcludeTotalSupply = lpTotalSupply.sub(excludeTotal);
 
-        uint256 _userLPbal = ERC20Upgradeable(uniswapV2Pair).balanceOf(account);
+        uint256 _userLPbal = ERC20(uniswapV2Pair).balanceOf(account);
         uint256 _userPt = _userLPbal.mul(10**4).div(lpTotalSupply);
         if (_userLPbal > 0) {
             _userReward = _rewardBaseLP.mul(_userLPbal).div(lpTotalSupply);
@@ -392,11 +371,7 @@ contract XLToken is
         return (_fonToken.balanceOf(account), balanceOf(account));
     }
 
-    function _swap(
-        address from,
-        address to,
-        uint256 amount
-    ) public {
+    function _swap() public {
         if (
             !swapping &&
             balanceOf(address(this)) > 0 &&
@@ -446,7 +421,7 @@ contract XLToken is
         ) {
             //sell
             if (!swapOrDividend) {
-                _swap(from, to, amount);
+                _swap();
 
                 swapOrDividend = true;
             } else {
@@ -470,7 +445,7 @@ contract XLToken is
             to != uniswapV2Pair &&
             to != address(uniswapV2Router) &&
             !_lpHolder.contains(to) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
+            ERC20(uniswapV2Pair).balanceOf(to) > 0
         ) {
             _lpHolder.add(to);
         }
@@ -478,7 +453,7 @@ contract XLToken is
             from != uniswapV2Pair &&
             from != address(uniswapV2Router) &&
             !_lpHolder.contains(from) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
+            ERC20(uniswapV2Pair).balanceOf(from) > 0
         ) {
             _lpHolder.add(from);
         }
@@ -553,7 +528,7 @@ contract XLToken is
         path[0] = inToken;
         path[1] = outToken;
 
-        ERC20Upgradeable(inToken).approve(
+        ERC20(inToken).approve(
             address(uniswapV2Router),
             tokenAmount
         );
