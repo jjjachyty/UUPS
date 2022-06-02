@@ -164,7 +164,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         address sender = _msgSender();
         require(block.timestamp > endTime, "can not take reward at this time");
         RankingInfo memory item = ranking[rankingIndex[sender]];
-        if (item.amount > 0) {
+        if (item.account == sender && item.amount > 0) {
             token1.transfer(sender, item.amount);
             ranking[rankingIndex[sender]].amount = 0;
         }
