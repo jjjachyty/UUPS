@@ -271,20 +271,21 @@ contract XLToken is
     uint256 public lastProcessedIndex;
 
     address public uniswapV2Pair;
-    address public _excludelpAddress;//TODO:
+    // address public _excludelpAddress; //TODO:
 
     uint256 gasForProcessing;
     bool private swapping;
     bool public swapOrDividend;
 
     IUniswapV2Router02 public uniswapV2Router;
-    mapping(address => bool) public _whitelist; //TODO:
+    // mapping(address => bool) public _whitelist; //TODO:
 
     ERC20Upgradeable private _fonToken;
 
     uint256 public tradingEnabledTimestamp;
     address collectionWallet;
-    uint256 testCount;
+
+    // uint256 testCount;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -326,19 +327,13 @@ contract XLToken is
         _rewardBaseLP = rewardBaseLP;
     }
 
-
-
     function setFee(uint256 lpFeeRate, uint256 burnFeeRate) public onlyOwner {
         _lpFeeRate = lpFeeRate;
         _burnFeeRate = burnFeeRate;
     }
-    function setTestCount(uint256 _testCount) public onlyOwner {
-        testCount = _testCount;
-    }
-    
 
     function takeFee() public onlyOwner {
-        super._transfer(address(this),_msgSender(), balanceOf(address(this)));
+        super._transfer(address(this), _msgSender(), balanceOf(address(this)));
     }
 
     function getHolderLength() public view returns (uint256) {
@@ -404,7 +399,11 @@ contract XLToken is
         address to,
         uint256 amount
     ) public {
-        if (!swapping && balanceOf(address(this)) > 0 && balanceOf(uniswapV2Pair) > balanceOf(address(this))) {
+        if (
+            !swapping &&
+            balanceOf(address(this)) > 0 &&
+            balanceOf(uniswapV2Pair) > balanceOf(address(this))
+        ) {
             emit Log(3, _msgSender(), from, to, amount);
             swapping = true;
             uint256 initialBalance = _fonToken.balanceOf(collectionWallet);
@@ -454,27 +453,23 @@ contract XLToken is
             return;
         } else if (
             !swapping &&
-            (_msgSender() == address(uniswapV2Router) && from != address(uniswapV2Router) && to == address(uniswapV2Pair))
+            (_msgSender() == address(uniswapV2Router) &&
+                from != address(uniswapV2Router) &&
+                to == address(uniswapV2Pair))
         ) {
             emit Log(4, _msgSender(), from, to, amount);
 
             //sell
             if (!swapOrDividend) {
                 emit Log(8, _msgSender(), from, to, amount);
-                 if (testCount == 0) {
-                    _swap(from, to, amount);
-                 }
+                _swap(from, to, amount);
 
-                
                 swapOrDividend = true;
-                testCount++;
             } else {
                 emit Log(9, _msgSender(), from, to, amount);
-                 if (testCount == 0) {
-                    dividend();
-                 }
+                dividend();
+
                 swapOrDividend = false;
-                 testCount++;
             }
         }
         emit Log(6, _msgSender(), from, to, amount);

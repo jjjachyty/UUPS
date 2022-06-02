@@ -579,8 +579,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\XLToken.sol": {
-      "lastModificationDate": 1654151906019,
-      "contentHash": "968dc6cb65713ccef4b8e5a62a4ea767",
+      "lastModificationDate": 1654160470495,
+      "contentHash": "0e6ab0e6f2bab791e5e8a693aef9733a",
       "sourceName": "contracts/XLToken.sol",
       "solcConfig": {
         "version": "0.8.3",
