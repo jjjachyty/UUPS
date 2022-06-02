@@ -21,7 +21,6 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ERC20Upgradeable token0;
     ERC20Upgradeable token1;
     mapping(address => address) public relationship;
-    // mapping(address => uint256[10]) public relationinfos;
     mapping(address => uint256) public rewards; //TODO:
 
     RankingInfo[] public ranking;
@@ -50,8 +49,8 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%
-        receiveAddress = 0xD08faF8c348E14B356778A7c9117769523083DDd;
-        endTime = 1654466766; //15 days later
+        receiveAddress = 0x3F3560f91b326b4d9eB8F00A71D59A95F9bD8899;
+        endTime = 1655467200; //2022-06-17 20:00:00 15 days later
     }
 
     receive() external payable {}

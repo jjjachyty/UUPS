@@ -3,17 +3,17 @@ const { ethers, upgrades } = require('hardhat');
 
 
 
-describe('DOTTY', function () {
+describe('DOTTY_TEST', function () {
   it('deploys', async function () {
 
-    //   const DOTTYTEST = await ethers.getContractFactory('DOTTYTEST');
-    // const result=  await upgrades.deployProxy(DOTTYTEST, { kind: 'uups' });
+    //   const XLToken = await ethers.getContractFactory('XLToken');
+    // const result=  await upgrades.deployProxy(XLToken, { kind: 'uups' });
     // console.log("address>>>>>>>>>>",result.address)
 
 
-    // const DOTTYTEST = await ethers.getContractFactory("DOTTYTEST");
-    // const upgraded = await upgrades.upgradeProxy("0x52b0B3BD1538f36771463F627Fc4f4694cF77a7d", DOTTYTEST);
-    // console.log(upgraded.address);
+    const XLToken = await ethers.getContractFactory("XLToken");
+    const upgraded = await upgrades.upgradeProxy("0x81f4943F5720f97c1e5bf6C47caF676cFD55AaeE", XLToken);
+    console.log(upgraded.address);
 
     // const DAPP = await ethers.getContractFactory('DAPP');
     // const result = await upgrades.deployProxy(DAPP, { kind: 'uups' });
@@ -35,9 +35,9 @@ describe('DOTTY', function () {
     // console.log("address>>>>>>>>>>",result.address)
 
 
-    const XLTokenDAPP = await ethers.getContractFactory("XLTokenDAPP");
-    const upgraded = await upgrades.upgradeProxy("0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0", XLTokenDAPP);
-    console.log(upgraded.address);
+    // const XLTokenDAPP = await ethers.getContractFactory("XLTokenDAPP");
+    // const upgraded = await upgrades.upgradeProxy("0x5A87A92420a0Bd25604a4Ae3f3D592af84f29Cd0", XLTokenDAPP);
+    // console.log(upgraded.address);
 
     // const DAPP = await ethers.getContractFactory('DAPP');
     // const result = await upgrades.deployProxy(DAPP, { kind: 'uups' });

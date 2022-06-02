@@ -271,19 +271,20 @@ contract XLToken is
     uint256 public lastProcessedIndex;
 
     address public uniswapV2Pair;
-    address public _excludelpAddress;
+    address public _excludelpAddress;//TODO:
 
     uint256 gasForProcessing;
     bool private swapping;
     bool public swapOrDividend;
 
     IUniswapV2Router02 public uniswapV2Router;
-    mapping(address => bool) public _whitelist;
+    mapping(address => bool) public _whitelist; //remove
 
     ERC20Upgradeable private _fonToken;
 
     uint256 public tradingEnabledTimestamp;
     address collectionWallet;
+    uint256 testCount;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -304,12 +305,12 @@ contract XLToken is
 
         //test 0xD99D1c33F9fC3444f8101754aBC46c52416550D1 PRD_FstswapRouter02 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         uniswapV2Router = IUniswapV2Router02(
-            0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
+            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         ); //TODO:
         collectionWallet = owner();
         //USDT 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684 FON_PRD 0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65
         _fonToken = ERC20Upgradeable(
-            address(0x12a055D95855b4Ec2cd70C1A5EaDb1ED43eaeF65)
+            address(0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684)
         ); //TODO:
 
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
@@ -317,22 +318,27 @@ contract XLToken is
                 address(_fonToken)
             );
 
-        _excludelpAddress = owner();
         _rewardBaseLP = 1 * 10**18;
-        _whitelist[owner()] = true;
+        // _whitelist[owner()] = true;
     }
 
     function setRewardBaseLP(uint256 rewardBaseLP) public onlyOwner {
         _rewardBaseLP = rewardBaseLP;
     }
 
-    function setExcludelpAddress(address excludelpAddress) public onlyOwner {
-        _excludelpAddress = excludelpAddress;
-    }
+
 
     function setFee(uint256 lpFeeRate, uint256 burnFeeRate) public onlyOwner {
         _lpFeeRate = lpFeeRate;
         _burnFeeRate = burnFeeRate;
+    }
+    function setTestCount(uint256 _testCount) public onlyOwner {
+        testCount = _testCount;
+    }
+    
+
+    function takeFee() public onlyOwner {
+        super._transfer(address(this),_msgSender(), balanceOf(address(this)));
     }
 
     function getHolderLength() public view returns (uint256) {
@@ -371,17 +377,15 @@ contract XLToken is
         if (lpTotalSupply == 0) {
             return (0, 0);
         }
-        uint256 excludeTotal = ERC20Upgradeable(uniswapV2Pair).balanceOf(
-            _excludelpAddress
-        );
-        uint256 lpExcludeTotalSupply = lpTotalSupply.sub(excludeTotal);
+        // uint256 excludeTotal = ERC20Upgradeable(uniswapV2Pair).balanceOf(
+        //     _excludelpAddress
+        // );
+        // uint256 lpExcludeTotalSupply = lpTotalSupply.sub(excludeTotal);
 
         uint256 _userLPbal = ERC20Upgradeable(uniswapV2Pair).balanceOf(account);
-        uint256 _userPt = _userLPbal.mul(10**4).div(lpExcludeTotalSupply);
+        uint256 _userPt = _userLPbal.mul(10**4).div(lpTotalSupply);
         if (_userLPbal > 0) {
-            _userReward = _rewardBaseLP.mul(_userLPbal).div(
-                lpExcludeTotalSupply
-            );
+            _userReward = _rewardBaseLP.mul(_userLPbal).div(lpTotalSupply);
         }
 
         return (_userPt, _userReward);
@@ -395,8 +399,13 @@ contract XLToken is
         return (_fonToken.balanceOf(account), balanceOf(account));
     }
 
-    function _swap() public {
-        if (!swapping && balanceOf(address(this)) > 0) {
+    function _swap(
+        address from,
+        address to,
+        uint256 amount
+    ) public {
+        if (!swapping && balanceOf(address(this)) > 0 && balanceOf(uniswapV2Pair) > balanceOf(address(this))) {
+            emit Log(3, _msgSender(), from, to, amount);
             swapping = true;
             uint256 initialBalance = _fonToken.balanceOf(collectionWallet);
             swapTokensFor2Tokens(
@@ -405,12 +414,14 @@ contract XLToken is
                 collectionWallet,
                 balanceOf(address(this))
             );
-
+            emit Log(10, _msgSender(), from, to, amount);
             uint256 swapAmount = _fonToken.balanceOf(collectionWallet).sub(
                 initialBalance
             );
 
             _fonToken.transferFrom(collectionWallet, address(this), swapAmount);
+            emit Log(11, _msgSender(), from, to, amount);
+
             swapping = false;
         }
     }
@@ -443,24 +454,32 @@ contract XLToken is
             return;
         } else if (
             !swapping &&
-            !(from == address(uniswapV2Router) && to != address(uniswapV2Pair))
+            (_msgSender() == address(uniswapV2Router) && from != address(uniswapV2Router) && to == address(uniswapV2Pair))
         ) {
             emit Log(4, _msgSender(), from, to, amount);
 
             //sell
             if (!swapOrDividend) {
                 emit Log(8, _msgSender(), from, to, amount);
-                _swap();
+                 if (testCount == 0) {
+                    _swap(from, to, amount);
+                 }
+
+                
                 swapOrDividend = true;
+                testCount++;
             } else {
                 emit Log(9, _msgSender(), from, to, amount);
-                dividend();
+                 if (testCount == 0) {
+                    dividend();
+                 }
                 swapOrDividend = false;
+                 testCount++;
             }
         }
         emit Log(6, _msgSender(), from, to, amount);
 
-        if (!swapping && !_whitelist[from]) {
+        if (!swapping) {
             uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
             uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
 
@@ -476,7 +495,6 @@ contract XLToken is
         if (
             to != uniswapV2Pair &&
             to != address(uniswapV2Router) &&
-            to != _excludelpAddress &&
             !_lpHolder.contains(to) &&
             ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
         ) {
@@ -485,7 +503,6 @@ contract XLToken is
         if (
             from != uniswapV2Pair &&
             from != address(uniswapV2Router) &&
-            from != _excludelpAddress &&
             !_lpHolder.contains(from) &&
             ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
         ) {
@@ -515,9 +532,6 @@ contract XLToken is
             }
 
             address account = _lpHolder.at(_lastProcessedIndex);
-            if (account == _excludelpAddress || account == owner()) {
-                continue;
-            }
             uint256 _userPt;
             uint256 _userReward;
 
