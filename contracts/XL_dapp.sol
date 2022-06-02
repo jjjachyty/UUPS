@@ -21,8 +21,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ERC20Upgradeable token0;
     ERC20Upgradeable token1;
     mapping(address => address) public relationship;
-    mapping(address => uint256) public rewards; //TODO:
-
+    mapping(address => uint256[10]) public relationinfos;
     RankingInfo[] public ranking;
     mapping(address => uint256) public rankingIndex;
 
@@ -30,7 +29,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint256 parentRewardRate;
     uint256 totalIDOCount;
     uint256 totalIDOAmount;
-    mapping(address => uint256[10]) public relationinfos;
+
     address receiveAddress;
     uint256 public endTime;
 
@@ -43,9 +42,9 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         token0 = ERC20Upgradeable(
             address(0xC9882dEF23bc42D53895b8361D0b1EDC7570Bc6A)
         );
-        //TEST_ADH 0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE XL_PRD 0xF3953F7fd3618B0cD0046C69A8D1FC8987510749
+        //TEST_ADH 0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE XL_PRD 0xC255Fe6ee698D39c9c2749df9e15CbaB333Ab0aF
         token1 = ERC20Upgradeable(
-            address(0xF3953F7fd3618B0cD0046C69A8D1FC8987510749)
+            address(0xC255Fe6ee698D39c9c2749df9e15CbaB333Ab0aF)
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%
@@ -171,7 +170,11 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }
     }
 
-    function getReward(address account) public view returns (RankingInfo memory) {
+    function getReward(address account)
+        public
+        view
+        returns (RankingInfo memory)
+    {
         return ranking[rankingIndex[account]];
     }
 
