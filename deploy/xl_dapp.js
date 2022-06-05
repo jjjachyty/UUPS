@@ -11,7 +11,7 @@ async function upgraded() {
 
   // Upgrading
   const XLTokenDAPP = await ethers.getContractFactory("XLTokenDAPP");
-  const upgraded = await upgrades.upgradeProxy("0x9346A72db85049d3e9f51B29374650742F370bE0", XLTokenDAPP);
+  const upgraded = await upgrades.upgradeProxy("0x7E733A8AE6891Db01102D0688001331762EF1a58", XLTokenDAPP);
   console.log(upgraded.address);
 }
-upgraded();
+deployed();
