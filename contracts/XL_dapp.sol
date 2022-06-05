@@ -48,7 +48,7 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%
-        receiveAddress = 0x3F3560f91b326b4d9eB8F00A71D59A95F9bD8899;
+        receiveAddress = 0x04c1E2d8D1D2069C9405240D156bf7004f1108ae;
         endTime = 1655467200; //2022-06-17 20:00:00 15 days later
     }
 
