@@ -14,4 +14,4 @@ async function upgraded() {
   const upgraded = await upgrades.upgradeProxy("0x7E733A8AE6891Db01102D0688001331762EF1a58", XLTokenDAPP);
   console.log(upgraded.address);
 }
-deployed();
+upgraded();

@@ -627,8 +627,8 @@
       ]
     },
     "/Users/janly/data/solidity/UUPS/contracts/XL_dapp.sol": {
-      "lastModificationDate": 1654414933066,
-      "contentHash": "eeb2f626a1e3e03cdd0b3b42bd0b804c",
+      "lastModificationDate": 1655808592854,
+      "contentHash": "7271ffb0564174865f78e8c7c29bdfa4",
       "sourceName": "contracts/XL_dapp.sol",
       "solcConfig": {
         "version": "0.8.3",
