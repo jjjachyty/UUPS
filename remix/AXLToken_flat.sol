@@ -1670,7 +1670,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract XLToken is
+contract AXLToken is
     ERC20,
     Ownable
 {
@@ -1699,8 +1699,8 @@ contract XLToken is
     uint256 public tradingEnabledTimestamp;
     address collectionWallet;
 
-    constructor() ERC20("Star Chain Token", "Star Chain") {
-        _mint(msg.sender, 10000000 * 10**decimals());
+    constructor() ERC20("AXL Token", "AXL") {
+        _mint(msg.sender, 9800 * 10**decimals());
 
         _lpFeeRate = 300; //fist
         _burnFeeRate = 100;
