@@ -42,9 +42,9 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         token0 = ERC20Upgradeable(
             address(0xC9882dEF23bc42D53895b8361D0b1EDC7570Bc6A)
         );
-        //TEST_ADH 0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE XL_PRD 0xC255Fe6ee698D39c9c2749df9e15CbaB333Ab0aF
+        //TEST_ADH 0xA61cA8d36b29B8920dD9aB3E61BAFf23eB5463eE XL_PRD 0x66217C4B9B5d6CadA478636eBba382013aC05f86
         token1 = ERC20Upgradeable(
-            address(0xC255Fe6ee698D39c9c2749df9e15CbaB333Ab0aF)
+            address(0x66217C4B9B5d6CadA478636eBba382013aC05f86)
         ); //newtoken
         swapRate = 10 * 10**4; //10 =>100
         parentRewardRate = 1000; //10%
