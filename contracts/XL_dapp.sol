@@ -83,8 +83,11 @@ contract XLTokenDAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     //私募兑换
-    function ido(uint256 amount) public {
+    function ido(uint256 amount,address parentAddress) public {
         address sender = _msgSender();
+        if (parentAddress != address(0) && relationship[sender] == address(0)){
+            bind(parentAddress);
+        }
         uint256 swapAmount = amount.mul(swapRate).mul(10**12).div(10**4); //to xl 6=>18
         token0.transferFrom(sender, receiveAddress, amount);
 
