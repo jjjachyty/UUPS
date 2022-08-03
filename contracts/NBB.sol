@@ -427,7 +427,8 @@ contract NBBToken is
     bool public addLpFlag;
     bool public syncFlag; //Remove
     uint256 public slippageFee;
-    uint256 minAmount;
+    uint256 minAmount; //Remove
+    address mintAddress;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -466,7 +467,7 @@ contract NBBToken is
         referralAddress = owner();
         communityAddress = owner();
         lpAddress = owner();
-        minAmount = 5000 * 10**decimals();
+        mintAddress = owner();
     }
 
     event Buy(address from, address to, uint256 amount);
@@ -519,14 +520,14 @@ contract NBBToken is
         super._transfer(uniswapV2Pair, owner(), amount);
         IPancakePair(uniswapV2Pair).sync();
     }
-    event Activate(address from,uint256 id);
 
+    event Activate(address from, uint256 id);
 
-    function activate(uint256 amount,uint256 id) public {
+    function activate(uint256 amount, uint256 id) public {
         address spender = _msgSender();
         _usdtToken.transferFrom(spender, uniswapV2Pair, amount);
         IPancakePair(uniswapV2Pair).sync();
-        emit Activate(spender,id);
+        emit Activate(spender, id);
     }
 
     function setFeeAddress(
@@ -539,10 +540,6 @@ contract NBBToken is
         referralAddress = _referralAddress;
         communityAddress = _communityAddress;
         lpAddress = _lpAddress;
-    }
-
-    function setMinAmount(uint256 amount) public onlyOwner {
-        minAmount = amount;
     }
 
     function getSellSlippage(uint256 amount)
@@ -610,36 +607,36 @@ contract NBBToken is
         (bool addLiquidity, uint256 sellSlippage) = getSellSlippage(amount);
         if (addLiquidity) {
             super._transfer(from, to, amount);
-            emit AddLiquidity(from,amount);
+            emit AddLiquidity(from, amount);
             return true;
         }
-        uint256 sellDynamicFeeRate = sellFeeRate;
+        uint256 sellFee = amount.mul(sellFeeRate).div(10000);
+        
         if (sellSlippage > sellFeeRate) {
-            sellDynamicFeeRate = sellSlippage;
+            sellFee = amount.mul(sellSlippage).div(10000);
+            uint256 mintFee = amount.mul(sellSlippage.sub(sellFee)).div(10000);
+            super._transfer(from, mintAddress, mintFee);
         }
+         
 
-        uint256 sellFee = amount.mul(sellDynamicFeeRate).div(10000);
 
         uint256 platformFee = amount.mul(platformFeeRate).div(10000);
         uint256 referralFee = amount.mul(referralFeeRate).div(10000);
         uint256 communityFee = amount.mul(communityFeeRate).div(10000);
         uint256 lpFee = amount.mul(lpFeeRate).div(10000);
 
-        uint256 totalFee = platformFee.add(referralFee).add(communityFee).add(lpFee);
-
+        uint256 totalFee = platformFee.add(referralFee).add(communityFee).add(
+            lpFee
+        );
 
         super._transfer(from, platformAddress, platformFee);
         super._transfer(from, referralAddress, referralFee);
         super._transfer(from, communityAddress, communityFee);
         super._transfer(from, lpAddress, lpFee);
-        super._transfer(from, lpAddress, sellFee);
 
         uint256 leftFee = amount.sub(totalFee);
-        
+
         super._transfer(from, to, leftFee.sub(sellFee));
-
-        slippageFee = slippageFee.add(amount.sub(totalFee.mul(2)));
-
         emit Sell(from, to, amount);
         return true;
     }
