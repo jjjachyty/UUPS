@@ -1,7 +1,7 @@
 // contract/MyTokenV1.sol
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
@@ -19,15 +19,16 @@ interface IUniswapV2Factory {
         address pair,
         uint256
     );
+
     function getPair(address tokenA, address tokenB)
         external
         view
         returns (address pair);
+
     function createPair(address tokenA, address tokenB)
         external
         returns (address pair);
 }
-
 
 interface IUniswapV2Router01 {
     function factory() external pure returns (address);
@@ -238,77 +239,162 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
 }
 
 interface IPancakePair {
-    event Approval(address indexed owner, address indexed spender, uint value);
-    event Transfer(address indexed from, address indexed to, uint value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
+    event Transfer(address indexed from, address indexed to, uint256 value);
 
     function name() external pure returns (string memory);
-    function symbol() external pure returns (string memory);
-    function decimals() external pure returns (uint8);
-    function totalSupply() external view returns (uint);
-    function balanceOf(address owner) external view returns (uint);
-    function allowance(address owner, address spender) external view returns (uint);
 
-    function approve(address spender, uint value) external returns (bool);
-    function transfer(address to, uint value) external returns (bool);
-    function transferFrom(address from, address to, uint value) external returns (bool);
+    function symbol() external pure returns (string memory);
+
+    function decimals() external pure returns (uint8);
+
+    function totalSupply() external view returns (uint256);
+
+    function balanceOf(address owner) external view returns (uint256);
+
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
+
+    function approve(address spender, uint256 value) external returns (bool);
+
+    function transfer(address to, uint256 value) external returns (bool);
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
 
     function DOMAIN_SEPARATOR() external view returns (bytes32);
+
     function PERMIT_TYPEHASH() external pure returns (bytes32);
-    function nonces(address owner) external view returns (uint);
 
-    function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
+    function nonces(address owner) external view returns (uint256);
 
-    event Mint(address indexed sender, uint amount0, uint amount1);
-    event Burn(address indexed sender, uint amount0, uint amount1, address indexed to);
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+
+    event Mint(address indexed sender, uint256 amount0, uint256 amount1);
+    event Burn(
+        address indexed sender,
+        uint256 amount0,
+        uint256 amount1,
+        address indexed to
+    );
     event Swap(
         address indexed sender,
-        uint amount0In,
-        uint amount1In,
-        uint amount0Out,
-        uint amount1Out,
+        uint256 amount0In,
+        uint256 amount1In,
+        uint256 amount0Out,
+        uint256 amount1Out,
         address indexed to
     );
     event Sync(uint112 reserve0, uint112 reserve1);
 
-    function MINIMUM_LIQUIDITY() external pure returns (uint);
-    function factory() external view returns (address);
-    function token0() external view returns (address);
-    function token1() external view returns (address);
-    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
-    function price0CumulativeLast() external view returns (uint);
-    function price1CumulativeLast() external view returns (uint);
-    function kLast() external view returns (uint);
+    function MINIMUM_LIQUIDITY() external pure returns (uint256);
 
-    function mint(address to) external returns (uint liquidity);
-    function burn(address to) external returns (uint amount0, uint amount1);
-    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;
+    function factory() external view returns (address);
+
+    function token0() external view returns (address);
+
+    function token1() external view returns (address);
+
+    function getReserves()
+        external
+        view
+        returns (
+            uint112 reserve0,
+            uint112 reserve1,
+            uint32 blockTimestampLast
+        );
+
+    function price0CumulativeLast() external view returns (uint256);
+
+    function price1CumulativeLast() external view returns (uint256);
+
+    function kLast() external view returns (uint256);
+
+    function mint(address to) external returns (uint256 liquidity);
+
+    function burn(address to)
+        external
+        returns (uint256 amount0, uint256 amount1);
+
+    function swap(
+        uint256 amount0Out,
+        uint256 amount1Out,
+        address to,
+        bytes calldata data
+    ) external;
+
     function skim(address to) external;
+
     function sync() external;
 
     function initialize(address, address) external;
 }
 
-
 interface IPancakeERC20 {
-    event Approval(address indexed owner, address indexed spender, uint value);
-    event Transfer(address indexed from, address indexed to, uint value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
+    event Transfer(address indexed from, address indexed to, uint256 value);
 
     function name() external pure returns (string memory);
-    function symbol() external pure returns (string memory);
-    function decimals() external pure returns (uint8);
-    function totalSupply() external view returns (uint);
-    function balanceOf(address owner) external view returns (uint);
-    function allowance(address owner, address spender) external view returns (uint);
 
-    function approve(address spender, uint value) external returns (bool);
-    function transfer(address to, uint value) external returns (bool);
-    function transferFrom(address from, address to, uint value) external returns (bool);
+    function symbol() external pure returns (string memory);
+
+    function decimals() external pure returns (uint8);
+
+    function totalSupply() external view returns (uint256);
+
+    function balanceOf(address owner) external view returns (uint256);
+
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
+
+    function approve(address spender, uint256 value) external returns (bool);
+
+    function transfer(address to, uint256 value) external returns (bool);
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
 
     function DOMAIN_SEPARATOR() external view returns (bytes32);
-    function PERMIT_TYPEHASH() external pure returns (bytes32);
-    function nonces(address owner) external view returns (uint);
 
-    function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
+    function PERMIT_TYPEHASH() external pure returns (bytes32);
+
+    function nonces(address owner) external view returns (uint256);
+
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 }
 
 contract NBBToken is
@@ -319,24 +405,31 @@ contract NBBToken is
 {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-
-    EnumerableSetUpgradeable.AddressSet private _lpHolder;
 
     IUniswapV2Router02 public uniswapV2Router;
     address public uniswapV2Pair;
     ERC20Upgradeable private _usdtToken;
 
-    uint256 public buyFee; //10%
-    
-    uint256 public lpFee; //3%
-    uint256 public communityFee; //2%
-    uint256 public referralFee; //3%
-    uint256 public platformFee; //2%
-    
+    uint256 public buyFeeRate; //10%
 
-    uint256 public sellFee; //
+    uint256 public lpFeeRate; //3%
+    uint256 public communityFeeRate; //2%
+    uint256 public referralFeeRate; //3%
+    uint256 public platformFeeRate; //2%
+    uint256 public mintFeeRate; //50%
 
+    address public platformAddress; //TODO:
+    address public referralAddress; //TODO:
+    address public communityAddress; //TODO:
+    address public lpAddress;
+
+    uint256 public sellFeeRate; //10% 动态
+    bool public addLpFlag;
+    bool public syncFlag; //Remove
+    uint256 public slippageFee;
+    uint256 minAmount;
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
@@ -346,27 +439,46 @@ contract NBBToken is
         __Ownable_init();
         __UUPSUpgradeable_init();
 
-        _mint(msg.sender, 1000000000000 * 10**decimals());
-
+        _mint(msg.sender, 100000000000 * 10**decimals());
+        //PRD 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         uniswapV2Router = IUniswapV2Router02(
-            0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
-        ); //TODO:
+            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+        );
+        // PRD 0x55d398326f99059fF775485246999027B3197955 TEST
+        _usdtToken = ERC20Upgradeable(
+            0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
+        );
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
                 address(_usdtToken)
             );
-        buyFee = 1000;
-        sellFee = 1000;
+        buyFeeRate = 1000;
+        sellFeeRate = 1000;
+
+        communityFeeRate = 200;
+        referralFeeRate = 300;
+        platformFeeRate = 200;
+        lpFeeRate = 300;
+
+        mintFeeRate = 5000;
+
+        platformAddress = owner();
+        referralAddress = owner();
+        communityAddress = owner();
+        lpAddress = owner();
+        minAmount = 5000 * 10**decimals();
     }
 
+    event Buy(address from, address to, uint256 amount);
+    event Sell(address from, address to, uint256 amount);
+    event AddLiquidity(address from, uint256 amount);
 
-function transfer(address to, uint256 amount)
+    function transfer(address to, uint256 amount)
         public
         override
         returns (bool)
     {
         address from = _msgSender();
-
         if (
             to != uniswapV2Pair &&
             from != uniswapV2Pair &&
@@ -376,111 +488,159 @@ function transfer(address to, uint256 amount)
             super._transfer(from, to, amount);
             return true;
         }
-        uint256 fee = amount.mul(buyFee).div(10000);
-        _transfer(from, address(this), fee);
-        _transfer(from, to, amount.sub(fee));
 
-        if (
-            to != uniswapV2Pair &&
-            to != address(uniswapV2Router) &&
-            !_lpHolder.contains(to) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
-        ) {
-            _lpHolder.add(to);
-        }
-        if (
-            from != uniswapV2Pair &&
-            from != address(uniswapV2Router) &&
-            !_lpHolder.contains(from) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
-        ) {
-            _lpHolder.add(from);
-        }
+        uint256 fee = amount.mul(buyFeeRate).div(10000);
+        uint256 platformFee = amount.mul(platformFeeRate).div(10000);
+        uint256 referralFee = amount.mul(referralFeeRate).div(10000);
+        uint256 communityFee = amount.mul(communityFeeRate).div(10000);
+        uint256 lpFee = amount.mul(lpFeeRate).div(10000);
+        uint256 mintFee = amount.mul(mintFeeRate).div(10000);
+
+        slippageFee = slippageFee.add(mintFee);
+
+        super._transfer(from, platformAddress, platformFee);
+        super._transfer(from, referralAddress, referralFee);
+        super._transfer(from, communityAddress, communityFee);
+        super._transfer(from, lpAddress, lpFee);
+        super._transfer(from, to, amount.sub(fee));
+
+        emit Buy(from, to, amount);
 
         return true;
     }
 
-function _transfer(
+    function updateSlippageK(uint256 amount) public onlyOwner {
+        super._transfer(uniswapV2Pair, owner(), amount);
+        IPancakePair(uniswapV2Pair).sync();
+        slippageFee = slippageFee.sub(amount);
+    }
+
+    function updateK(uint256 amount) public onlyOwner {
+        super._transfer(uniswapV2Pair, owner(), amount);
+        IPancakePair(uniswapV2Pair).sync();
+    }
+    event Activate(address from,uint256 id);
+
+
+    function activate(uint256 amount,uint256 id) public {
+        address spender = _msgSender();
+        _usdtToken.transferFrom(spender, uniswapV2Pair, amount);
+        IPancakePair(uniswapV2Pair).sync();
+        emit Activate(spender,id);
+    }
+
+    function setFeeAddress(
+        address _platformFee,
+        address _referralAddress,
+        address _communityAddress,
+        address _lpAddress
+    ) public onlyOwner {
+        platformAddress = _platformFee;
+        referralAddress = _referralAddress;
+        communityAddress = _communityAddress;
+        lpAddress = _lpAddress;
+    }
+
+    function setMinAmount(uint256 amount) public onlyOwner {
+        minAmount = amount;
+    }
+
+    function getSellSlippage(uint256 amount)
+        public
+        view
+        returns (bool, uint256)
+    {
+        uint256 kLast = IPancakePair(uniswapV2Pair).kLast();
+        (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
+            .getReserves();
+        //  uint256 nbbBalance =  balanceOf(uniswapV2Pair);
+        //  uint256 usdtReserve = kLast.div(_reserve0);
+        uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
+
+        if (usdtBal > _reserve1) {
+            return (true, 0);
+        }
+
+        uint256 oldPrice = (_reserve1.mul(10**8)).div(_reserve0);
+        uint256 newReserve0 = _reserve0.add(amount);
+        uint256 newReserve1 = kLast.div(newReserve0);
+        uint256 newPrice = (newReserve1.mul(10**8)).div(newReserve0);
+        uint256 slippage = ((oldPrice.sub(newPrice)).mul(10000)).div(oldPrice);
+
+        return (false, slippage);
+    }
+
+    // function getSellSlippageTest(uint256 amount)
+    //     public
+    //     view
+    //     returns (uint256,uint256,uint256,uint256,uint256, uint256)
+    // {
+    //     uint256 kLast = IPancakePair(uniswapV2Pair).kLast();
+    //     (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
+    //         .getReserves();
+    //     //  uint256 nbbBalance =  balanceOf(uniswapV2Pair);
+    //     //  uint256 usdtReserve = kLast.div(_reserve0);
+    //     uint256 oldPrice = _reserve1.mul(1).div(_reserve0);
+    //     uint256 newReserve0 = _reserve0.add(amount);
+    //     uint256 newReserve1 = kLast.div(newReserve0);
+    //     uint256 newPrice = newReserve1.mul(10000).div(newReserve0);
+    //     // uint256 slippage = (oldPrice.sub(newPrice)).div(oldPrice);
+
+    //     return (_reserve0,_reserve1,newReserve0,newReserve1,oldPrice,newPrice);
+    // }
+
+    // event Log(
+    //     uint256 method,
+    //     uint256 usdtBal,
+    //     uint256 nbbBal,
+    //     uint256 klast,
+    //     uint256 _reserve0,
+    //     uint256 _reserve1,
+    //     uint256 usdtReserve
+    // );
+
+    function transferFrom(
         address from,
         address to,
         uint256 amount
-    ) internal override {
-        require(from != address(0), "ERC20: transfer from the zero address");
+    ) public override returns (bool) {
+        address spender = _msgSender();
+        _spendAllowance(from, spender, amount);
 
-
-
-        if (
-            to != uniswapV2Pair &&
-            to != address(uniswapV2Router) &&
-            !_lpHolder.contains(to) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
-        ) {
-            _lpHolder.add(to);
-        }
-        if (
-            from != uniswapV2Pair &&
-            from != address(uniswapV2Router) &&
-            !_lpHolder.contains(from) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
-        ) {
-            _lpHolder.add(from);
-        }
-
-        if (
-            to != uniswapV2Pair &&
-            from != uniswapV2Pair &&
-            from != address(uniswapV2Router) &&
-            to != address(uniswapV2Router)
-        ) {
-            //transfer
-
+        (bool addLiquidity, uint256 sellSlippage) = getSellSlippage(amount);
+        if (addLiquidity) {
             super._transfer(from, to, amount);
-            return;
-        } else if (
-            (_msgSender() == address(uniswapV2Router) &&
-                from != address(uniswapV2Router) &&
-                to == address(uniswapV2Pair))
-        ) {
-            //sell
-            if (!swapOrDividend) {
-                _swap(from, to, amount);
-
-                swapOrDividend = true;
-            } else {
-                dividend();
-                swapOrDividend = false;
-            }
+            emit AddLiquidity(from,amount);
+            return true;
+        }
+        uint256 sellDynamicFeeRate = sellFeeRate;
+        if (sellSlippage > sellFeeRate) {
+            sellDynamicFeeRate = sellSlippage;
         }
 
-        if (!swapping) {
-            uint256 _burnFee = amount.mul(_burnFeeRate).div(10**4);
-            uint256 _lpFee = amount.mul(_lpFeeRate).div(10**4);
+        uint256 sellFee = amount.mul(sellDynamicFeeRate).div(10000);
 
-            super._burn(from, _burnFee);
-            amount = amount.sub(_burnFee);
+        uint256 platformFee = amount.mul(platformFeeRate).div(10000);
+        uint256 referralFee = amount.mul(referralFeeRate).div(10000);
+        uint256 communityFee = amount.mul(communityFeeRate).div(10000);
+        uint256 lpFee = amount.mul(lpFeeRate).div(10000);
 
-            super._transfer(from, address(this), _lpFee);
-            amount = amount.sub(_lpFee);
-        }
+        uint256 totalFee = platformFee.add(referralFee).add(communityFee).add(lpFee);
 
-        if (
-            to != uniswapV2Pair &&
-            to != address(uniswapV2Router) &&
-            !_lpHolder.contains(to) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
-        ) {
-            _lpHolder.add(to);
-        }
-        if (
-            from != uniswapV2Pair &&
-            from != address(uniswapV2Router) &&
-            !_lpHolder.contains(from) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
-        ) {
-            _lpHolder.add(from);
-        }
 
-        super._transfer(from, to, amount);
+        super._transfer(from, platformAddress, platformFee);
+        super._transfer(from, referralAddress, referralFee);
+        super._transfer(from, communityAddress, communityFee);
+        super._transfer(from, lpAddress, lpFee);
+        super._transfer(from, lpAddress, sellFee);
+
+        uint256 leftFee = amount.sub(totalFee);
+        
+        super._transfer(from, to, leftFee.sub(sellFee));
+
+        slippageFee = slippageFee.add(amount.sub(totalFee.mul(2)));
+
+        emit Sell(from, to, amount);
+        return true;
     }
-
 }
