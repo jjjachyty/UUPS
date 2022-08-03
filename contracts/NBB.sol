@@ -547,11 +547,10 @@ contract NBBToken is
         view
         returns (bool, uint256)
     {
-        uint256 kLast = IPancakePair(uniswapV2Pair).kLast();
         (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
             .getReserves();
-        //  uint256 nbbBalance =  balanceOf(uniswapV2Pair);
-        //  uint256 usdtReserve = kLast.div(_reserve0);
+        uint256 kLast = _reserve0.mul(_reserve1);
+
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
 
         if (usdtBal > _reserve1) {
