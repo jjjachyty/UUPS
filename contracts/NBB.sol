@@ -559,42 +559,37 @@ contract NBBToken is
         }
 
         uint256 oldPrice = (_reserve1.mul(10**8)).div(_reserve0);
+
         uint256 newReserve0 = _reserve0.add(amount);
         uint256 newReserve1 = kLast.div(newReserve0);
-        uint256 newPrice = (newReserve1.mul(10**8)).div(newReserve0);
-        uint256 slippage = ((oldPrice.sub(newPrice)).mul(10000)).div(oldPrice);
+        uint256 diff = _reserve1.sub(newReserve1);
+        uint256 newPrice = diff.mul(10**8).div(amount);
 
-        return (false, slippage);
+        if (oldPrice > newPrice) {
+            uint256 slippage = ((oldPrice.sub(newPrice,"oldPrice < newPrice")).mul(10**4)).div(
+                oldPrice
+            );
+            return (false, slippage);
+        }
+        return (false, 0);
     }
 
-    // function getSellSlippageTest(uint256 amount)
-    //     public
-    //     view
-    //     returns (uint256,uint256,uint256,uint256,uint256, uint256)
-    // {
-    //     uint256 kLast = IPancakePair(uniswapV2Pair).kLast();
-    //     (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
-    //         .getReserves();
-    //     //  uint256 nbbBalance =  balanceOf(uniswapV2Pair);
-    //     //  uint256 usdtReserve = kLast.div(_reserve0);
-    //     uint256 oldPrice = _reserve1.mul(1).div(_reserve0);
-    //     uint256 newReserve0 = _reserve0.add(amount);
-    //     uint256 newReserve1 = kLast.div(newReserve0);
-    //     uint256 newPrice = newReserve1.mul(10000).div(newReserve0);
-    //     // uint256 slippage = (oldPrice.sub(newPrice)).div(oldPrice);
+    function getSellSlippageTest(uint256 amount)
+        public
+        view
+        returns (uint256,uint256,uint256,uint256,uint256,uint256)
+    {
+        uint256 kLast = IPancakePair(uniswapV2Pair).kLast();
+        (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
+            .getReserves();
+        uint256 oldPrice = (_reserve1.mul(10**8)).div(_reserve0);
 
-    //     return (_reserve0,_reserve1,newReserve0,newReserve1,oldPrice,newPrice);
-    // }
+        uint256 newReserve0 = _reserve0.add(amount);
+        uint256 newReserve1 = kLast.div(newReserve0);
 
-    // event Log(
-    //     uint256 method,
-    //     uint256 usdtBal,
-    //     uint256 nbbBal,
-    //     uint256 klast,
-    //     uint256 _reserve0,
-    //     uint256 _reserve1,
-    //     uint256 usdtReserve
-    // );
+        
+        return (kLast,_reserve0,_reserve1,oldPrice,newReserve0,newReserve1);
+    }
 
     function transferFrom(
         address from,
@@ -610,33 +605,31 @@ contract NBBToken is
             emit AddLiquidity(from, amount);
             return true;
         }
+
         uint256 sellFee = amount.mul(sellFeeRate).div(10000);
-        
+        uint256 lftPool = sellFee;
+
         if (sellSlippage > sellFeeRate) {
             sellFee = amount.mul(sellSlippage).div(10000);
-            uint256 mintFee = amount.mul(sellSlippage.sub(sellFee)).div(10000);
+            uint256 mintFee = sellFee.sub(lftPool,"lftPool > sellFee");
             super._transfer(from, mintAddress, mintFee);
         }
-         
-
 
         uint256 platformFee = amount.mul(platformFeeRate).div(10000);
         uint256 referralFee = amount.mul(referralFeeRate).div(10000);
         uint256 communityFee = amount.mul(communityFeeRate).div(10000);
         uint256 lpFee = amount.mul(lpFeeRate).div(10000);
 
-        uint256 totalFee = platformFee.add(referralFee).add(communityFee).add(
-            lpFee
-        );
-
         super._transfer(from, platformAddress, platformFee);
         super._transfer(from, referralAddress, referralFee);
         super._transfer(from, communityAddress, communityFee);
         super._transfer(from, lpAddress, lpFee);
 
-        uint256 leftFee = amount.sub(totalFee);
+        uint256 leftFee = amount.sub(sellFee);
+        super._transfer(from, to, leftFee);
 
-        super._transfer(from, to, leftFee.sub(sellFee));
+        uint256 leftAmount = leftFee.sub(lftPool,"lftPool > leftFee");
+        slippageFee = slippageFee.add(leftAmount);
         emit Sell(from, to, amount);
         return true;
     }
