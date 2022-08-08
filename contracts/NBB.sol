@@ -428,7 +428,8 @@ contract NBBToken is
     bool public syncFlag; //Remove
     uint256 public slippageFee;
     uint256 minAmount; //Remove
-    address mintAddress;
+    address mintAddress; //TODO:
+    address pledgeAddress;//TODO:
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -468,6 +469,7 @@ contract NBBToken is
         communityAddress = owner();
         lpAddress = owner();
         mintAddress = owner();
+        pledgeAddress = owner();
     }
 
     event Buy(address from, address to, uint256 amount);
@@ -626,7 +628,7 @@ contract NBBToken is
         emit Sell(from, to, amount);
         return true;
     }
-
+    //hash 对对碰
    function alphanumeric(
         address token,
         uint256 amount
@@ -636,5 +638,15 @@ contract NBBToken is
         blockhash(0);
         ERC20Upgradeable(token).transferFrom(owner(), spender, amount);
 
-    } 
+    }
+    event PledgeUSDT(address,uint256);
+    //理财质押
+    function pledgeUSDT(
+            uint256 amount
+        ) public{
+            require(amount > 100*10**_usdtToken.decimals(),"less 100 U");
+            address spender = _msgSender();
+            _usdtToken.transferFrom(spender, pledgeAddress, amount);
+            emit PledgeUSDT(spender,amount);
+    }
 }
