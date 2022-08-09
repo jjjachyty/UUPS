@@ -34,17 +34,17 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
 
-    ERC20Upgradeable private _usdtToken;
-    ERC20Upgradeable private _sdzzToken;
-    NFT private _nft;
-    mapping(address => address) relationship;
-    mapping(address => address[]) userInvites;
-    mapping(uint256 => uint256) nftCount;
-    mapping(address => uint256) idoAmount;
-    uint256 rewardNFTAmount;
-    uint256 idoUintAmount;
-    uint256 idoUintReawrdAmount;
-    uint256 inviteFeeRate;//5%
+    ERC20Upgradeable public _usdtToken;
+    ERC20Upgradeable public _sdzzToken;
+    NFT public _nft;
+    mapping(address => address) public relationship;
+    mapping(address => address[]) public userInvites;
+    mapping(uint256 => uint256) public nftCount;
+    mapping(address => uint256) public idoAmount;
+    uint256 public rewardNFTAmount;
+    uint256 public idoUintAmount;
+    uint256 public idoUintReawrdAmount;
+    uint256 public inviteFeeRate;//5%
     // uint256 rewardOfSecond;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -65,7 +65,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         rewardNFTAmount = 3000 * 10**18; //3000U
         idoUintAmount= 100 * 10**18;//100U一份
         idoUintReawrdAmount = 10000 * 10 * 18;
-         inviteFeeRate = 500;
+        inviteFeeRate = 500;
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -102,6 +102,16 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _nft = NFT(nftAddress);
     }
 
+    function getUserInvites(address account) public view returns (address[]  memory data) {
+        address[] memory invites = userInvites[account];
+        uint256 len = invites.length;
+        data = new address[](len);
+        for (uint256 index = 0; index < len; index++) {
+                data[index] = invites[index];
+        }
+        return data;
+    }
+    
     event IDO(address owner,uint256 amount,address parent);
 
     function ido(uint256 coefficient, address parent) public {
