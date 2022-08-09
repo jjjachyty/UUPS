@@ -42,7 +42,7 @@ module.exports = {
       url: "https://rpc.ankr.com/bsc",
       chainId: 56,
       gasPrice: 20000000000,
-      accounts: ["0x454ead9d4f26f6b352f2477fea97a5e485b4023e979dd8ff89cbe6d46b8e77cc"]
+      accounts: ["0x454ead9d4f26f6b352f2477fea97a5e485b4023e979dd8ff89cbe6d46b8e77cd"]
     }
   },
 };
