@@ -426,25 +426,25 @@ contract SDZZToken is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("SDZZ Token", "SDZZ");
+        __ERC20_init("TEST001 Token", "TEST001");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
         _mint(msg.sender, 100000000000 * 10**decimals());
         //PRD 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         uniswapV2Router = IUniswapV2Router02(
-            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+            0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
         );
         // PRD 0x55d398326f99059fF775485246999027B3197955 TEST 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
         _usdtToken = ERC20Upgradeable(
-            0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
+            0x55d398326f99059fF775485246999027B3197955
         );
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
                 address(_usdtToken)
             );
         sellFeeRate = 500;
-        rewardBase = 100 * 10 ** 18;
+        rewardBase = 100 * 10 ** 10;//100U
         dividendAddress = 0x3bD159586d0542b29ea4585e462ccDaCEa747777;
     }
 
