@@ -44,6 +44,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     uint256 rewardNFTAmount;
     uint256 idoUintAmount;
     uint256 idoUintReawrdAmount;
+    uint256 inviteFeeRate;//5%
     // uint256 rewardOfSecond;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -64,6 +65,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         rewardNFTAmount = 3000 * 10**18; //3000U
         idoUintAmount= 100 * 10**18;//100U一份
         idoUintReawrdAmount = 10000 * 10 * 18;
+         inviteFeeRate = 500;
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -76,8 +78,20 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _usdtToken = ERC20Upgradeable(account);
     }
 
+    function setIDOUintReawrdAmount(uint256 amount) public onlyOwner {
+        idoUintReawrdAmount = amount;
+    }
+
+    function setIDOUintAmount(uint256 amount) public onlyOwner {
+        idoUintAmount = amount;
+    }
+
     function setRewardNFTAmount(uint256 amount) public onlyOwner {
         rewardNFTAmount = amount;
+    }
+
+    function setInviteFeeRate(uint256 rate) public onlyOwner {
+        inviteFeeRate = rate;
     }
 
     function setSDZZ(address account) public onlyOwner {
@@ -88,15 +102,17 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _nft = NFT(nftAddress);
     }
 
+    event IDO(address owner,uint256 amount,address parent);
 
     function ido(uint256 coefficient, address parent) public {
         address sender = _msgSender();
         uint256 amount = coefficient.mul(idoUintAmount); 
 
-        require(amount > 0 && amount.mod(2 * 10**18) == 0, "invaild amount");
+        require(amount > 0 && amount.mod(idoUintAmount) == 0, "invaild amount");
+        
+            uint256 inviteFee = amount.mul(inviteFeeRate).div(10**4);
 
         if (parent != address(0x0) && relationship[sender] == address(0x0)) {
-            uint256 inviteFee = amount.mul(5).div(100);
 
             relationship[sender] = parent;
             userInvites[parent].push(sender);
@@ -115,11 +131,10 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
                 }
             }
             _usdtToken.transferFrom(sender, parent, inviteFee);
-            amount = amount.sub(inviteFee);
         }
 
 
-        _usdtToken.transferFrom(sender, address(this), amount);
+        _usdtToken.transferFrom(sender, address(this), amount.sub(inviteFee));
 
         _sdzzToken.transferFrom(
             owner(),
@@ -127,5 +142,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             coefficient.mul(idoUintReawrdAmount)
         );
         idoAmount[sender] += amount;
+
+        emit IDO(sender,amount,parent);
     }
 }
