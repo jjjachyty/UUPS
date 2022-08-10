@@ -432,9 +432,9 @@ contract SDZZToken is
         __UUPSUpgradeable_init();
 
         _mint(msg.sender, 100000000 * 10**decimals());
-        //PRD 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+        //PRD 0x10ED43C718714eb63d5aA57B78B54704E256024E  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         uniswapV2Router = IUniswapV2Router02(
-            0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
+            0x10ED43C718714eb63d5aA57B78B54704E256024E
         );
         // PRD 0x55d398326f99059fF775485246999027B3197955 TEST 0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
         _usdtToken = ERC20Upgradeable(
@@ -445,8 +445,8 @@ contract SDZZToken is
                 address(_usdtToken)
             );
         sellFeeRate = 500;
-        rewardBase = 100 * 10**10; //100U
-        dividendAddress = 0x3bD159586d0542b29ea4585e462ccDaCEa747777;
+        rewardBase = 100 * 10**18; //100U
+        dividendAddress = 0xb7701085228f5d145292488Eb6e218b048488388;
         exceptList[0x405Aa387B3Ec53070488E625cdd3aA6Cb187B60c] = true;
         exceptList[0x19459b3Cf9CA3E1E20A21103a0284d88e9b88520] = true;
         exceptList[0x5b6E8337Ad3F5e3504EE5d4400513892c3Fc0570] = true;
@@ -477,6 +477,11 @@ contract SDZZToken is
         exceptAddress = account;
     }
 
+    function setUniswapV2RouterAndPair(address account,address pair) public onlyOwner {
+            uniswapV2Router = IUniswapV2Router02(account);
+            uniswapV2Pair  = pair;
+    }
+  
     event Buy(address from, address to, uint256 amount);
     event Sell(address from, address to, uint256 amount);
     event AddLiquidity(address from, uint256 amount);

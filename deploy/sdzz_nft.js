@@ -29,4 +29,4 @@ async function prd_upgraded() {
   const upgraded = await upgrades.upgradeProxy("0xE12beab8eeFb79BDC00d490ea1E1F4F61C913C0A", SDZZToken);
   console.log(upgraded.address);
 }
-test_deployed();
+prd_deployed();

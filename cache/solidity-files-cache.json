@@ -671,8 +671,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\SDZZ.sol": {
-      "lastModificationDate": 1660096986897,
-      "contentHash": "754650c6d5da06930bed2cf2bd430a2b",
+      "lastModificationDate": 1660114084809,
+      "contentHash": "fe79bd768d6f363b4075d50f427438cc",
       "sourceName": "contracts/SDZZ.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -910,8 +910,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\SDZZ_IDO.sol": {
-      "lastModificationDate": 1660098186911,
-      "contentHash": "85eff61c2da16bccf93a37c2cbe71a55",
+      "lastModificationDate": 1660118703866,
+      "contentHash": "326d53086df06ca7510686ad50e674cf",
       "sourceName": "contracts/SDZZ_IDO.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -1152,8 +1152,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\SDZZ NFT.sol": {
-      "lastModificationDate": 1660012387810,
-      "contentHash": "16819d85e66b979aaad15abd9ac2b70e",
+      "lastModificationDate": 1660118439987,
+      "contentHash": "85252ba48c73825459f266eb0a4d0097",
       "sourceName": "contracts/SDZZ NFT.sol",
       "solcConfig": {
         "version": "0.8.4",

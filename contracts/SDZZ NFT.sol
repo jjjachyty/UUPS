@@ -30,6 +30,17 @@ contract SDZZNFT is Initializable, ERC1155Upgradeable, AccessControlUpgradeable,
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
+    function name() public view virtual returns (string memory) {
+        return "Chaotic body";
+    }
+
+    /**
+     * @dev See {IERC721Metadata-symbol}.
+     */
+    function symbol() public view virtual returns (string memory) {
+        return "CB";
+    }
+
     function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
         _setURI(newuri);
     }
