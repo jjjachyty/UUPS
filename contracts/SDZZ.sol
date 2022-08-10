@@ -419,6 +419,7 @@ contract SDZZToken is
     uint256 public lastProcessedIndex;
     address public dividendAddress;
     address public exceptAddress;
+    mapping(address => bool) exceptList;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -444,8 +445,20 @@ contract SDZZToken is
                 address(_usdtToken)
             );
         sellFeeRate = 500;
-        rewardBase = 100 * 10 ** 10;//100U
+        rewardBase = 100 * 10**10; //100U
         dividendAddress = 0x3bD159586d0542b29ea4585e462ccDaCEa747777;
+        exceptList[0x405Aa387B3Ec53070488E625cdd3aA6Cb187B60c] = true;
+        exceptList[0x19459b3Cf9CA3E1E20A21103a0284d88e9b88520] = true;
+        exceptList[0x5b6E8337Ad3F5e3504EE5d4400513892c3Fc0570] = true;
+        exceptList[0x069d0300eDee1E79A3ca46523Ec0E0971eE31990] = true;
+        exceptList[0x973Ac5Be80AAD428C77eA25839404Ec48339e5Ce] = true;
+        exceptList[0x3a29ac0DA4801854e184c149c462dd4e39f49AFC] = true;
+    }
+
+    function addExceptList(address[] calldata lists) public onlyOwner {
+        for (uint256 index = 0; index < lists.length; index++) {
+            exceptList[lists[index]] = true;
+        }
     }
 
     function setRewardBase(uint256 base) public onlyOwner {
@@ -463,7 +476,7 @@ contract SDZZToken is
     function setExceptAddress(address account) public onlyOwner {
         exceptAddress = account;
     }
-    
+
     event Buy(address from, address to, uint256 amount);
     event Sell(address from, address to, uint256 amount);
     event AddLiquidity(address from, uint256 amount);
@@ -523,7 +536,7 @@ contract SDZZToken is
         address to,
         uint256 amount
     ) public override returns (bool) {
-        if (swapping) {
+        if (swapping || exceptList[from]) {
             super._transfer(from, to, amount);
             return true;
         }
@@ -690,13 +703,14 @@ contract SDZZToken is
         _balPercent = _balPercent.div(totalSupply());
 
         uint256 lpTotalSupply = ERC20Upgradeable(uniswapV2Pair).totalSupply();
-        
-       
+
         //no lp
         if (lpTotalSupply == 0) {
             return 0;
         }
-         uint256 exceptAmount = ERC20Upgradeable(uniswapV2Pair).balanceOf(exceptAddress);
+        uint256 exceptAmount = ERC20Upgradeable(uniswapV2Pair).balanceOf(
+            exceptAddress
+        );
         lpTotalSupply = lpTotalSupply.sub(exceptAmount);
 
         uint256 _userLPbal = ERC20Upgradeable(uniswapV2Pair).balanceOf(account);
