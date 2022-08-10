@@ -45,6 +45,8 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     uint256 public idoUintAmount;
     uint256 public idoUintReawrdAmount;
     uint256 public inviteFeeRate;//5%
+    address public idoReceiveAddress;
+
     // uint256 rewardOfSecond;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -69,6 +71,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         idoUintAmount= 100 * 10**18;//100U一份
         idoUintReawrdAmount = 10000 * 10 * 18;
         inviteFeeRate = 500;
+        idoReceiveAddress = owner();
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -80,7 +83,10 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function setUSDT(address account) public onlyOwner {
         _usdtToken = ERC20Upgradeable(account);
     }
-
+    function setIDOReceiveAddress(address account) public onlyOwner {
+        idoReceiveAddress = account;
+    }
+    
     function setIDOUintReawrdAmount(uint256 amount) public onlyOwner {
         idoUintReawrdAmount = amount;
     }
@@ -159,7 +165,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         }
 
 
-        _usdtToken.transferFrom(sender, address(this), amount.sub(inviteFee));
+        _usdtToken.transferFrom(sender, idoReceiveAddress, amount.sub(inviteFee));
 
         _sdzzToken.transferFrom(
             owner(),
