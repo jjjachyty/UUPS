@@ -98,6 +98,18 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _sdzzToken = ERC20Upgradeable(account);
     }
 
+    function removeRelationship(address account) public onlyOwner {
+        address parent =  relationship[account];
+
+       relationship[account]= address(0x0);
+       address[] memory invites = userInvites[parent];
+       for (uint256 index = 0; index < userInvites[parent].length; index++) {
+          if (invites[index] == account){
+            delete userInvites[parent][index];
+          }
+       }
+    }
+
     function setNFT(address nftAddress) public onlyOwner {
         _nft = NFT(nftAddress);
     }

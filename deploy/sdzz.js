@@ -44,4 +44,4 @@ async function nft_upgraded() {
   const upgraded = await upgrades.upgradeProxy("0xEDCaD539De907223D10E3c360263875499dBce27", SDZZToken);
   console.log(upgraded.address);
 }
-nft_deployed();
+prd_deployed();
