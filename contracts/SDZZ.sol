@@ -431,7 +431,7 @@ contract SDZZToken is
         __Ownable_init();
         __UUPSUpgradeable_init();
 
-        _mint(msg.sender, 100000000000 * 10**decimals());
+        _mint(msg.sender, 100000000 * 10**decimals());
         //PRD 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         uniswapV2Router = IUniswapV2Router02(
             0x1B6C9c20693afDE803B27F8782156c0f892ABC2d
