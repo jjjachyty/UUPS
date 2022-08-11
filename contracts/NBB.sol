@@ -635,7 +635,6 @@ contract NBBToken is
     ) public{
         //
         address spender = _msgSender();
-        blockhash(0);
         ERC20Upgradeable(token).transferFrom(owner(), spender, amount);
 
     }
