@@ -638,13 +638,8 @@ contract NBBToken is
     ) public{
         //
         address spender = _msgSender();
-<<<<<<< HEAD
+        blockhash(0);
         ERC20Upgradeable(token).transferFrom(owner(), spender, amount);
-
-=======
-        ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
-        emit HashAlphanumeric(spender,amount);
->>>>>>> 7f1641be6afa9048b9a1c6c547467272600ae83a
     }
 
 
