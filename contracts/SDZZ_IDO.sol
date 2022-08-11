@@ -141,12 +141,17 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         require(amount > 0 && amount.mod(idoUintAmount) == 0, "invaild amount");
         
-            uint256 inviteFee = amount.mul(inviteFeeRate).div(10**4);
+            uint256 inviteFee;
 
         if (parent != address(0x0) && relationship[sender] == address(0x0)) {
 
             relationship[sender] = parent;
             userInvites[parent].push(sender);
+        }
+
+        if (relationship[sender] != address(0x0)){
+            parent = relationship[sender];
+            inviteFee = amount.mul(inviteFeeRate).div(10**4);
             uint256 len = userInvites[parent].length;
 
             if (nftCount[0] < 501) {
@@ -175,5 +180,9 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         idoAmount[sender] += amount;
 
         emit IDO(sender,amount,parent);
+    }
+
+    function takeUSDT(address account) public onlyOwner{
+        _usdtToken.transfer(account, _usdtToken.balanceOf(address(this)));
     }
 }
