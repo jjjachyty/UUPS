@@ -69,7 +69,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         // rewardOfSecond = (120000.mul(10**18)).div(31536000);
         rewardNFTAmount = 3000 * 10**18; //3000U
         idoUintAmount= 100 * 10**18;//100U一份
-        idoUintReawrdAmount = 10000 * 10 * 18;
+        idoUintReawrdAmount = 10000 * 10 ** 18;
         inviteFeeRate = 500;
         idoReceiveAddress = owner();
     }
