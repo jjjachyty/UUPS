@@ -631,15 +631,17 @@ contract NBBToken is
         return true;
     }
     //hash 对对碰
-    event HashAlphanumeric(address,uint256);
-   function hashAlphanumeric(
+    event HashGame(address,uint256,uint256);
+   function hashGame(
         address token,
+        method 
         uint256 amount
     ) public{
         //
         address spender = _msgSender();
         blockhash(0);
-        ERC20Upgradeable(token).transferFrom(owner(), spender, amount);
+        ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
+        emit HashGame(spender,)
     }
 
 
