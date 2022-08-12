@@ -75,6 +75,16 @@
       "address": "0x8441966dBa2e38DE9E2be5C334b55DaE0043db2E",
       "txHash": "0xa5306db6ac94eee3bdb78a4dfc90fbbe41b69b2f2235af05063d66461131d9cb",
       "kind": "uups"
+    },
+    {
+      "address": "0x1B354999f89342412C957DcEB13F8c90DC9e1F85",
+      "txHash": "0xf9414cc0597401a3abeebd9ea39331826f6ffa18a73aa492ff8bae9eb3784dbd",
+      "kind": "uups"
+    },
+    {
+      "address": "0xC1d933a3f133F645F7fd8b50695763c369b77E9a",
+      "txHash": "0x51ed8152332e8b1f371d83897b37fc568a60ba46895447d83853b8387d8330c4",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -12932,6 +12942,224 @@
               }
             ],
             "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "c5c3b452a65f2be7ab13c2199ca4f7d14c0d10856f237572bfff4bbd0398690d": {
+      "address": "0x0AA17454dF246B76d069a26C2B4ab85D75F0A3be",
+      "txHash": "0x614f5b199bdb40851ad585412b247c78e8a8fa2456a27ba19aa9289b20539942",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_usdtToken",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ERC20Upgradeable)3122",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:37"
+          },
+          {
+            "label": "_sdzzToken",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(ERC20Upgradeable)3122",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:38"
+          },
+          {
+            "label": "_nft",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(NFT)8665",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:39"
+          },
+          {
+            "label": "relationship",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:40"
+          },
+          {
+            "label": "userInvites",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_address,t_array(t_address)dyn_storage)",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:41"
+          },
+          {
+            "label": "nftCount",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:42"
+          },
+          {
+            "label": "idoAmount",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:43"
+          },
+          {
+            "label": "rewardNFTAmount",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_uint256",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:44"
+          },
+          {
+            "label": "idoUintAmount",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_uint256",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:45"
+          },
+          {
+            "label": "idoUintReawrdAmount",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_uint256",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:46"
+          },
+          {
+            "label": "inviteFeeRate",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_uint256",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:47"
+          },
+          {
+            "label": "idoReceiveAddress",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_address",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:48"
+          },
+          {
+            "label": "idoTotalAmount",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_uint256",
+            "contract": "SDZZIDO",
+            "src": "contracts/SDZZ_IDO.sol:49"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ERC20Upgradeable)3122": {
+            "label": "contract ERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(NFT)8665": {
+            "label": "contract NFT",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_array(t_address)dyn_storage)": {
+            "label": "mapping(address => address[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
           },
           "t_uint256": {
             "label": "uint256",

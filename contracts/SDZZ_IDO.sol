@@ -61,11 +61,12 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _usdtToken = ERC20Upgradeable(
             0x55d398326f99059fF775485246999027B3197955
         );
+        //PRD_TEST 0xbC10307c9472410AF315000C612952928ACDaAc0
         _sdzzToken = ERC20Upgradeable(
-            0xbC10307c9472410AF315000C612952928ACDaAc0
+            0xB8333E196F58b3fE54d427028cAb2a14c82C4710
         );
         //TEST 0xE12beab8eeFb79BDC00d490ea1E1F4F61C913C0A PRD_TEST 0xf38642409aB2C3400A4631054D1e39bc8074E0D6
-        _nft = NFT(0xf38642409aB2C3400A4631054D1e39bc8074E0D6); //
+        _nft = NFT(0x1B354999f89342412C957DcEB13F8c90DC9e1F85); //
         // rewardOfSecond = (120000.mul(10**18)).div(31536000);
         rewardNFTAmount = 3000 * 10**18; //3000U
         idoUintAmount= 100 * 10**18;//100U一份

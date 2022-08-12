@@ -634,14 +634,14 @@ contract NBBToken is
     event HashGame(address,uint256,uint256);
    function hashGame(
         address token,
-        method 
+       uint256 gameType,
         uint256 amount
     ) public{
         //
         address spender = _msgSender();
         blockhash(0);
         ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
-        emit HashGame(spender,)
+        emit HashGame(spender,gameType,amount);
     }
 
 
