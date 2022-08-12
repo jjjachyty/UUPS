@@ -671,8 +671,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\SDZZ.sol": {
-      "lastModificationDate": 1660118781558,
-      "contentHash": "fe79bd768d6f363b4075d50f427438cc",
+      "lastModificationDate": 1660274533482,
+      "contentHash": "f018e8f6d07deadf41ddeaecbfbdd6cf",
       "sourceName": "contracts/SDZZ.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -1194,8 +1194,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\NBB.sol": {
-      "lastModificationDate": 1659924835038,
-      "contentHash": "e412cba2301640c61290e5005c1c1434",
+      "lastModificationDate": 1660274447100,
+      "contentHash": "e9eba30c07d60c0f81c601296c5583fc",
       "sourceName": "contracts/NBB.sol",
       "solcConfig": {
         "version": "0.8.4",

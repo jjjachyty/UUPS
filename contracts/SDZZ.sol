@@ -427,7 +427,7 @@ contract SDZZToken is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("TEST001 Token", "TEST001");
+        __ERC20_init("Children of God", "SDZZ");
         __Ownable_init();
         __UUPSUpgradeable_init();
 

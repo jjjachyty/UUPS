@@ -46,7 +46,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     uint256 public idoUintReawrdAmount;
     uint256 public inviteFeeRate;//5%
     address public idoReceiveAddress;
-
+    uint256 public idoTotalAmount;
     // uint256 rewardOfSecond;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -71,7 +71,8 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         idoUintAmount= 100 * 10**18;//100U一份
         idoUintReawrdAmount = 10000 * 10 ** 18;
         inviteFeeRate = 500;
-        idoReceiveAddress = owner();
+        idoReceiveAddress = 0x712b00787604512215079eE991377D8c37cBDbEc;
+        
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -138,10 +139,10 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function ido(uint256 coefficient, address parent) public {
         address sender = _msgSender();
         uint256 amount = coefficient.mul(idoUintAmount); 
-
         require(amount > 0 && amount.mod(idoUintAmount) == 0, "invaild amount");
+        require(idoTotalAmount <= 15000000 * 10**18, "ido has ended");
         
-            uint256 inviteFee;
+        uint256 inviteFee;
 
         if (parent != address(0x0) && relationship[sender] == address(0x0)) {
 
@@ -154,7 +155,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             inviteFee = amount.mul(inviteFeeRate).div(10**4);
             uint256 len = userInvites[parent].length;
 
-            if (nftCount[0] < 501) {
+            if (nftCount[0] <= 50) {
                 uint256 inviteAmount = amount;
                 for (uint256 index = 0; index < len; index++) {
                     inviteAmount += idoAmount[userInvites[parent][index]];
@@ -171,14 +172,14 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
 
         _usdtToken.transferFrom(sender, idoReceiveAddress, amount.sub(inviteFee));
-
+         uint256 sdzzAmount = coefficient.mul(idoUintReawrdAmount);
         _sdzzToken.transferFrom(
             owner(),
             sender,
-            coefficient.mul(idoUintReawrdAmount)
+            sdzzAmount
         );
         idoAmount[sender] += amount;
-
+        idoTotalAmount+= sdzzAmount;
         emit IDO(sender,amount,parent);
     }
 
