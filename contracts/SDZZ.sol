@@ -477,11 +477,14 @@ contract SDZZToken is
         exceptAddress = account;
     }
 
-    function setUniswapV2RouterAndPair(address account,address pair) public onlyOwner {
-            uniswapV2Router = IUniswapV2Router02(account);
-            uniswapV2Pair  = pair;
+    function setUniswapV2RouterAndPair(address account, address pair)
+        public
+        onlyOwner
+    {
+        uniswapV2Router = IUniswapV2Router02(account);
+        uniswapV2Pair = pair;
     }
-  
+
     event Buy(address from, address to, uint256 amount);
     event Sell(address from, address to, uint256 amount);
     event AddLiquidity(address from, uint256 amount);
@@ -557,31 +560,39 @@ contract SDZZToken is
             return true;
         }
         swap();
-        uint256 sellFee = amount.mul(sellFeeRate).div(10**4);
-        uint256 leftFee = amount.sub(sellFee);
-
-        super._transfer(from, address(this), sellFee);
-        super._transfer(from, to, leftFee);
-
         if (
-            to != uniswapV2Pair &&
-            to != address(uniswapV2Router) &&
-            !_lpHolder.contains(to) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
-        ) {
-            _lpHolder.add(to);
-        }
-        if (
-            from != uniswapV2Pair &&
+            _msgSender() == address(uniswapV2Router) &&
             from != address(uniswapV2Router) &&
-            !_lpHolder.contains(from) &&
-            ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
+            to == address(uniswapV2Pair)
         ) {
-            _lpHolder.add(from);
+            uint256 sellFee = amount.mul(sellFeeRate).div(10**4);
+            uint256 leftFee = amount.sub(sellFee);
+
+            super._transfer(from, address(this), sellFee);
+            super._transfer(from, to, leftFee);
+
+            if (
+                to != uniswapV2Pair &&
+                to != address(uniswapV2Router) &&
+                !_lpHolder.contains(to) &&
+                ERC20Upgradeable(uniswapV2Pair).balanceOf(to) > 0
+            ) {
+                _lpHolder.add(to);
+            }
+            if (
+                from != uniswapV2Pair &&
+                from != address(uniswapV2Router) &&
+                !_lpHolder.contains(from) &&
+                ERC20Upgradeable(uniswapV2Pair).balanceOf(from) > 0
+            ) {
+                _lpHolder.add(from);
+            }
+
+            dividend();
+            emit Sell(from, to, amount);
         }
-        dividend();
-        emit Sell(from, to, amount);
-        return true;
+            super._transfer(from, to, amount);
+            return true;
     }
 
     function swap() public {

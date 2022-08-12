@@ -155,7 +155,7 @@ contract SDZZIDO is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             uint256 len = userInvites[parent].length;
 
             if (nftCount[0] < 501) {
-                uint256 inviteAmount;
+                uint256 inviteAmount = amount;
                 for (uint256 index = 0; index < len; index++) {
                     inviteAmount += idoAmount[userInvites[parent][index]];
                 }
