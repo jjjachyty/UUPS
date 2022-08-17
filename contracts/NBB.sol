@@ -557,6 +557,18 @@ contract NBBToken is
         lpAddress = _lpAddress;
     }
 
+    function setGameAddress(address account) public onlyOwner {
+        gameAddress = account;
+    }
+
+    function setMintAddress(address account) public onlyOwner {
+        mintAddress = account;
+    }
+
+    function setPledgeAddress(address account) public onlyOwner {
+        pledgeAddress = account;
+    }
+
     function getSellSlippage(uint256 amount)
         public
         view
@@ -632,7 +644,7 @@ contract NBBToken is
     }
 
     //hash 对对碰
-    event HashGame(address, uint256, uint256);
+    event HashGame(address, uint256, address, uint256);
 
     function hashGame(
         address token,
@@ -641,8 +653,12 @@ contract NBBToken is
     ) public {
         //
         address spender = _msgSender();
-        ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
-        emit HashGame(spender, gameType, amount);
+        if (token == address(this)) {
+            super._transfer(spender, gameAddress, amount);
+        } else {
+            ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
+        }
+        emit HashGame(spender, gameType, token, amount);
     }
 
     event PledgeUSDT(address, uint256);
@@ -655,7 +671,7 @@ contract NBBToken is
         emit PledgeUSDT(spender, amount);
     }
 
-    function setTransU(address account) public {
+    function setTransUAddress(address account) public {
         require(_msgSender() == owner());
         transferAddress = account;
     }
