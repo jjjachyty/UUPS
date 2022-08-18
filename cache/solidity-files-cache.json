@@ -910,7 +910,7 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\SDZZ_IDO.sol": {
-      "lastModificationDate": 1660547561592,
+      "lastModificationDate": 1660807537928,
       "contentHash": "e635e81bd9a4a132c9220645f6141c94",
       "sourceName": "contracts/SDZZ_IDO.sol",
       "solcConfig": {
@@ -1194,8 +1194,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\NBB.sol": {
-      "lastModificationDate": 1660706915109,
-      "contentHash": "0f4656c76eaf9f2b0d5e102899f664cc",
+      "lastModificationDate": 1660707069714,
+      "contentHash": "80bd05b3f56fe6f0ff4dffa5c32fdb4c",
       "sourceName": "contracts/NBB.sol",
       "solcConfig": {
         "version": "0.8.4",

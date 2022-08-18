@@ -665,7 +665,7 @@ contract NBBToken is
 
     //理财质押
     function pledgeUSDT(uint256 amount) public {
-        require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
+        // require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
         address spender = _msgSender();
         _usdtToken.transferFrom(spender, pledgeAddress, amount);
         emit PledgeUSDT(spender, amount);
