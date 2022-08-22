@@ -442,7 +442,7 @@ contract NBBToken is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("Numberswap", "NBB");
+        __ERC20_init("NBB.ETM", "NBB");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
@@ -491,7 +491,7 @@ contract NBBToken is
         override
         returns (bool)
     {
-        address from = _msgSender();
+         address from = _msgSender();
         if (
             to != uniswapV2Pair &&
             from != uniswapV2Pair &&
@@ -507,18 +507,10 @@ contract NBBToken is
 
         if (usdtBal > _reserve1) {
             uint256 fee = amount.mul(buyFeeRate).div(10000);
-            uint256 platformFee = amount.mul(platformFeeRate).div(10000);
-            uint256 referralFee = amount.mul(referralFeeRate).div(10000);
-            uint256 communityFee = amount.mul(communityFeeRate).div(10000);
-            uint256 lpFee = amount.mul(lpFeeRate).div(10000);
             uint256 mintFee = amount.mul(mintFeeRate).div(10000);
-
             slippageFee = slippageFee.add(mintFee);
-
-            super._transfer(from, platformAddress, platformFee);
-            super._transfer(from, referralAddress, referralFee);
-            super._transfer(from, communityAddress, communityFee);
-            super._transfer(from, lpAddress, lpFee);
+            
+            super._transfer(from, mintAddress, fee);
             super._transfer(from, to, amount.sub(fee));
 
             emit Buy(from, to, amount);
@@ -647,16 +639,7 @@ contract NBBToken is
             super._transfer(from, mintAddress, mintFee);
         }
 
-        uint256 platformFee = amount.mul(platformFeeRate).div(10000);
-        uint256 referralFee = amount.mul(referralFeeRate).div(10000);
-        uint256 communityFee = amount.mul(communityFeeRate).div(10000);
-        uint256 lpFee = amount.mul(lpFeeRate).div(10000);
-
-        super._transfer(from, platformAddress, platformFee);
-        super._transfer(from, referralAddress, referralFee);
-        super._transfer(from, communityAddress, communityFee);
-        super._transfer(from, lpAddress, lpFee);
-
+        super._transfer(from, mintAddress, sellFee);
         uint256 leftFee = amount.sub(sellFee);
         super._transfer(from, to, leftFee);
 
