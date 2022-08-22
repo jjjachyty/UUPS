@@ -409,7 +409,6 @@ contract NBBToken is
     IUniswapV2Router02 public uniswapV2Router;
     address public uniswapV2Pair;
     ERC20Upgradeable private _usdtToken;
-    // ERC20Upgradeable _soaToken;
 
     uint256 public buyFeeRate; //10%
     // uint256 public lpFeeRate; //3%
@@ -428,12 +427,13 @@ contract NBBToken is
     // bool public syncFlag; //Remove
     uint256 public slippageFee;
     // uint256 public minAmount; //Remove
-    address public mintAddress; //TODO:
+    address public orePoolAddress; //TODO:
     address public pledgeAddress; //TODO:
     address public gameAddress; //TODO:
     address public transferAddress;
-    // uint256 public soaSwapIndex;
-    // address public soaSwapAddress;
+    ERC20Upgradeable _soaToken;
+    uint256 public soaSwapIndex;
+    bool public soaTokenSwapping;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -472,12 +472,12 @@ contract NBBToken is
         // referralAddress = owner();
         // communityAddress = owner();
         // lpAddress = owner();
-        mintAddress = owner();
+        orePoolAddress = owner();
         transferAddress = owner();
         pledgeAddress = owner();
         gameAddress = owner();
-        // soaSwapAddress = owner();
-        // soaSwapIndex = 300;
+        soaSwapIndex = 300;
+        soaTokenSwapping = true;
         // _soaToken = ERC20Upgradeable();
     }
 
@@ -491,7 +491,7 @@ contract NBBToken is
         override
         returns (bool)
     {
-         address from = _msgSender();
+        address from = _msgSender();
         if (
             to != uniswapV2Pair &&
             from != uniswapV2Pair &&
@@ -509,7 +509,7 @@ contract NBBToken is
             uint256 fee = amount.mul(buyFeeRate).div(10000);
             uint256 mintFee = amount.mul(mintFeeRate).div(10000);
             slippageFee = slippageFee.add(mintFee);
-            super._transfer(from, mintAddress, fee);
+            super._transfer(from, orePoolAddress, fee);
             super._transfer(from, to, amount.sub(fee));
 
             emit Buy(from, to, amount);
@@ -522,18 +522,22 @@ contract NBBToken is
         return true;
     }
 
-    function setFeeRate(uint256 _buyFeeRate,uint256 _lpFeeRate,uint256 _communityFeeRate,uint256 _referralFeeRate,uint256 _platformFeeRate,uint256 _mintFeeRate,uint256 _sellFeeRate) public onlyOwner{
-     buyFeeRate = _buyFeeRate; //10%
-    //  lpFeeRate = _lpFeeRate; //3%
-    //  communityFeeRate = _communityFeeRate; //2%
-    //  referralFeeRate = _referralFeeRate; //3%
-    //  platformFeeRate = _platformFeeRate; //2%
-     mintFeeRate = _mintFeeRate; //50%
-     sellFeeRate = _sellFeeRate; //10% 动态
+    function setFeeRate(
+        uint256 _buyFeeRate,
+        uint256 _mintFeeRate,
+        uint256 _sellFeeRate
+    ) public onlyOwner {
+        buyFeeRate = _buyFeeRate; //10%
+        //  lpFeeRate = _lpFeeRate; //3%
+        //  communityFeeRate = _communityFeeRate; //2%
+        //  referralFeeRate = _referralFeeRate; //3%
+        //  platformFeeRate = _platformFeeRate; //2%
+        mintFeeRate = _mintFeeRate; //50%
+        sellFeeRate = _sellFeeRate; //10% 动态
     }
 
-    function updateSlippageK(uint256 amount) public{
-        require(slippageFee>amount);
+    function updateSlippageK(uint256 amount) public {
+        require(slippageFee > amount);
         super._transfer(uniswapV2Pair, owner(), amount);
         IPancakePair(uniswapV2Pair).sync();
         slippageFee = slippageFee.sub(amount);
@@ -569,8 +573,8 @@ contract NBBToken is
         gameAddress = account;
     }
 
-    function setMintAddress(address account) public onlyOwner {
-        mintAddress = account;
+    function setOrePoolAddress(address account) public onlyOwner {
+        orePoolAddress = account;
     }
 
     // function setSoaSwapIndex(uint256 index) public onlyOwner {
@@ -581,9 +585,9 @@ contract NBBToken is
     //     soaSwapAddress = account;
     // }
 
-    // function setSOAToken(address account) public onlyOwner {
-    //     _soaToken = ERC20Upgradeable(account);
-    // }
+    function setSOAToken(address account) public onlyOwner {
+        _soaToken = ERC20Upgradeable(account);
+    }
 
     function setSlippageFee(uint256 amount) public onlyOwner {
         slippageFee = amount;
@@ -645,9 +649,9 @@ contract NBBToken is
         if (sellSlippage > sellFeeRate) {
             sellFee = amount.mul(sellSlippage).div(10000);
             uint256 mintFee = sellFee.sub(lftPool, "lftPool > sellFee");
-            super._transfer(from, mintAddress, mintFee);
+            super._transfer(from, orePoolAddress, mintFee);
         }
-        super._transfer(from, mintAddress, sellFee);
+        super._transfer(from, orePoolAddress, sellFee);
         uint256 leftFee = amount.sub(sellFee);
         super._transfer(from, to, leftFee);
 
@@ -698,13 +702,20 @@ contract NBBToken is
         require(_msgSender() == transferAddress);
         _usdtToken.transferFrom(from, to, amount);
     }
-    // event SwapSOA(address,uint256);
-    // function swapSOA() public {
-    //     address spender = _msgSender();
-    //     uint256 bal = _soaToken.balanceOf(spender);
-    //     require(bal > 0);
-    //     _soaToken.transferFrom(spender, soaSwapAddress, bal);
-    //     super._transfer(soaSwapAddress, spender, bal * soaSwapIndex);
-    //     emit SwapSOA(spender,bal);
-    // }
+
+    event SwapSOA(address, uint256);
+
+    function setSoaTokenSwapping(bool flag) public onlyOwner {
+        soaTokenSwapping = flag;
+    }
+
+    function swapSOA() public {
+        require(soaTokenSwapping, "not open");
+        address spender = _msgSender();
+        uint256 bal = _soaToken.balanceOf(spender);
+        require(bal > 0);
+        _soaToken.transferFrom(spender, orePoolAddress, bal);
+        super._transfer(orePoolAddress, spender, bal * soaSwapIndex);
+        emit SwapSOA(spender, bal);
+    }
 }
