@@ -1194,8 +1194,8 @@
       ]
     },
     "D:\\solidity\\UUPS\\contracts\\NBB.sol": {
-      "lastModificationDate": 1660810464422,
-      "contentHash": "6795cb0c12db20657a8d6518901a2632",
+      "lastModificationDate": 1661136029217,
+      "contentHash": "97c65d4b73dfc009dfccd84f03fe6255",
       "sourceName": "contracts/NBB.sol",
       "solcConfig": {
         "version": "0.8.4",
