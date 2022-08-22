@@ -478,7 +478,7 @@ contract NBBToken is
         gameAddress = owner();
         soaSwapIndex = 300;
         soaTokenSwapping = true;
-        // _soaToken = ERC20Upgradeable();
+        _soaToken = ERC20Upgradeable(0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8);
     }
 
     event Buy(address from, address to, uint256 amount);
