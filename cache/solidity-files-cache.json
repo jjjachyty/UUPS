@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\solidity\\UUPS\\contracts\\NBB.sol": {
-      "lastModificationDate": 1661151459372,
-      "contentHash": "1ed42357ff7a72fc590172f1bd985cca",
+      "lastModificationDate": 1661217507362,
+      "contentHash": "974e6f00733ec35e19e30b28cd24a474",
       "sourceName": "contracts/NBB.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -29,27 +29,9 @@
           }
         }
       },
-      "imports": [
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.3"
-      ],
-      "artifacts": [
-        "IPancakeERC20",
-        "IPancakePair",
-        "IUniswapV2Factory",
-        "IUniswapV2Router01",
-        "IUniswapV2Router02",
-        "NBBToken"
-      ]
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
     },
     "D:\\solidity\\UUPS\\contracts\\aaa.sol": {
       "lastModificationDate": 1649920066216,
@@ -2388,6 +2370,56 @@
         "IUniswapV2Router01",
         "IUniswapV2Router02",
         "SDZZToken"
+      ]
+    },
+    "D:\\solidity\\UUPS\\contracts\\NBB_clean.sol": {
+      "lastModificationDate": 1661243769991,
+      "contentHash": "1f79d8998c7af15de14606f5a3bf8ed6",
+      "sourceName": "contracts/NBB_clean.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.3"
+      ],
+      "artifacts": [
+        "IPancakeERC20",
+        "IPancakePair",
+        "IUniswapV2Factory",
+        "IUniswapV2Router01",
+        "IUniswapV2Router02",
+        "NBBToken"
       ]
     }
   }

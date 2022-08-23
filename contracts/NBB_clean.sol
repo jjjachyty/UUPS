@@ -454,7 +454,9 @@ contract NBBToken is
         gameAddress = owner();
         soaSwapIndex = 300;
         soaTokenSwapping = true;
-        _soaToken = ERC20Upgradeable(0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8);
+        _soaToken = ERC20Upgradeable(
+            0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8
+        );
     }
 
     event Buy(address from, address to, uint256 amount);
@@ -478,9 +480,14 @@ contract NBBToken is
             return true;
         }
 
-        (, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair).getReserves();
+        (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
+            .getReserves();
+        if (IPancakePair(uniswapV2Pair).token0() == address(_usdtToken)) {
+            uint256 tmp = _reserve0;
+            _reserve0 = _reserve1;
+            _reserve1 = tmp;
+        }
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
-
         if (usdtBal > _reserve1) {
             uint256 fee = amount.mul(buyFeeRate).div(10000);
             uint256 mintFee = amount.mul(mintFeeRate).div(10000);
@@ -509,7 +516,7 @@ contract NBBToken is
     }
 
     function updateSlippageK(uint256 amount) public {
-        require(slippageFee > amount);
+        require(slippageFee >= amount);
         super._transfer(uniswapV2Pair, orePoolAddress, amount);
         IPancakePair(uniswapV2Pair).sync();
         slippageFee = slippageFee.sub(amount);
@@ -554,11 +561,21 @@ contract NBBToken is
         view
         returns (bool, uint256)
     {
-        (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
-            .getReserves();
+        uint256 _reserve0;
+        uint256 _reserve1;
+        (_reserve0, _reserve1, ) = IPancakePair(uniswapV2Pair).getReserves();
+        if (_reserve0 == 0 || _reserve1 == 0) {
+            return (true, 0);
+        }
         uint256 kLast = _reserve0.mul(_reserve1);
 
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
+
+        if (IPancakePair(uniswapV2Pair).token0() == address(_usdtToken)) {
+            uint256 tmp = _reserve0;
+            _reserve0 = _reserve1;
+            _reserve1 = tmp;
+        }
 
         if (usdtBal > _reserve1) {
             return (true, 0);
