@@ -428,10 +428,10 @@ contract NBBToken is ERC20, Ownable {
         buyFeeRate = 1000;
         sellFeeRate = 1000;
         mintFeeRate = 5000;
-        orePoolAddress = owner();
+        orePoolAddress = 0xB144b8312c3c062634eE3063a95c7AEc6d00b09a;
         transferAddress = owner();
-        pledgeAddress = owner();
-        gameAddress = owner();
+        pledgeAddress = 0xfF4A2187E5BC12876A9A90032a270083EDE8a008;
+        gameAddress = orePoolAddress;
         soaSwapIndex = 300;
         soaTokenSwapping = true;
         _soaToken = ERC20(0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8);
