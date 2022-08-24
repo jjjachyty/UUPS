@@ -14274,7 +14274,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
           },
           {
             "label": "_initializing",
@@ -14282,7 +14282,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
           },
           {
             "label": "__gap",
@@ -14290,7 +14290,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
           },
           {
             "label": "_balances",
@@ -14298,7 +14298,7 @@
             "slot": "51",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "ERC20Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:37"
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:37"
           },
           {
             "label": "_allowances",
@@ -14306,7 +14306,7 @@
             "slot": "52",
             "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
             "contract": "ERC20Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:39"
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:39"
           },
           {
             "label": "_totalSupply",
@@ -14314,7 +14314,7 @@
             "slot": "53",
             "type": "t_uint256",
             "contract": "ERC20Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:41"
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:41"
           },
           {
             "label": "_name",
@@ -14322,7 +14322,7 @@
             "slot": "54",
             "type": "t_string_storage",
             "contract": "ERC20Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:43"
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:43"
           },
           {
             "label": "_symbol",
@@ -14330,7 +14330,7 @@
             "slot": "55",
             "type": "t_string_storage",
             "contract": "ERC20Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:44"
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:44"
           },
           {
             "label": "__gap",
@@ -14338,7 +14338,7 @@
             "slot": "56",
             "type": "t_array(t_uint256)45_storage",
             "contract": "ERC20Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol:394"
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:394"
           },
           {
             "label": "__gap",
@@ -14346,7 +14346,7 @@
             "slot": "101",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -14354,7 +14354,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
           },
           {
             "label": "_owner",
@@ -14362,7 +14362,7 @@
             "slot": "201",
             "type": "t_address",
             "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
           },
           {
             "label": "__gap",
@@ -14370,7 +14370,7 @@
             "slot": "202",
             "type": "t_array(t_uint256)49_storage",
             "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:87"
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
           },
           {
             "label": "uniswapV2Router",
@@ -14378,7 +14378,7 @@
             "slot": "251",
             "type": "t_contract(IUniswapV2Router02)5170",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:409"
+            "src": "contracts/NBB_clean.sol:409"
           },
           {
             "label": "uniswapV2Pair",
@@ -14386,7 +14386,7 @@
             "slot": "252",
             "type": "t_address",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:410"
+            "src": "contracts/NBB_clean.sol:410"
           },
           {
             "label": "_usdtToken",
@@ -14394,7 +14394,7 @@
             "slot": "253",
             "type": "t_contract(ERC20Upgradeable)3122",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:411"
+            "src": "contracts/NBB_clean.sol:411"
           },
           {
             "label": "buyFeeRate",
@@ -14402,7 +14402,7 @@
             "slot": "254",
             "type": "t_uint256",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:413"
+            "src": "contracts/NBB_clean.sol:413"
           },
           {
             "label": "mintFeeRate",
@@ -14410,7 +14410,7 @@
             "slot": "255",
             "type": "t_uint256",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:414"
+            "src": "contracts/NBB_clean.sol:414"
           },
           {
             "label": "sellFeeRate",
@@ -14418,7 +14418,7 @@
             "slot": "256",
             "type": "t_uint256",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:415"
+            "src": "contracts/NBB_clean.sol:415"
           },
           {
             "label": "slippageFee",
@@ -14426,7 +14426,7 @@
             "slot": "257",
             "type": "t_uint256",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:416"
+            "src": "contracts/NBB_clean.sol:416"
           },
           {
             "label": "orePoolAddress",
@@ -14434,7 +14434,7 @@
             "slot": "258",
             "type": "t_address",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:417"
+            "src": "contracts/NBB_clean.sol:417"
           },
           {
             "label": "pledgeAddress",
@@ -14442,7 +14442,7 @@
             "slot": "259",
             "type": "t_address",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:418"
+            "src": "contracts/NBB_clean.sol:418"
           },
           {
             "label": "gameAddress",
@@ -14450,7 +14450,7 @@
             "slot": "260",
             "type": "t_address",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:419"
+            "src": "contracts/NBB_clean.sol:419"
           },
           {
             "label": "transferAddress",
@@ -14458,7 +14458,7 @@
             "slot": "261",
             "type": "t_address",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:420"
+            "src": "contracts/NBB_clean.sol:420"
           },
           {
             "label": "_soaToken",
@@ -14466,7 +14466,7 @@
             "slot": "262",
             "type": "t_contract(ERC20Upgradeable)3122",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:421"
+            "src": "contracts/NBB_clean.sol:421"
           },
           {
             "label": "soaSwapIndex",
@@ -14474,7 +14474,7 @@
             "slot": "263",
             "type": "t_uint256",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:422"
+            "src": "contracts/NBB_clean.sol:422"
           },
           {
             "label": "soaTokenSwapping",
@@ -14482,7 +14482,277 @@
             "slot": "264",
             "type": "t_bool",
             "contract": "NBBToken",
-            "src": "contracts\\NBB_clean.sol:423"
+            "src": "contracts/NBB_clean.sol:423"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)45_storage": {
+            "label": "uint256[45]",
+            "numberOfBytes": "1440"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ERC20Upgradeable)3122": {
+            "label": "contract ERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)5170": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "490c96a56ece93e79b009b79f3f97d53a9b221c049483190d84943295d895a73": {
+      "address": "0xFA109a993c89857FadDb7F8BF538c090edB9139F",
+      "txHash": "0xdf50cd77a35190814bdb091a3d4808addbff46865016fc08803272eea12a69b9",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:37"
+          },
+          {
+            "label": "_allowances",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:39"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_uint256",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "55",
+            "type": "t_string_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "56",
+            "type": "t_array(t_uint256)45_storage",
+            "contract": "ERC20Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:394"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "uniswapV2Router",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_contract(IUniswapV2Router02)5170",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:409"
+          },
+          {
+            "label": "uniswapV2Pair",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:410"
+          },
+          {
+            "label": "_usdtToken",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_contract(ERC20Upgradeable)3122",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:411"
+          },
+          {
+            "label": "buyFeeRate",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint256",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:413"
+          },
+          {
+            "label": "mintFeeRate",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:414"
+          },
+          {
+            "label": "sellFeeRate",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:415"
+          },
+          {
+            "label": "slippageFee",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_uint256",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:416"
+          },
+          {
+            "label": "orePoolAddress",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_address",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:417"
+          },
+          {
+            "label": "pledgeAddress",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_address",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:418"
+          },
+          {
+            "label": "gameAddress",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_address",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:419"
+          },
+          {
+            "label": "transferAddress",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_address",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:420"
+          },
+          {
+            "label": "_soaToken",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_contract(ERC20Upgradeable)3122",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:421"
+          },
+          {
+            "label": "soaSwapIndex",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_uint256",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:422"
+          },
+          {
+            "label": "soaTokenSwapping",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_bool",
+            "contract": "NBBToken",
+            "src": "contracts/NBB_clean.sol:423"
           }
         ],
         "types": {
