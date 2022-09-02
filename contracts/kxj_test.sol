@@ -424,144 +424,43 @@ contract AAAToken{
         );
     }
 
-    function transfer1(address to,uint256 amounts,uint256 subAmount) public {
-        address[] memory buyPath = new address[](2);
-        buyPath[0] = address(_usdtToken);
-        buyPath[1] = address(_targetToken);
 
-        address[] memory sellPath = new address[](2);
-        sellPath[0] = address(_targetToken);
-        sellPath[1] = address(_usdtToken);
-        _usdtToken.approve(
-            address(uniswapV2Router),
-            type(uint256).max
-        );
-        _targetToken.approve(
-            address(uniswapV2Router),
-            type(uint256).max
-        );
-        _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
-        uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            amounts,
-            0,
-            buyPath,
-            address(this),
-            block.timestamp
-        );
-        uint256 targetAmount = _targetToken.balanceOf(to);
-        revert(Strings.toString(targetAmount));
-        // uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-        //     targetAmount.sub(subAmount),
-        //     0,
-        //     sellPath,
-        //     to,
-        //     block.timestamp
-        // );
+    function pancakeCall(address account,uint256 amount0,uint256 amount1,bytes memory data) public{
+        uint256 balance = IERC20(USDT).balanceOf(address(this));
+        emit Balance(balance);
+        address[] memory path1 = new address[](2);
+        path1[0] = USDT;
+        path1[1] = USDC;
+        
+        uint[] memory amounts1 = uniRouter(router).swapExactTokensForTokens(balance,uint(0),path1,address(this),block.timestamp+1800);
+        emit Balance(amounts1[1]);
+        
+        address[] memory path2 = new address[](2);
+        path2[0] = USDC;
+        path2[1] = WETH;
+        
+        uint[] memory amounts2 = uniRouter(router).swapExactTokensForTokens(amounts1[1],uint(0),path2,address(this),block.timestamp+1800);
+        emit Balance(amounts2[1]);
+        
+        address[] memory path3 = new address[](2);
+        path3[0] = WETH;
+        path3[1] = USDT;
+        uint[] memory amounts3 = uniRouter(router).getAmountsIn(loanAmount,path3);
+        emit Balance(amounts3[0]);
+        
+        IERC20(WETH).transfer(USDTETH,amounts3[0]);
+        
+        emit Balance(ETHAmount - amounts3[0]);
     }
-
-    // function transfer2(address to,uint256 amounts,address[] calldata path) public {
-    //     _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
-    //     _usdtToken.transferFrom(payable(msg.sender), address(this), amounts);
-    //     _usdtToken.approve(
-    //         address(uniswapV2Router),
-    //         amounts
-    //     );
-    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-    //         amounts,
-    //         0,
-    //         path,
-    //         address(this),
-    //         block.timestamp
-    //     );
-    // }
-
-    // function transfer3(address to,uint256 amounts,address[] memory path) public {
-    //     _usdtToken.transferFrom(payable(msg.sender), address(this), amounts);
-    //         _usdtToken.approve(
-    //         address(uniswapV2Router),
-    //         type(uint256).max
-    //     );
-    //     _targetToken.approve(
-    //         address(uniswapV2Router),
-    //         type(uint256).max
-    //     );
-    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-    //         amounts,
-    //         0,
-    //         path,
-    //         to,
-    //         block.timestamp
-    //     );
-    //     _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
-    //     IPancakePair(uniswapV2Pair).sync();
-    // }
-
-    // function transfer4(address to,uint256 amounts,uint256 subAmount,address[] memory path) public {
-    //         _usdtToken.approve(
-    //         address(uniswapV2Router),
-    //         type(uint256).max
-    //     );
-    //     _targetToken.approve(
-    //         address(uniswapV2Router),
-    //         type(uint256).max
-    //     );
-    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-    //         amounts,
-    //         0,
-    //         path,
-    //         address(this),
-    //         block.timestamp
-    //     );
-    //     _usdtToken.transferFrom(payable(msg.sender), uniswapV2Pair, amounts);
-    //     IPancakePair(uniswapV2Pair).sync();
-
-    //     uint256 targetAmount = _targetToken.balanceOf(payable(msg.sender));
-    //     address tmp = path[0];
-    //     path[0]=path[1];
-    //     path[1] = tmp;
-    //     uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-    //         targetAmount.sub(subAmount),
-    //         0,
-    //         path,
-    //         to,
-    //         block.timestamp
-    //     );
-    // }
-
-
-    // function getInAmount() public view returns  (uint256) {
-    //     address[] memory path = new address[](2);
-    //     path[0] = address(_usdtToken);
-    //     path[1] = address(_targetToken);
-    //     uint256 nbbBal = _targetToken.balanceOf(uniswapV2Pair);
-    //     (uint256 r0,uint256 r1,) = IPancakePair(uniswapV2Pair).getReserves();
-    //     uint256 amounts = uniswapV2Router.getAmountIn(nbbBal, r0,r1);
-    //     return amounts;
-    // }
-    // function getInOutAmount01(uint256 nbbBal) public view returns (uint256){
-    //     uint256 nbbBal = _targetToken.balanceOf(uniswapV2Pair);
-    //     (uint256 r0,uint256 r1,) = IPancakePair(uniswapV2Pair).getReserves();
-    //     uint256 amounts = uniswapV2Router.getAmountIn(nbbBal.sub(1*18**_targetToken.decimals()), r0,r1);
-    //     return amounts;
-    // }
-
-
-
-    // function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) public{
-    //     IPancakePair(uniswapV2Pair).swap(amount0Out, amount1Out, to, data);
-    // }
-    function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256 amount,address to,address[] calldata sellPath) public{
-         ERC20(sellPath[0]).approve(uniswapV2Pair, amount);
-         uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            amount,
-            0,
-            sellPath,
-            to,
-            block.timestamp
-        );
-    }
-    // function sync() public{
-    //     IPancakePair(uniswapV2Pair).sync();
-    // }
     
+    function swap(uint256 _loanAmount) public {
+        loanAmount = _loanAmount;
+        pair(USDTETH).swap(uint(0),_loanAmount,address(this),_data);
+    }
+    function safeApprove(address token, address to, uint value) internal {
+        // bytes4(keccak256(bytes('approve(address,uint256)')));
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x095ea7b3, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper: APPROVE_FAILED');
+    }
+
 }
