@@ -11,23 +11,22 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+interface IPancakeFactory {
+    event PairCreated(address indexed token0, address indexed token1, address pair, uint);
 
-interface IUniswapV2Factory {
-    event PairCreated(
-        address indexed token0,
-        address indexed token1,
-        address pair,
-        uint256
-    );
+    function feeTo() external view returns (address);
+    function feeToSetter() external view returns (address);
 
-    function getPair(address tokenA, address tokenB)
-        external
-        view
-        returns (address pair);
+    function getPair(address tokenA, address tokenB) external view returns (address pair);
+    function allPairs(uint) external view returns (address pair);
+    function allPairsLength() external view returns (uint);
 
-    function createPair(address tokenA, address tokenB)
-        external
-        returns (address pair);
+    function createPair(address tokenA, address tokenB) external returns (address pair);
+
+    function setFeeTo(address) external;
+    function setFeeToSetter(address) external;
+
+    function INIT_CODE_PAIR_HASH() external view returns (bytes32);
 }
 
 interface IUniswapV2Router01 {
@@ -353,41 +352,58 @@ interface IERC20FULL is IERC20,IERC20Metadata{
 
 
 
-contract KXJ is  Ownable{
+contract AAA is  Ownable{
     
     using SafeMath for uint256;
     using Address for address;
 
-    IUniswapV2Router01 router = IUniswapV2Router01(0xD99D1c33F9fC3444f8101754aBC46c52416550D1);
-    address loanCoin1;
-    address loanCoin2;
-    address targetCoin1;
-    address targetCoin2;
+    IUniswapV2Router02 routerV2;
+    IUniswapV2Router01 routerV1;
+    address loanCoin1 = 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82; //CAKE
+    address loanCoin2 = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; //WBNB
+    address targetCoin1 = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; //WBNB
+    address targetCoin2 = 0x709930642C7dC30af4c67545528feA0E1E96aC12;
     address reciverAddress;
-    constructor(){
-        reciverAddress = 0xa38433265062F1F73c0A90F2FEa408f2Efd1a569;
+    address factoryV1;
+    address factoryV2;
+    address pairAddress1;
+    address pairAddress2;
+    uint256 loanAmount;
+    constructor() {
+        routerV1 = IUniswapV2Router01(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F);
+        routerV2 = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
+        factoryV1 = routerV1.factory();
+        factoryV2 = routerV2.factory();
+        pairAddress1 = IPancakeFactory(factoryV1).getPair(loanCoin1,loanCoin2);
+        pairAddress2 = IPancakeFactory(factoryV2).getPair(targetCoin1,targetCoin2);
+        startArbitrage();
     }
+// 创建一个Event，起名为Log
+    event Log(string);
+    event Log(uint256);
+    event Log(address);
 
-    function startArbitrage(address _loanCoin1,address _loanCoin2,address _targetCoin2,address _reciverAddress) public onlyOwner {
-    loanCoin1 = _loanCoin1;
-    loanCoin2 = _loanCoin2;
-    targetCoin1 = _loanCoin2;
-    targetCoin2 = _targetCoin2;
-    reciverAddress = _reciverAddress;
+    function startArbitrage() private  {
+    // loanCoin1 = _loanCoin1;
+    // loanCoin2 = _loanCoin2;
+    // targetCoin1 = _loanCoin2;
+    // targetCoin2 = _targetCoin2;
+    // reciverAddress = _reciverAddress;
+   
 
-    address pairAddress = IUniswapV2Factory(address(router.factory())).getPair(loanCoin1, loanCoin2);
-    // address targetPairAddress =  IUniswapV2Factory(router.factory()).getPair(targetCoin1, targetCoin2);
-    // uint256 targetPair1Bal = IERC20(targetCoin1).balanceOf(targetPairAddress);
-    (uint256 reserveIn,uint256 reserveOut,) =  IUniswapV2Pair(pairAddress).getReserves();
-    IERC20FULL targetCoin2Token = IERC20FULL(targetCoin2);
-   uint256 targetCoin2Bal=  targetCoin2Token.balanceOf(pairAddress);
+    require(pairAddress1 != address(0), 'This pool does not exist');
 
-    uint256 amountIn = router.getAmountIn(targetCoin2Bal.sub(1*10*targetCoin2Token.decimals()), reserveIn, reserveOut);
+//      address targetPairAddress =  IUniswapV2Factory(router.factory()).getPair(targetCoin1, targetCoin2);
+//     // uint256 targetPair1Bal = IERC20(targetCoin1).balanceOf(targetPairAddress);
+    (uint256 reserveIn,uint256 reserveOut,) =  IUniswapV2Pair(pairAddress1).getReserves();
+    IERC20 targetCoin2Token = IERC20(targetCoin2);
+   uint256 targetCoin2Bal=  targetCoin2Token.balanceOf(pairAddress2);
 
-    require(pairAddress != address(0), 'This pool does not exist');
-    IUniswapV2Pair(pairAddress).swap(
+    loanAmount = routerV2.getAmountIn(targetCoin2Bal,reserveOut , reserveIn);
+    emit Log(loanAmount);
+    IUniswapV2Pair(pairAddress1).swap(
       0, 
-      amountIn, 
+      loanAmount, 
       address(this), 
       bytes('not empty')
     );
@@ -395,38 +411,36 @@ contract KXJ is  Ownable{
 
 
 function pancakeCall(address _sender, uint _amount0, uint _amount1, bytes calldata _data) external {
-    IUniswapV2Router01 pcRouter = IUniswapV2Router01(router);
 
-    require(msg.sender == IUniswapV2Factory(router.factory()).getPair(loanCoin1, loanCoin2), 'Unauthorized'); 
+    require(msg.sender == factoryV1, 'Unauthorized'); 
 
     uint amountToken = _amount1;
 
-    IERC20 token = IERC20(targetCoin1); 
-    token.approve(address(router), type(uint256).max);
+    IERC20 token = IERC20(loanCoin2); 
+    token.approve(address(routerV1), type(uint256).max);
     
-    uint256 loanAmount = token.balanceOf(address(this));
+    // uint256 loanAmount = token.balanceOf(address(this));
 
-    uint amountRequired = amountToken;
+    // uint amountRequired = amountToken;
 
-    address[] memory path1 = new address[](2);
-    path1[0] = targetCoin1;
-    path1[1] = targetCoin2;
+    // address[] memory path1 = new address[](2);
+    // path1[0] = targetCoin1;
+    // path1[1] = targetCoin2;
 
-    address targetPairAddress =  IUniswapV2Factory(router.factory()).getPair(targetCoin1, targetCoin2);
 
-    uint received = pcRouter.swapExactTokensForTokens(token.balanceOf(address(this))/2, 0, path1, address(this), block.timestamp + 10)[1];
+    // uint received = routerV2.swapExactTokensForTokens(token.balanceOf(address(this))/2, 0, path1, address(this), block.timestamp + 10)[1];
 
-    token.transfer(targetPairAddress, token.balanceOf(address(this)));
-    IUniswapV2Pair(targetPairAddress).sync();
+    // token.transfer(pairAddress2, token.balanceOf(address(this)));
+    // IUniswapV2Pair(pairAddress2).sync();
 
-    address[] memory path2 = new address[](2);
-    path1[0] = targetCoin2;
-    path1[1] = targetCoin1;
+    // address[] memory path2 = new address[](2);
+    // path1[0] = targetCoin2;
+    // path1[1] = targetCoin1;
 
     
-    uint receivedTarget1 = pcRouter.swapExactTokensForTokens(received, 0, path2, address(this), block.timestamp + 10)[1];
-    require(receivedTarget1>loanAmount,"receivedTarget1 < loanAmount");
-    token.transfer(msg.sender, amountRequired.sub(loanAmount));
-    token.transfer(reciverAddress, token.balanceOf(address(this)));
+    // uint receivedTarget1 = routerV2.swapExactTokensForTokens(received, 0, path2, address(this), block.timestamp + 10)[1];
+    // require(receivedTarget1>loanAmount,"receivedTarget1 < loanAmount");
+     token.transfer(msg.sender, loanAmount);
+    // token.transfer(reciverAddress, token.balanceOf(address(this)));
 }
 }
