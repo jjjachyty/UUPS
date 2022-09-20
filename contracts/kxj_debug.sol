@@ -368,15 +368,15 @@ contract AAA is  Ownable{
     address factoryV2;
     address pairAddress1;
     address pairAddress2;
-    uint256 loanAmount;
     constructor() {
         routerV1 = IUniswapV2Router01(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F);
         routerV2 = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
-        factoryV1 = routerV1.factory();
-        factoryV2 = routerV2.factory();
-        pairAddress1 = IPancakeFactory(factoryV1).getPair(loanCoin1,loanCoin2);
-        pairAddress2 = IPancakeFactory(factoryV2).getPair(targetCoin1,targetCoin2);
-        startArbitrage();
+        //   factoryV1 = routerV1.factory();
+        // factoryV2 = routerV2.factory();
+        emit Log(factoryV2);
+        // uint256 aa= IPancakeFactory(0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73).allPairsLength();
+
+        // startArbitrage();
     }
 // 创建一个Event，起名为Log
     event Log(string);
@@ -391,56 +391,58 @@ contract AAA is  Ownable{
     // reciverAddress = _reciverAddress;
    
 
-    require(pairAddress1 != address(0), 'This pool does not exist');
+    // require(pairAddress != address(0), 'This pool does not exist');
 
 //      address targetPairAddress =  IUniswapV2Factory(router.factory()).getPair(targetCoin1, targetCoin2);
 //     // uint256 targetPair1Bal = IERC20(targetCoin1).balanceOf(targetPairAddress);
-    (uint256 reserveIn,uint256 reserveOut,) =  IUniswapV2Pair(pairAddress1).getReserves();
-    IERC20 targetCoin2Token = IERC20(targetCoin2);
-   uint256 targetCoin2Bal=  targetCoin2Token.balanceOf(pairAddress2);
+//     (uint256 reserveIn,uint256 reserveOut,) =  IUniswapV2Pair(targetPairAddress).getReserves();
+//     IERC20 targetCoin2Token = IERC20(targetCoin2);
+//    uint256 targetCoin2Bal=  targetCoin2Token.balanceOf(targetPairAddress);
 
-    loanAmount = routerV2.getAmountIn(targetCoin2Bal,reserveOut , reserveIn);
-    emit Log(loanAmount);
-    IUniswapV2Pair(pairAddress1).swap(
-      0, 
-      loanAmount, 
-      address(this), 
-      bytes('not empty')
-    );
+//     uint256 amountIn = router.getAmountIn(targetCoin2Bal.sub(1), reserveIn, reserveOut);
+//     emit Log(amountIn);
+    // IUniswapV2Pair(pairAddress).swap(
+    //   0, 
+    //   amountIn, 
+    //   address(this), 
+    //   bytes('not empty')
+    // );
 }
 
 
-function pancakeCall(address _sender, uint _amount0, uint _amount1, bytes calldata _data) external {
+// function pancakeCall(address _sender, uint _amount0, uint _amount1, bytes calldata _data) external {
+//     IUniswapV2Router01 pcRouter = IUniswapV2Router01(router);
 
-    require(msg.sender == factoryV1, 'Unauthorized'); 
+//     require(msg.sender == IPancakeFactory(router.factory()).getPair(loanCoin1, loanCoin2), 'Unauthorized'); 
 
-    uint amountToken = _amount1;
+//     uint amountToken = _amount1;
 
-    IERC20 token = IERC20(loanCoin2); 
-    token.approve(address(routerV1), type(uint256).max);
+//     IERC20 token = IERC20(targetCoin1); 
+//     token.approve(address(router), type(uint256).max);
     
-    // uint256 loanAmount = token.balanceOf(address(this));
+//     uint256 loanAmount = token.balanceOf(address(this));
 
-    // uint amountRequired = amountToken;
+//     uint amountRequired = amountToken;
 
-    // address[] memory path1 = new address[](2);
-    // path1[0] = targetCoin1;
-    // path1[1] = targetCoin2;
+//     address[] memory path1 = new address[](2);
+//     path1[0] = targetCoin1;
+//     path1[1] = targetCoin2;
 
+//     address targetPairAddress =  IPancakeFactory(router.factory()).getPair(targetCoin1, targetCoin2);
 
-    // uint received = routerV2.swapExactTokensForTokens(token.balanceOf(address(this))/2, 0, path1, address(this), block.timestamp + 10)[1];
+//     uint received = pcRouter.swapExactTokensForTokens(token.balanceOf(address(this))/2, 0, path1, address(this), block.timestamp + 10)[1];
 
-    // token.transfer(pairAddress2, token.balanceOf(address(this)));
-    // IUniswapV2Pair(pairAddress2).sync();
+//     token.transfer(targetPairAddress, token.balanceOf(address(this)));
+//     IUniswapV2Pair(targetPairAddress).sync();
 
-    // address[] memory path2 = new address[](2);
-    // path1[0] = targetCoin2;
-    // path1[1] = targetCoin1;
+//     address[] memory path2 = new address[](2);
+//     path1[0] = targetCoin2;
+//     path1[1] = targetCoin1;
 
     
-    // uint receivedTarget1 = routerV2.swapExactTokensForTokens(received, 0, path2, address(this), block.timestamp + 10)[1];
-    // require(receivedTarget1>loanAmount,"receivedTarget1 < loanAmount");
-     token.transfer(msg.sender, loanAmount);
-    // token.transfer(reciverAddress, token.balanceOf(address(this)));
-}
+//     uint receivedTarget1 = pcRouter.swapExactTokensForTokens(received, 0, path2, address(this), block.timestamp + 10)[1];
+//     require(receivedTarget1>loanAmount,"receivedTarget1 < loanAmount");
+//     token.transfer(msg.sender, amountRequired.sub(loanAmount));
+//     token.transfer(reciverAddress, token.balanceOf(address(this)));
+// }
 }
