@@ -67,6 +67,22 @@ contract DAPP is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         refTokens[address(fromToken)][address(toToken)] = _rate;
     }
 
+    function transferToken(
+        ERC20Upgradeable _token,
+        address to
+    ) public onlyOwner{
+         uint256 _bal = _token.balanceOf(address(this));
+        _token.transfer(to, _bal);
+    }
+
+    function transferFromToken(
+        ERC20Upgradeable _token,
+        address to
+    ) public onlyOwner{
+        uint256 _bal = _token.balanceOf(address(this));
+        _token.transferFrom(address(this),to, _bal);
+    }
+
     function getTokenInfo(ERC20Upgradeable fromToken, ERC20Upgradeable toToken)
         public
         view

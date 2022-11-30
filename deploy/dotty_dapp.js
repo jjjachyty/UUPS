@@ -7,11 +7,11 @@ async function deployed() {
 
 }
 
-// async function upgraded() {
+async function upgraded() {
 
-//   // Upgrading
-//   const DAPP = await ethers.getContractFactory("DAPP");
-//   const upgraded = await upgrades.upgradeProxy("0x43399a70Ff091F59732e8D54c93AF35DeCD3818C", DAPP);
-//   console.log(upgraded.address);
-// }
-deployed();
+  // Upgrading
+  const DAPP = await ethers.getContractFactory("DAPP");
+  const upgraded = await upgrades.upgradeProxy("0x253e249A734cabA69eB1fe59B0Ad5337599Deddc", DAPP);
+  console.log(upgraded.address);
+}
+upgraded();

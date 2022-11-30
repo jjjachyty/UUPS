@@ -186,9 +186,6 @@ interface IUniswapV2Router01 {
         view
         returns (uint256[] memory amounts);
 }
-
-// pragma solidity >=0.6.2;
-
 interface IUniswapV2Router02 is IUniswapV2Router01 {
     function removeLiquidityETHSupportingFeeOnTransferTokens(
         address token,
