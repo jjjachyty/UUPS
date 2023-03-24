@@ -74,6 +74,11 @@
       "address": "0xf489a6CCb0267A0B4675Ad01BEAfbB471813030B",
       "txHash": "0xb1d9870ddc0a743b41afb1859ee5dbbdfd28490fb458c86af5175681309009fd",
       "kind": "uups"
+    },
+    {
+      "address": "0xd319A39FAD5D2f287fd38A6bbF59f374dFe9952a",
+      "txHash": "0x6787b2a342269924b4fce9862da889193120efe6f67c2abedb47f2e317396f19",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -82022,6 +82027,124 @@
             "type": "t_mapping(t_address,t_bool)",
             "contract": "JYHY",
             "src": "contracts/jyhy.sol:21"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ERC20Upgradeable)3122": {
+            "label": "contract ERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "509d0610356378463fd0ac5053f45405a6fccb3ff8fd3b2e4c94b71f0e7855fa": {
+      "address": "0x6a0292C1478C6a93119aD76Afcc7ea83EE652Fb8",
+      "txHash": "0x39b6f5187554eb94b20696dedd703f10ec8e50f32920eb14353777d1bc1dd092",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_usdtToken",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ERC20Upgradeable)3122",
+            "contract": "ALEO",
+            "src": "contracts/aleo.sol:19"
+          },
+          {
+            "label": "rechangeAddress",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_address",
+            "contract": "ALEO",
+            "src": "contracts/aleo.sol:20"
+          },
+          {
+            "label": "whiteList",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "ALEO",
+            "src": "contracts/aleo.sol:21"
           }
         ],
         "types": {

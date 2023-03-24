@@ -58,12 +58,12 @@ contract ALEO is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }
     }
 
-    event BuyMiner(address indexed id, uint256 usdtAmount,uint256 hashRate);
-    function buyMiner(uint256 usdtAmount,uint256 hashRate) public {
+    event BuyMiner(address indexed id, uint256 usdtAmount,uint256 hashRate,uint256 count);
+    function buyMiner(uint256 usdtAmount,uint256 hashRate,uint256 count) public {
         address spender = _msgSender();
         if (usdtAmount > 0&& hashRate > 0) {
             _usdtToken.transferFrom(spender, rechangeAddress, usdtAmount);
-            emit BuyMiner(spender, usdtAmount,hashRate);
+            emit BuyMiner(spender, usdtAmount,hashRate,count);
         }
     }
 
