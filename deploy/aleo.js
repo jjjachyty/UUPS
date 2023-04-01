@@ -36,4 +36,4 @@ async function deployed_catch_prd() {
   console.log("address>>>>>>>>>>", result.address)
 
 }
-deployed_catch_prd()
+upgraded_prd()

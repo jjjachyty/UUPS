@@ -16463,7 +16463,7 @@
             "label": "_usdtToken",
             "offset": 0,
             "slot": "201",
-            "type": "t_contract(ERC20Upgradeable)1335",
+            "type": "t_contract(ERC20Upgradeable)3122",
             "contract": "ALEO",
             "src": "contracts/aleo.sol:19"
           },
@@ -16501,7 +16501,7 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(ERC20Upgradeable)1335": {
+          "t_contract(ERC20Upgradeable)3122": {
             "label": "contract ERC20Upgradeable",
             "numberOfBytes": "20"
           },
