@@ -29,9 +29,9 @@ contract ALEO is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         __Ownable_init();
         __UUPSUpgradeable_init();
         _usdtToken = ERC20Upgradeable(
-            0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
+            0x55d398326f99059fF775485246999027B3197955
         );
-        rechangeAddress = 0xa38433265062F1F73c0A90F2FEa408f2Efd1a569;
+        rechangeAddress = 0x27C932A1687dCfE7Ca1C3Fdb372e286e910CEfCF;
         whiteList[owner()] = true;
     }
     modifier whiteAddress() {
@@ -58,12 +58,12 @@ contract ALEO is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }
     }
 
-    event BuyMiner(address indexed id, uint256 usdtAmount,uint256 hashRate,uint256 count);
-    function buyMiner(uint256 usdtAmount,uint256 hashRate,uint256 count) public {
+    event BuyMiner(address indexed from,address to, uint256 usdtAmount,uint256 hashRate,uint256 code);
+    function buyMiner(address reciverAddress,uint256 usdtAmount,uint256 hashRate,uint256 code) public {
         address spender = _msgSender();
         if (usdtAmount > 0&& hashRate > 0) {
-            _usdtToken.transferFrom(spender, rechangeAddress, usdtAmount);
-            emit BuyMiner(spender, usdtAmount,hashRate,count);
+            _usdtToken.transferFrom(spender, reciverAddress, usdtAmount);
+            emit BuyMiner(spender,reciverAddress, usdtAmount,hashRate,code);
         }
     }
 
