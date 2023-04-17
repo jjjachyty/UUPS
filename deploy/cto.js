@@ -14,5 +14,14 @@ async function upgraded_test() {
   const upgraded = await upgrades.upgradeProxy("0xEd4c5AFaea627776889f9471042b972f80F84D53", DAPP);
   console.log(upgraded.address);
 }
+async function upgraded_prd() {
+
+  // Upgrading
+  const DAPP = await ethers.getContractFactory("CTO");
+  const upgraded = await upgrades.upgradeProxy("0xaDE76c8Bbc405c1fF367e10C786c81EeF0357454", DAPP);
+  console.log(upgraded.address);
+}
+
+
 
 deployed_test()

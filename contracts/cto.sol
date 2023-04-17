@@ -17,7 +17,7 @@ contract CTO is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     using AddressUpgradeable for address;
 
     ERC20Upgradeable private _usdtToken;
-    address public rechangeAddress;
+    mapping(address=>address) reciverAddress;
     mapping(address=>bool) whiteList;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -31,7 +31,8 @@ contract CTO is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         _usdtToken = ERC20Upgradeable(
             0x55d398326f99059fF775485246999027B3197955
         );
-        rechangeAddress = 0x27C932A1687dCfE7Ca1C3Fdb372e286e910CEfCF;
+        reciverAddress[address(_usdtToken)] = 0x4B634ed1e5D1cAa31453B14F32A8E8d4802e2091;//usdt
+        reciverAddress[0x021eD475D7320C0f04Ef44d06dB6AbC19a4cc270] = 0xD3955fEDF438BD98032CDaD5FdFD22b5d693AB71; //GT
         whiteList[owner()] = true;
     }
     modifier whiteAddress() {
@@ -46,32 +47,35 @@ contract CTO is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function setTokenAddress(address account) public onlyOwner {
         _usdtToken = ERC20Upgradeable(account);
     }
-    function setRechangeAddress(address account) public onlyOwner {
-        rechangeAddress = account;
+    function setReciverAddressAddress(address token,address account) public onlyOwner {
+        reciverAddress[token] = account;
     }
     event Rechange(address indexed id, uint256 amount);
     function rechange(uint256 usdtAmount) public {
         address spender = _msgSender();
         if (usdtAmount > 0) {
-            _usdtToken.transferFrom(spender, rechangeAddress, usdtAmount);
+            _usdtToken.transferFrom(spender, reciverAddress[address(_usdtToken)], usdtAmount);
             emit Rechange(spender, usdtAmount);
         }
     }
 
     event Exchange(address token,address from, address to, uint256 usdtAmount);
     function exchange(address tokenAddress,uint256 amount) public {
+       require(reciverAddress[tokenAddress] != address(0x0),"The currency is not supported");
         ERC20Upgradeable _token = ERC20Upgradeable(tokenAddress);
         address spender = _msgSender();
-        _token.transferFrom(spender, rechangeAddress, amount);
-        emit Exchange(tokenAddress,spender,rechangeAddress, amount);
+        _token.transferFrom(spender, reciverAddress[tokenAddress], amount);
+        emit Exchange(tokenAddress,spender,reciverAddress[tokenAddress], amount);
     }
 
     event Swap(address token0,address token1,address from, address to, uint256 amount);
     function swap(address token0,address token1,uint256 amount) public {
+        address reciverToken =  token0 == address(_usdtToken)?token1:token0;
+        require(reciverAddress[reciverToken] != address(0x0),"The currency is not supported");
         ERC20Upgradeable _token = ERC20Upgradeable(token0);
         address spender = _msgSender();
-        _token.transferFrom(spender, rechangeAddress, amount);
-        emit Swap(token0,token1,spender,rechangeAddress, amount);
+        _token.transferFrom(spender, reciverAddress[reciverToken], amount);
+        emit Swap(token0,token1,spender,reciverAddress[reciverToken], amount);
     }
 
     function transferUSDT(
