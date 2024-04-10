@@ -1,15 +1,8 @@
-require('@nomiclabs/hardhat-ethers');
-require('@openzeppelin/hardhat-upgrades');
-task("accounts", "Prints the list of accounts", async () => {
-  const accounts = await ethers.getSigners();
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
 
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
-
-module.exports = {
-  solidity: "0.8.18",
+const config: HardhatUserConfig = {
+  solidity: "0.8.24",
   networks: {
     hardhat: {
     },
@@ -30,3 +23,5 @@ module.exports = {
     }
   },
 };
+
+export default config;

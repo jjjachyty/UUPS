@@ -1,3 +1,6 @@
+npx hardhat compile
+
+
 npx hardhat test --network testnet
 npx hardhat run --network mainnet .\deploy\deploy.js 
 npx hardhat run --network testnet ./deploy/NBB_Token.js
