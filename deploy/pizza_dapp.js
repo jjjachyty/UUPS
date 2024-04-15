@@ -5,6 +5,7 @@ async function deployed_test() {
   const result = await upgrades.deployProxy(DAPP, { kind: 'uups' });
   console.log("address>>>>>>>>>>", result.address)
 
+  
 }
 
 // async function upgraded_test() {

