@@ -1,4 +1,16 @@
+// Sources flattened with hardhat v2.22.2 https://hardhat.org
+
 // SPDX-License-Identifier: MIT
+
+// File backup/bscerc314.sol
+
+// Sources flattened with hardhat v2.22.2 https://hardhat.org
+
+// Original license: SPDX_License_Identifier: MIT
+
+// File backup/bscerc314.sol
+
+// Original license: SPDX_License_Identifier: MIT
 pragma solidity ^0.8.24;
 
 /**
@@ -21,7 +33,7 @@ interface IEERC314 {
     );
 }
 
-abstract contract ERC314 is IEERC314 {
+contract TEST  is IEERC314 {
     mapping(address => uint256) private _balances;
 
     uint256 private _totalSupply;
@@ -66,21 +78,12 @@ abstract contract ERC314 is IEERC314 {
         );
         _;
     }
+ 
 
-    /**
-     * @dev Sets the values for {name}, {symbol} and {totalSupply}.
-     *
-     * All two of these values are immutable: they can only be set once during
-     * construction.
-     */
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        uint256 totalSupply_
-    ) {
-        _name = name_;
-        _symbol = symbol_;
-        _totalSupply = totalSupply_; //3.1亿
+    constructor(){
+        _name = "TEST";
+        _symbol = "TEST";
+        _totalSupply =  990000000 * 10**8; //3.1亿
         _bnbTotalSupply = 300 * 10**18;
         _fireStopAmount = 10000000 * 10**8;
         _maxWallet = 500000 * 10**8; //50w
@@ -423,10 +426,4 @@ abstract contract ERC314 is IEERC314 {
     receive() external payable {
         buy();
     }
-}
-
-contract TEST is ERC314 {
-    uint256 private _totalSupply = 990000000 * 10**8;
-
-    constructor() ERC314("TEST", "TEST", _totalSupply) {}
 }

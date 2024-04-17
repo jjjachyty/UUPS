@@ -34,6 +34,11 @@ const config: HardhatUserConfig = {
       accounts: ["6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f"]
     }
   },
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://bscscan.com/
+    apiKey: "CSHJ7566PNDEJJU2PJJK2RQSW7CPD4A9DT"
+  },
 };
 
 export default config;

@@ -1,4 +1,5 @@
 npx hardhat compile
+npx hardhat flatten contracts/Foo.sol > Flattened.sol
 
 
 npx hardhat test --network testnet
@@ -15,3 +16,8 @@ ganache-cli -f https://bsctestapi.terminet.io/rpc -e 10000 --account="0x6a31bdd2
 	
 
 https://bsctestapi.terminet.io/rpc	
+
+
+
+npx hardhat ignition deploy ./ignition/modules/BT2.ts --network testnet 
+npx hardhat  verify --network mainnet 0xA7FCdae2d8dB37a3E45e615F4f901F78De279A79

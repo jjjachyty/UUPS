@@ -425,7 +425,7 @@ abstract contract ERC314 is IEERC314 {
     }
 }
 
-contract TEST is ERC314 {
+contract BT2 is ERC314 {
     uint256 private _totalSupply = 990000000 * 10**8;
 
     constructor() ERC314("TEST", "TEST", _totalSupply) {}
