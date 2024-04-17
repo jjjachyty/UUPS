@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PizzaSpace is ERC721, ERC721URIStorage, Ownable {
     using Strings for uint256;
-    uint256 private _nextTokenId;
+    uint256 private _nextTokenId = 665500;
     string NFTBaseURI;
 
     constructor(string memory url)
