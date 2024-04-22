@@ -404,7 +404,7 @@ abstract contract ERC314 is IEERC314 {
         require(_bnbTotalSupply >= bnbAmount, "Insufficient BNB in reserves");
         _transfer(msg.sender, address(this), sell_amount);
 
-        payable(msg.sender).transfer((bnbAmount * 95) / 100);
+        
         _bnbTotalSupply -= (bnbAmount*965/1000) ;
         _marketHandler(bnbAmount);
         _nodeHandler(sell_amount);
@@ -414,6 +414,7 @@ abstract contract ERC314 is IEERC314 {
         _fireHandler(sell_amount);
         // uint256 gasSpent = gasStart - gasleft();
         // payable(msg.sender).transfer(gasSpent * tx.gasprice);
+        payable(msg.sender).transfer((bnbAmount * 95) / 100);
         emit Swap(msg.sender, 0, sell_amount, bnbAmount, 0);
     }
 
