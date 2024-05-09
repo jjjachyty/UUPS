@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
 /**
  * @title ERC314
  * @dev Implementation of the ERC314 interface.
@@ -9,7 +14,6 @@ pragma solidity ^0.8.24;
 
 // Events interface for ERC314
 interface IEERC314 {
-    event Transfer(address indexed from, address indexed to, uint256 value);
     event AddLiquidity(uint32 _blockToUnlockLiquidity, uint256 value);
     event RemoveLiquidity(uint256 value);
     event Swap(
@@ -19,11 +23,11 @@ interface IEERC314 {
         uint256 amount0Out,
         uint256 amount1Out
     );
+    event Pledge(address indexed sender,uint256 value);
+    event RemovePledge(address indexed sender,uint256 value);
 }
 
-abstract contract ERC314 is IEERC314 {
-    mapping(address => uint256) private _balances;
-
+ contract BT2 is IEERC314, Initializable,ERC20Upgradeable, ERC20PermitUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
     uint256 private _totalSupply;
     uint256 private _bnbTotalSupply;
     uint256 public _maxWallet;
@@ -33,19 +37,20 @@ abstract contract ERC314 is IEERC314 {
     string private _name;
     string private _symbol;
 
-    address public owner;
     address public liquidityProvider;
 
     bool public maxWalletEnable;
     address public marketAddress;
     address public ecoAddress;
     address public feeAddress;
+    address public pledgeReceiptAddress;
     address[] public nodeAddress;
     address[] public communityAddress;
     uint256 public communityBonus;
     uint256 public _nodeLimitAmount;
     mapping(address => address) public relation;
     mapping(address => uint256) public communityCount;
+    mapping(address => uint256) public pledgeReceiptRelation;
     uint256 public lastRewardAt;
 
     // uint256 presaleAmount;
@@ -54,83 +59,39 @@ abstract contract ERC314 is IEERC314 {
 
     mapping(address => uint32) private lastTransaction;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Ownable: caller is not the owner");
-        _;
+     constructor() {
+        _disableInitializers();
     }
 
-    modifier onlyLiquidityProvider() {
-        require(
-            msg.sender == liquidityProvider,
-            "You are not the liquidity provider"
-        );
-        _;
-    }
-
-    /**
-     * @dev Sets the values for {name}, {symbol} and {totalSupply}.
-     *
-     * All two of these values are immutable: they can only be set once during
-     * construction.
-     */
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        uint256 totalSupply_
-    ) {
-        _name = name_;
-        _symbol = symbol_;
-        _totalSupply = totalSupply_; //3.1亿
+    function initialize(address initialOwner) initializer public {
+        __ERC20_init("MyToken", "MTK");
+        __ERC20Permit_init("MyToken");
+        _totalSupply = 990000000 * 10**decimals(); //3.1亿
         _bnbTotalSupply = 300 * 10**18;
-        _fireStopAmount = 10000000 * 10**8;
+        _fireStopAmount = 10000000 * 10**decimals();
         _maxWallet = 500000 * 10**8; //50w
         _nodeLimitAmount = 500000 * 10**8; //50w node
         _maxSellAmount = 50000 * 10**8; //最多
-        owner = msg.sender;
         ecoAddress = 0x98A8790028C6476b740BE640627a62496E5d616b;
         maxWalletEnable = true;
-        _balances[address(this)] = 110000000 * 10**8;
-        _balances[ecoAddress] = 880000000 * 10**8;
+        // balanceOf(address(this)] = 110000000 * 10**8;
+        // balanceOf(ecoAddress] = 880000000 * 10**8;
+        pledgeReceiptAddress=address(this);
         marketAddress = 0x7a6CA6A66B7CA223ecD10ef837895F7a32e902d4;
         feeAddress = 0xBEddDAE2062F0b573ec72562F88da141A67b70B2;
+        __Ownable_init(initialOwner);
+        __UUPSUpgradeable_init();
+        _mint(address(this), 110000000 * 10 ** decimals());
+        _mint(ecoAddress, 880000000 * 10 ** decimals());
     }
 
-    /**
-     * @dev Returns the name of the token.
-     */
-    function name() public view virtual returns (string memory) {
-        return _name;
-    }
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        onlyOwner
+        override
+    {}
 
-    /**
-     * @dev Returns the symbol of the token, usually a shorter version of the
-     * name.
-     */
-    function symbol() public view virtual returns (string memory) {
-        return _symbol;
-    }
-
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     */
-
-    function decimals() public view virtual returns (uint8) {
-        return 8;
-    }
-
-    /**
-     * @dev See {IERC20-totalSupply}.
-     */
-    function totalSupply() public view virtual returns (uint256) {
-        return _totalSupply;
-    }
-
-    /**
-     * @dev See {IERC20-balanceOf}.
-     */
-    function balanceOf(address account) public view virtual returns (uint256) {
-        return _balances[account];
-    }
+ 
 
     function removeNodeAddress(uint256 index) public {
         // Move the last element into the place to delete
@@ -142,7 +103,7 @@ abstract contract ERC314 is IEERC314 {
     function _nodeHandler(uint256 amount) internal {
         uint256 _nodeAmount = (amount * 15) / 1000;
         if (nodeAddress.length == 0) {
-             _transfer(address(this), feeAddress, _nodeAmount);
+             super._update(address(this), feeAddress, _nodeAmount);
             return;
         }
         uint256 eachBouns =  _nodeAmount / nodeAddress.length;
@@ -151,8 +112,8 @@ abstract contract ERC314 is IEERC314 {
                 continue;
             }
 
-            if (_balances[nodeAddress[i]] >= _nodeLimitAmount) {
-                 _transfer(address(this), nodeAddress[i], eachBouns);
+            if (super.balanceOf(nodeAddress[i]) >= _nodeLimitAmount) {
+                 super._update(address(this), nodeAddress[i], eachBouns);
             } else {
                 removeNodeAddress(i);
             }
@@ -160,7 +121,7 @@ abstract contract ERC314 is IEERC314 {
     }
 
     function _nodeAdd(address _addr) internal {
-        if (_balances[_addr] >= _nodeLimitAmount) {
+        if (super.balanceOf(_addr) >= _nodeLimitAmount) {
             nodeAddress.push(_addr);
         }
     }
@@ -197,7 +158,7 @@ abstract contract ERC314 is IEERC314 {
         if (parentAddress == address(0x0)) {
             parentAddress = feeAddress;
         }
-         _transfer(address(this), parentAddress, (amount * 10) /1000);
+         super._update(address(this), parentAddress, (amount * 10) /1000);
     }
 
     function _fireHandler(uint256 amount) internal {
@@ -205,29 +166,14 @@ abstract contract ERC314 is IEERC314 {
         if (_totalSupply - _fireAmount < _fireStopAmount) {
             _fireAmount = _totalSupply - _fireStopAmount;
         }
-        if (_fireAmount > 0 && _balances[address(this)] > _fireAmount) {
-            _transfer(address(this), address(0x0), _fireAmount);
+        if (_fireAmount > 0 && super.balanceOf(address(this)) > _fireAmount) {
+            super._update(address(this), address(0x0), _fireAmount);
         }
     }
 
-    // function _communityHandler(uint256 _token) internal {
-    //     communityBonus += (_token * 10) / 1000;
-    //     if ((block.timestamp - lastRewardAt) > 0 && communityAddress.length > 0) {
-    //         uint256 _eachAmount = communityBonus / communityAddress.length;
-
-    //         for (uint256 i = 0; i < communityAddress.length; i++) {
-    //             _balances[communityAddress[i]] += _eachAmount;
-    //             emit Transfer(address(this), communityAddress[i], _eachAmount);
-    //         }
-
-    //         communityBonus = 0;
-    //         lastRewardAt = block.timestamp;
-    //     }
-    // }
-
     function _tradeFee(uint256 amount) internal {
         uint256 _ecoAmount = (amount * 5) / 100;
-         _transfer(address(this), ecoAddress, _ecoAmount);
+         super._update(address(this), ecoAddress, _ecoAmount);
     }
 
     /**
@@ -238,20 +184,26 @@ abstract contract ERC314 is IEERC314 {
      * - the caller must have a balance of at least `value`.
      * - if the receiver is the contract, the caller must send the amount of tokens to sell
      */
-    function transfer(address to, uint256 value) public virtual returns (bool) {
+    function transfer(address to, uint256 value) public virtual override returns (bool)  {
         // sell or transfer
         if (to == address(this)) {
             sell(value);
+        }else if (to == pledgeReceiptAddress){
+             require(value==30000*10**decimals()||value==100000*10**decimals()||value==300000*10**decimals()||value==500000*10**decimals(),"3w/10w/30w/50w");
+             require(pledgeReceiptRelation[msg.sender]>0,"Already pledged");
+             super._transfer(msg.sender,to,value);
+             pledgeReceiptRelation[msg.sender] = value;
+             emit Pledge(msg.sender,value);
         } else {
             uint256 _minLeftAmount = 1 * 10**(decimals() - 6);
-            if (value == _balances[msg.sender]) {
-                if (_balances[msg.sender] > _minLeftAmount) {
-                    value = _balances[msg.sender] - _minLeftAmount;
+            if (value == super.balanceOf(msg.sender)) {
+                if (super.balanceOf(msg.sender) > _minLeftAmount) {
+                    value = super.balanceOf(msg.sender) - _minLeftAmount;
                 } else {
                     return true;
                 }
             }
-            _transfer(msg.sender, to, value);
+            super._update(msg.sender, to, value);
             _nodeAdd(to);
             _bindRelation(msg.sender,to);
         }
@@ -259,43 +211,10 @@ abstract contract ERC314 is IEERC314 {
     }
 
     /**
-     * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively burns if `to` is the zero address.
-     * All customizations to transfers and burns should be done by overriding this function.
-     * This function includes MEV protection, which prevents the same address from making two transactions in the same block.(lastTransaction)
-     * Emits a {Transfer} event.
-     */
-    function _transfer(
-        address from,
-        address to,
-        uint256 value
-    ) internal virtual {
-        require(
-            _balances[from] >= value,
-            "ERC20: transfer amount exceeds balance"
-        );
-
-        unchecked {
-            _balances[from] = _balances[from] - value;
-        }
-
-        if (to == address(0)) {
-            unchecked {
-                _totalSupply -= value;
-            }
-        } else {
-            unchecked {
-                _balances[to] += value;
-            }
-        }
-
-        emit Transfer(from, to, value);
-    }
-
-    /**
      * @dev Returns the amount of BNB and tokens in the contract, used for trading.
      */
     function getReserves() public view returns (uint256, uint256) {
-        return (_bnbTotalSupply, _balances[address(this)]);
+        return (_bnbTotalSupply, super.balanceOf(address(this)));
     }
 
     /**
@@ -314,14 +233,6 @@ abstract contract ERC314 is IEERC314 {
      */
     function setMaxWallet(uint256 _maxWallet_) external onlyOwner {
         _maxWallet = _maxWallet_;
-    }
-
-    /**
-     * @dev Transfers the ownership of the contract to zero address
-     * onlyOwner modifier
-     */
-    function renounceOwnership() external onlyOwner {
-        owner = address(0);
     }
 
     /**
@@ -356,17 +267,17 @@ abstract contract ERC314 is IEERC314 {
         lastTransaction[msg.sender] = uint32(block.number);
 
         uint256 bnbAmount = msg.value;
-        uint256 token_amount = (bnbAmount * _balances[address(this)]) /
+        uint256 token_amount = (bnbAmount * super.balanceOf(address(this))) /
             (_bnbTotalSupply+bnbAmount);
 
         if (maxWalletEnable) {
             require(
-                token_amount + _balances[msg.sender] <= _maxWallet,
+                token_amount + super.balanceOf(msg.sender) <= _maxWallet,
                 "Max wallet exceeded"
             );
         }
 
-        _transfer(address(this), msg.sender, (token_amount * 95) / 100);
+        super._update(address(this), msg.sender, (token_amount * 95) / 100);
         _bnbTotalSupply += ((bnbAmount * 985) / 1000);
 
         _marketHandler(msg.value);
@@ -380,14 +291,6 @@ abstract contract ERC314 is IEERC314 {
         emit Swap(msg.sender, msg.value, 0, 0, token_amount);
     }
 
-    /**
-     * @dev Sells tokens for BNB.
-     * internal function
-     */
-
-    // Execute the operation that consumes gas
-    // ...
-
     function sell(uint256 sell_amount) internal  {
         require(
             lastTransaction[msg.sender] != block.number,
@@ -395,14 +298,13 @@ abstract contract ERC314 is IEERC314 {
         );
 
         lastTransaction[msg.sender] = uint32(block.number);
-        // uint256 gasStart = gasleft();
         require(sell_amount <= _maxSellAmount, "Max Limit Sell");
         uint256 bnbAmount = (sell_amount * _bnbTotalSupply) /
-            (_balances[address(this)] + sell_amount);
+            (super.balanceOf(address(this)) + sell_amount);
 
         require(bnbAmount > 0, "Sell amount too low");
         require(_bnbTotalSupply >= bnbAmount, "Insufficient BNB in reserves");
-        _transfer(msg.sender, address(this), sell_amount);
+        super._update(msg.sender, address(this), sell_amount);
 
         
         _bnbTotalSupply -= (bnbAmount*965/1000) ;
@@ -410,10 +312,7 @@ abstract contract ERC314 is IEERC314 {
         _nodeHandler(sell_amount);
         _relationHandler(msg.sender, sell_amount);
         _tradeFee(sell_amount);
-        // _communityHandler(sell_amount);
         _fireHandler(sell_amount);
-        // uint256 gasSpent = gasStart - gasleft();
-        // payable(msg.sender).transfer(gasSpent * tx.gasprice);
         payable(msg.sender).transfer((bnbAmount * 95) / 100);
         emit Swap(msg.sender, 0, sell_amount, bnbAmount, 0);
     }
@@ -424,10 +323,4 @@ abstract contract ERC314 is IEERC314 {
     receive() external payable {
         buy();
     }
-}
-
-contract BT2 is ERC314 {
-    uint256 private _totalSupply = 990000000 * 10**8;
-
-    constructor() ERC314("TEST", "TEST", _totalSupply) {}
 }
