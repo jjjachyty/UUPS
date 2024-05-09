@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
+
 /**
  * @title ERC314
  * @dev Implementation of the ERC314 interface.
@@ -23,11 +23,17 @@ interface IEERC314 {
         uint256 amount0Out,
         uint256 amount1Out
     );
-    event Pledge(address indexed sender,uint256 value);
-    event RemovePledge(address indexed sender,uint256 value);
+    event Pledge(address indexed sender, uint256 value);
+    event RemovePledge(address indexed sender, uint256 value);
 }
 
- contract BT2 is IEERC314, Initializable,ERC20Upgradeable, ERC20PermitUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract BT2 is
+    IEERC314,
+    Initializable,
+    ERC20Upgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
+{
     uint256 private _totalSupply;
     uint256 private _bnbTotalSupply;
     uint256 public _maxWallet;
@@ -43,7 +49,6 @@ interface IEERC314 {
     address public marketAddress;
     address public ecoAddress;
     address public feeAddress;
-    address public pledgeReceiptAddress;
     address[] public nodeAddress;
     address[] public communityAddress;
     uint256 public communityBonus;
@@ -51,32 +56,36 @@ interface IEERC314 {
     mapping(address => address) public relation;
     mapping(address => uint256) public communityCount;
     mapping(address => uint256) public pledgeReceiptRelation;
+    mapping(address => bool) whiteAddress;
     uint256 public lastRewardAt;
+    ERC20Upgradeable zToken;
 
     // uint256 presaleAmount;
 
     bool public presaleEnable = false;
 
     mapping(address => uint32) private lastTransaction;
+    modifier onlyWhiteAddress() {
+        require(whiteAddress[msg.sender], "caller is not the white address");
+        _;
+    }
 
-     constructor() {
+    constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) initializer public {
+    function initialize(address initialOwner) public initializer {
         __ERC20_init("MyToken", "MTK");
-        __ERC20Permit_init("MyToken");
-        _totalSupply = 990000000 * 10**decimals(); //3.1亿
-        _bnbTotalSupply = 300 * 10**18;
-        _fireStopAmount = 10000000 * 10**decimals();
-        _maxWallet = 500000 * 10**8; //50w
-        _nodeLimitAmount = 500000 * 10**8; //50w node
-        _maxSellAmount = 50000 * 10**8; //最多
+        _totalSupply = 990000000 * 10 ** decimals(); //3.1亿
+        _bnbTotalSupply = 300 * 10 ** 18;
+        _fireStopAmount = 10000000 * 10 ** decimals();
+        _maxWallet = 500000 * 10 ** 8; //50w
+        _nodeLimitAmount = 500000 * 10 ** 8; //50w node
+        _maxSellAmount = 50000 * 10 ** 8; //最多
         ecoAddress = 0x98A8790028C6476b740BE640627a62496E5d616b;
         maxWalletEnable = true;
         // balanceOf(address(this)] = 110000000 * 10**8;
         // balanceOf(ecoAddress] = 880000000 * 10**8;
-        pledgeReceiptAddress=address(this);
         marketAddress = 0x7a6CA6A66B7CA223ecD10ef837895F7a32e902d4;
         feeAddress = 0xBEddDAE2062F0b573ec72562F88da141A67b70B2;
         __Ownable_init(initialOwner);
@@ -85,13 +94,31 @@ interface IEERC314 {
         _mint(ecoAddress, 880000000 * 10 ** decimals());
     }
 
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        onlyOwner
-        override
-    {}
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
 
- 
+    function setWhiteAddress(address addr, bool flag) public onlyOwner {
+        whiteAddress[addr] = flag;
+    }
+
+    function setZToken(address addr) public onlyOwner {
+        zToken = ERC20Upgradeable(addr);
+    }
+    
+    function getPledgeReceiptRelation(
+        address addr
+    ) public view returns (uint256) {
+        return pledgeReceiptRelation[addr];
+    }
+
+    function removePledgeReceiptRelation(address addr) public onlyWhiteAddress {
+        uint256 value = pledgeReceiptRelation[addr];
+        require(value>0,"no pledge");
+        super._transfer(msg.sender,addr,value);
+        delete pledgeReceiptRelation[addr];
+        emit RemovePledge(addr, value);
+    }
 
     function removeNodeAddress(uint256 index) public {
         // Move the last element into the place to delete
@@ -103,17 +130,17 @@ interface IEERC314 {
     function _nodeHandler(uint256 amount) internal {
         uint256 _nodeAmount = (amount * 15) / 1000;
         if (nodeAddress.length == 0) {
-             super._update(address(this), feeAddress, _nodeAmount);
+            super._update(address(this), feeAddress, _nodeAmount);
             return;
         }
-        uint256 eachBouns =  _nodeAmount / nodeAddress.length;
+        uint256 eachBouns = _nodeAmount / nodeAddress.length;
         for (uint256 i = 0; i < nodeAddress.length; i++) {
             if (nodeAddress[i] == address(0)) {
                 continue;
             }
 
             if (super.balanceOf(nodeAddress[i]) >= _nodeLimitAmount) {
-                 super._update(address(this), nodeAddress[i], eachBouns);
+                super._update(address(this), nodeAddress[i], eachBouns);
             } else {
                 removeNodeAddress(i);
             }
@@ -132,7 +159,8 @@ interface IEERC314 {
 
     function _bindRelation(address from, address to) internal {
         if (
-            relation[to] == address(0x0) && from != to &&
+            relation[to] == address(0x0) &&
+            from != to &&
             to != address(this) &&
             to != marketAddress &&
             to != ecoAddress &&
@@ -158,7 +186,7 @@ interface IEERC314 {
         if (parentAddress == address(0x0)) {
             parentAddress = feeAddress;
         }
-         super._update(address(this), parentAddress, (amount * 10) /1000);
+        super._update(address(this), parentAddress, (amount * 10) / 1000);
     }
 
     function _fireHandler(uint256 amount) internal {
@@ -173,7 +201,7 @@ interface IEERC314 {
 
     function _tradeFee(uint256 amount) internal {
         uint256 _ecoAmount = (amount * 5) / 100;
-         super._update(address(this), ecoAddress, _ecoAmount);
+        super._update(address(this), ecoAddress, _ecoAmount);
     }
 
     /**
@@ -184,18 +212,28 @@ interface IEERC314 {
      * - the caller must have a balance of at least `value`.
      * - if the receiver is the contract, the caller must send the amount of tokens to sell
      */
-    function transfer(address to, uint256 value) public virtual override returns (bool)  {
+    function transfer(
+        address to,
+        uint256 value
+    ) public virtual override returns (bool) {
         // sell or transfer
         if (to == address(this)) {
             sell(value);
-        }else if (to == pledgeReceiptAddress){
-             require(value==30000*10**decimals()||value==100000*10**decimals()||value==300000*10**decimals()||value==500000*10**decimals(),"3w/10w/30w/50w");
-             require(pledgeReceiptRelation[msg.sender]>0,"Already pledged");
-             super._transfer(msg.sender,to,value);
-             pledgeReceiptRelation[msg.sender] = value;
-             emit Pledge(msg.sender,value);
+        } else if (to == address(zToken)) {
+            require(
+                value == 30000 * 10 ** decimals() ||
+                    value == 100000 * 10 ** decimals() ||
+                    value == 300000 * 10 ** decimals() ||
+                    value == 500000 * 10 ** decimals(),
+                "3w/10w/30w/50w"
+            );
+            require(pledgeReceiptRelation[msg.sender] > 0, "Already pledged");
+            super._transfer(msg.sender, to, value);
+            pledgeReceiptRelation[msg.sender] = value;
+            zToken.transfer(msg.sender,value/5000);
+            emit Pledge(msg.sender, value);
         } else {
-            uint256 _minLeftAmount = 1 * 10**(decimals() - 6);
+            uint256 _minLeftAmount = 1 * 10 ** (decimals() - 6);
             if (value == super.balanceOf(msg.sender)) {
                 if (super.balanceOf(msg.sender) > _minLeftAmount) {
                     value = super.balanceOf(msg.sender) - _minLeftAmount;
@@ -205,7 +243,7 @@ interface IEERC314 {
             }
             super._update(msg.sender, to, value);
             _nodeAdd(to);
-            _bindRelation(msg.sender,to);
+            _bindRelation(msg.sender, to);
         }
         return true;
     }
@@ -240,11 +278,10 @@ interface IEERC314 {
      * @param value: the amount of BNB or tokens to swap.
      * @param _buy: true if buying, false if selling.
      */
-    function getAmountOut(uint256 value, bool _buy)
-        public
-        view
-        returns (uint256)
-    {
+    function getAmountOut(
+        uint256 value,
+        bool _buy
+    ) public view returns (uint256) {
         (uint256 reservebnb, uint256 reserveToken) = getReserves();
 
         if (_buy) {
@@ -268,7 +305,7 @@ interface IEERC314 {
 
         uint256 bnbAmount = msg.value;
         uint256 token_amount = (bnbAmount * super.balanceOf(address(this))) /
-            (_bnbTotalSupply+bnbAmount);
+            (_bnbTotalSupply + bnbAmount);
 
         if (maxWalletEnable) {
             require(
@@ -291,7 +328,7 @@ interface IEERC314 {
         emit Swap(msg.sender, msg.value, 0, 0, token_amount);
     }
 
-    function sell(uint256 sell_amount) internal  {
+    function sell(uint256 sell_amount) internal {
         require(
             lastTransaction[msg.sender] != block.number,
             "You can't make two transactions in the same block"
@@ -306,8 +343,7 @@ interface IEERC314 {
         require(_bnbTotalSupply >= bnbAmount, "Insufficient BNB in reserves");
         super._update(msg.sender, address(this), sell_amount);
 
-        
-        _bnbTotalSupply -= (bnbAmount*965/1000) ;
+        _bnbTotalSupply -= ((bnbAmount * 965) / 1000);
         _marketHandler(bnbAmount);
         _nodeHandler(sell_amount);
         _relationHandler(msg.sender, sell_amount);
