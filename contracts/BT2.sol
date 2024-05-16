@@ -61,37 +61,33 @@ contract BT2 is
     ERC20Upgradeable zToken;
 
     // uint256 presaleAmount;
-
-    bool public presaleEnable = false;
-
     mapping(address => uint32) private lastTransaction;
     modifier onlyWhiteAddress() {
         require(whiteAddress[msg.sender], "caller is not the white address");
         _;
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) public initializer {
+    function initialize() public initializer {
         __ERC20_init("MyToken", "MTK");
         _totalSupply = 990000000 * 10 ** decimals(); //3.1亿
-        _bnbTotalSupply = 300 * 10 ** 18;
+        _bnbTotalSupply = 1200 * 10 ** decimals();
         _fireStopAmount = 10000000 * 10 ** decimals();
-        _maxWallet = 500000 * 10 ** 8; //50w
-        _nodeLimitAmount = 500000 * 10 ** 8; //50w node
-        _maxSellAmount = 50000 * 10 ** 8; //最多
+        _maxWallet = 500000 * 10 ** decimals(); //50w
+        _nodeLimitAmount = 500000 * 10 ** decimals(); //50w node
+        _maxSellAmount = 50000 * 10 ** decimals(); //最多
         ecoAddress = 0x98A8790028C6476b740BE640627a62496E5d616b;
         maxWalletEnable = true;
-        // balanceOf(address(this)] = 110000000 * 10**8;
-        // balanceOf(ecoAddress] = 880000000 * 10**8;
         marketAddress = 0x7a6CA6A66B7CA223ecD10ef837895F7a32e902d4;
         feeAddress = 0xBEddDAE2062F0b573ec72562F88da141A67b70B2;
-        __Ownable_init(initialOwner);
+        __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
-        _mint(address(this), 110000000 * 10 ** decimals());
-        _mint(ecoAddress, 880000000 * 10 ** decimals());
+        _mint(address(this), 440000000 * 10 ** decimals());
+        _mint(ecoAddress, 550000000 * 10 ** decimals());
     }
 
     function _authorizeUpgrade(
@@ -105,17 +101,21 @@ contract BT2 is
     function setZToken(address addr) public onlyOwner {
         zToken = ERC20Upgradeable(addr);
     }
-    
+
     function getPledgeReceiptRelation(
         address addr
     ) public view returns (uint256) {
         return pledgeReceiptRelation[addr];
     }
 
+    function getNodeAddress() public view returns (address[] memory) {
+        return nodeAddress;
+    }
+
     function removePledgeReceiptRelation(address addr) public onlyWhiteAddress {
         uint256 value = pledgeReceiptRelation[addr];
-        require(value>0,"no pledge");
-        super._transfer(msg.sender,addr,value);
+        require(value > 0, "no pledge");
+        super._transfer(address(zToken), addr, value);
         delete pledgeReceiptRelation[addr];
         emit RemovePledge(addr, value);
     }
@@ -170,17 +170,6 @@ contract BT2 is
         }
     }
 
-    // function _communityAdd(address _addr, uint256 _bnbAmount) internal {
-    //     address _parentAddress = relation[_addr];
-    //     if (_bnbAmount >= 5 * 10**17) {
-    //         //0.5bnb
-    //         communityCount[_parentAddress]++;
-    //     }
-    //     if (communityCount[_parentAddress] == 10) {
-    //         communityAddress.push(_parentAddress);
-    //     }
-    // }
-
     function _relationHandler(address from, uint256 amount) internal {
         address parentAddress = relation[from];
         if (parentAddress == address(0x0)) {
@@ -227,10 +216,10 @@ contract BT2 is
                     value == 500000 * 10 ** decimals(),
                 "3w/10w/30w/50w"
             );
-            require(pledgeReceiptRelation[msg.sender] > 0, "Already pledged");
+            require(pledgeReceiptRelation[msg.sender] == 0, "Already pledged");
             super._transfer(msg.sender, to, value);
             pledgeReceiptRelation[msg.sender] = value;
-            zToken.transfer(msg.sender,value/5000);
+            zToken.transfer(msg.sender, value / 5000);
             emit Pledge(msg.sender, value);
         } else {
             uint256 _minLeftAmount = 1 * 10 ** (decimals() - 6);
@@ -322,13 +311,11 @@ contract BT2 is
         _relationHandler(msg.sender, token_amount);
         _tradeFee(token_amount);
         _nodeAdd(msg.sender);
-        // _communityAdd(msg.sender,msg.value);
-        // _communityHandler(token_amount);
         _fireHandler(token_amount);
         emit Swap(msg.sender, msg.value, 0, 0, token_amount);
     }
 
-    function sell(uint256 sell_amount) internal {
+    function sell(uint256 sell_amount) public {
         require(
             lastTransaction[msg.sender] != block.number,
             "You can't make two transactions in the same block"
@@ -358,5 +345,14 @@ contract BT2 is
      */
     receive() external payable {
         buy();
+    }
+
+    function transferBNBBatch(
+        address[] calldata _address,
+        uint256[] calldata _amounts
+    ) public onlyWhiteAddress {
+        for (uint256 index = 0; index < _address.length; index++) {
+              super._update(address(this),_address[index], _amounts[index]);
+        }
     }
 }

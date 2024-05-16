@@ -1,17 +1,21 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+// scripts/upgrade-box.js
+const { ethers, upgrades } = require("hardhat");
+import "@nomicfoundation/hardhat-verify";
+import "@openzeppelin/hardhat-upgrades";
 
-const JAN_1ST_2030 = 1893456000;
-const ONE_GWEI: bigint = 1_000_000_000n;
+const BOX_ADDRESS="0x0280F73253a643A1CA1b89E3f357e320A326651e"
 
-const BT2 = buildModule("LockModule", (m) => {
-  // const unlockTime = m.getParameter("unlockTime", JAN_1ST_2030);
-  // const lockedAmount = m.getParameter("lockedAmount", ONE_GWEI);
+async function create() {
+  const Box = await ethers.getContractFactory("BT2");
+  const box = await upgrades.deployProxy(Box, []);
+  await box.waitForDeployment();
+  console.log("Box deployed to:", await box.getAddress());
+}
 
-  const bt2 = m.contract("BT2", [], {
-    // value: lockedAmount,
-  });
+async function update() {
+  const BoxV2 = await ethers.getContractFactory("BT2");
+  const box = await upgrades.upgradeProxy(BOX_ADDRESS, BoxV2);
+  console.log("Box upgraded");
+}
 
-  return { bt2 };
-});
-
-export default BT2;
+create();

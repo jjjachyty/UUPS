@@ -7,11 +7,10 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-abstract contract ZPlan is ERC20Upgradeable {
-    function getPledgeReceiptRelation(
-        address addr
-    ) public view virtual returns (uint256);
-    function removePledgeReceiptRelation(address addr)public virtual;
+ 
+interface ZPlan {
+    function getPledgeReceiptRelation(address addr)  external returns (uint256);
+    function removePledgeReceiptRelation(address addr)  external ;
 }
 
 struct redemption {
@@ -25,18 +24,24 @@ contract Z is
     OwnableUpgradeable,
     UUPSUpgradeable
 {
+    event ApplyRemovePledge(address indexed sender, uint256 value);
+
     ZPlan zPlanToken;
-    mapping(address => redemption) redemptionRelation;
+    mapping(address => redemption) public redemptionRelation;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) public initializer {
+    function initialize() public initializer {
         __ERC20_init("Z", "Z");
-        __Ownable_init(initialOwner);
+        __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
+    }
+
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
     }
 
     function _authorizeUpgrade(
@@ -45,6 +50,10 @@ contract Z is
 
     function setZPlanToken(address addr) public onlyOwner {
         zPlanToken = ZPlan(addr);
+    }
+
+    function getRedemptionRelation(address _addr) public view returns (redemption memory){
+        return redemptionRelation[_addr];
     }
 
     function transfer(
@@ -59,19 +68,25 @@ contract Z is
             );
 
             require(pledgeValue > 0,"no pleadge");
-            require(pledgeValue/5000==value,"transfer amount error");
+            require(pledgeValue/10000==value,"transfer amount error");
 
             redemption memory item = redemptionRelation[msg.sender];
-            if (item.time <= block.timestamp) {
-                zPlanToken.removePledgeReceiptRelation(msg.sender);
-                return true;
+            if (item.time > 0 ){
+                if (item.time <= block.timestamp) {
+                    zPlanToken.removePledgeReceiptRelation(msg.sender);
+                    delete redemptionRelation[msg.sender];
+                    return true;
+                }
+                    revert("cannot redemption on this time");
             }
 
             
             redemptionRelation[msg.sender] = redemption(
-                block.timestamp * 24 * 60 * 60,
+                block.timestamp + (60),
                 pledgeValue
             );
+
+            emit ApplyRemovePledge(msg.sender, pledgeValue);
         }
         return true;
     }
