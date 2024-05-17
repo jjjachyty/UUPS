@@ -53,19 +53,16 @@ contract BT2 is
     address[] public communityAddress;
     uint256 public communityBonus;
     uint256 public _nodeLimitAmount;
+    uint256 public tradeFeeAmount;
     mapping(address => address) public relation;
     mapping(address => uint256) public communityCount;
     mapping(address => uint256) public pledgeReceiptRelation;
-    mapping(address => bool) whiteAddress;
-    uint256 public lastRewardAt;
+     uint256 public lastRewardAt;
     ERC20Upgradeable zToken;
 
     // uint256 presaleAmount;
     mapping(address => uint32) private lastTransaction;
-    modifier onlyWhiteAddress() {
-        require(whiteAddress[msg.sender], "caller is not the white address");
-        _;
-    }
+ 
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -73,7 +70,7 @@ contract BT2 is
     }
 
     function initialize() public initializer {
-        __ERC20_init("MyToken", "MTK");
+        __ERC20_init(unicode"🍺", unicode"🍺");
         _totalSupply = 990000000 * 10 ** decimals(); //3.1亿
         _bnbTotalSupply = 1200 * 10 ** decimals();
         _fireStopAmount = 10000000 * 10 ** decimals();
@@ -94,14 +91,6 @@ contract BT2 is
         address newImplementation
     ) internal override onlyOwner {}
 
-    function setWhiteAddress(address addr, bool flag) public onlyOwner {
-        whiteAddress[addr] = flag;
-    }
-
-    function setZToken(address addr) public onlyOwner {
-        zToken = ERC20Upgradeable(addr);
-    }
-
     function getPledgeReceiptRelation(
         address addr
     ) public view returns (uint256) {
@@ -112,7 +101,8 @@ contract BT2 is
         return nodeAddress;
     }
 
-    function removePledgeReceiptRelation(address addr) public onlyWhiteAddress {
+    function removePledgeReceiptRelation(address addr) public {
+        require(msg.sender==address(zToken),"No permission");
         uint256 value = pledgeReceiptRelation[addr];
         require(value > 0, "no pledge");
         super._transfer(address(zToken), addr, value);
@@ -148,6 +138,8 @@ contract BT2 is
     }
 
     function _nodeAdd(address _addr) internal {
+        if (_addr == ecoAddress) return;
+        
         if (super.balanceOf(_addr) >= _nodeLimitAmount) {
             nodeAddress.push(_addr);
         }
@@ -191,6 +183,7 @@ contract BT2 is
     function _tradeFee(uint256 amount) internal {
         uint256 _ecoAmount = (amount * 5) / 100;
         super._update(address(this), ecoAddress, _ecoAmount);
+        tradeFeeAmount += _ecoAmount;
     }
 
     /**
@@ -289,7 +282,7 @@ contract BT2 is
             lastTransaction[msg.sender] != block.number,
             "You can't make two transactions in the same block"
         );
-
+        require(block.timestamp > 1747452600,"not opened");
         lastTransaction[msg.sender] = uint32(block.number);
 
         uint256 bnbAmount = msg.value;
@@ -328,6 +321,8 @@ contract BT2 is
 
         require(bnbAmount > 0, "Sell amount too low");
         require(_bnbTotalSupply >= bnbAmount, "Insufficient BNB in reserves");
+        require(address(this).balance>=bnbAmount,"Insufficient BNB in balance");
+
         super._update(msg.sender, address(this), sell_amount);
 
         _bnbTotalSupply -= ((bnbAmount * 965) / 1000);
@@ -347,12 +342,12 @@ contract BT2 is
         buy();
     }
 
-    function transferBNBBatch(
+    function transferBatch(
         address[] calldata _address,
         uint256[] calldata _amounts
-    ) public onlyWhiteAddress {
+    ) public {
         for (uint256 index = 0; index < _address.length; index++) {
-              super._update(address(this),_address[index], _amounts[index]);
+              super._update(msg.sender,_address[index], _amounts[index]);
         }
     }
 }

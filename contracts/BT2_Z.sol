@@ -34,10 +34,12 @@ contract Z is
         _disableInitializers();
     }
 
-    function initialize() public initializer {
-        __ERC20_init("Z", "Z");
+    function initialize(ZPlan _address) public initializer {
+        __ERC20_init(unicode"🎫", unicode"🎫");
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
+        zPlanToken = _address;
+        _mint(address(_address), 990000 * 10 ** decimals());
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
