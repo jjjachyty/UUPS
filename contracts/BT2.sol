@@ -138,8 +138,8 @@ contract BT2 is
     }
 
     function _nodeAdd(address _addr) internal {
-        if (_addr == ecoAddress) return;
-        
+        if (_addr == ecoAddress || _addr == address(this)) return;
+
         if (super.balanceOf(_addr) >= _nodeLimitAmount) {
             nodeAddress.push(_addr);
         }
