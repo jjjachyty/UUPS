@@ -27,6 +27,7 @@ contract Z is
     event ApplyRemovePledge(address indexed sender, uint256 value);
 
     ZPlan zPlanToken;
+    uint256 redemptionIntervals;
     mapping(address => redemption) public redemptionRelation;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -40,6 +41,7 @@ contract Z is
         __UUPSUpgradeable_init();
         zPlanToken = _address;
         _mint(address(_address), 990000 * 10 ** decimals());
+        redemptionIntervals =60;
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
@@ -53,6 +55,11 @@ contract Z is
     function setZPlanToken(address addr) public onlyOwner {
         zPlanToken = ZPlan(addr);
     }
+    
+    function setRedemptionIntervals(uint256 _unxitime) public onlyOwner {
+        redemptionIntervals = _unxitime;
+    }
+    
 
     function getRedemptionRelation(address _addr) public view returns (redemption memory){
         return redemptionRelation[_addr];
@@ -84,7 +91,7 @@ contract Z is
 
             
             redemptionRelation[msg.sender] = redemption(
-                block.timestamp + (60),
+                block.timestamp + redemptionIntervals,
                 pledgeValue
             );
 
