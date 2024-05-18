@@ -72,7 +72,7 @@ contract BT2 is
     }
 
     function initialize() public initializer {
-        __ERC20_init(unicode"🍺", unicode"🍺");
+        __ERC20_init("BT2", "BT2");
         _totalSupply = 990000000 * 10 ** decimals(); //3.1亿
         _bnbTotalSupply = 1200 * 10 ** decimals();
         _fireStopAmount = 10000000 * 10 ** decimals();
