@@ -36,12 +36,12 @@ contract Z is
     }
 
     function initialize(ZPlan _address) public initializer {
-        __ERC20_init(unicode"🎫", unicode"🎫");
+        __ERC20_init("Z", "Z");
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         zPlanToken = _address;
         _mint(address(_address), 990000 * 10 ** decimals());
-        redemptionIntervals =60;
+        redemptionIntervals =12*60*60;
     }
 
     function mint(address to, uint256 amount) public onlyOwner {

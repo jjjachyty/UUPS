@@ -29,13 +29,13 @@ const config: HardhatUserConfig = {
       url: "https://data-seed-prebsc-1-s2.binance.org:8545",
       chainId: 97,
       gasPrice: 50000000000,
-      accounts: ["4a99de51656334fccaad3c9c554eb82af5c13972c7009577c5e58802810ebc0c"]
+      accounts: [" "]
     },
     mainnet: {
       url: "https://rpc.ankr.com/bsc",
       chainId: 56,
       gasPrice: 20000000000,
-      accounts: ["4a99de51656334fccaad3c9c554eb82af5c13972c7009577c5e58802810ebc0c"]
+      accounts: [" "]
     }
   },
   etherscan: {

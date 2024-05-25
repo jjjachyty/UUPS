@@ -25,6 +25,8 @@ interface IEERC314 {
     );
     event Pledge(address indexed sender, uint256 value);
     event RemovePledge(address indexed sender, uint256 value);
+    event PledgeNode(address indexed sender, uint256 value);
+    event RemoveNodePledge(address indexed sender, uint256 value);
 }
 
 contract BT2 is
@@ -64,6 +66,11 @@ contract BT2 is
 
     // uint256 presaleAmount;
     mapping(address => uint32) private lastTransaction;
+    uint256 public _lastNodeIndex;
+    uint256 public _nodeFeeTotalAmount;
+    ERC20Upgradeable public nodeToken;
+    uint256 nodeLimitAmount;
+    mapping(address => uint256) public nodePledgeRelation;
  
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -102,6 +109,11 @@ contract BT2 is
     function getNodeAddress() public view returns (address[] memory) {
         return nodeAddress;
     }
+
+    function getNodeFeeTotalAmount()public view returns (uint256){
+        return _nodeFeeTotalAmount;
+    }
+
     function setOpenTradeAt(uint256 _t) public onlyOwner {
         openTradeAt = _t;
     }
@@ -110,56 +122,50 @@ contract BT2 is
         zToken = _token;
     }
 
+    function setNodeToken(ERC20Upgradeable _token) public onlyOwner {
+        nodeToken = _token;
+    }
+
+
+    function setNodePledgeRelation(address _addr,uint256 _val) public onlyOwner {
+        nodePledgeRelation[_addr] = _val;
+    }
+    
+
+    function setNodeLimitAmount(uint256 _amount) public onlyOwner {
+        nodeLimitAmount = _amount;
+    }
+    
+
     function removePledgeReceiptRelation(address addr) external {
         require(msg.sender==address(zToken),"No permission");
         uint256 value = pledgeReceiptRelation[addr];
         require(value > 0, "no pledge");
         super._transfer(address(zToken), addr, value);
-        _nodeCheck(addr);
-        delete pledgeReceiptRelation[addr];
+         delete pledgeReceiptRelation[addr];
         emit RemovePledge(addr, value);
     }
 
-    function removeNodeAddress(uint256 index,address _addr)  internal   {
-         nodeAddress[index] = nodeAddress[nodeAddress.length - 1];
-         nodeAddress.pop();
-        delete nodeAddressRelation[_addr];
+    function removePledgeNode(address addr) external {
+        require(msg.sender==address(nodeToken),"No permission");
+        uint256 value = nodePledgeRelation[addr];
+        require(value > 0, "not node");
+        super._transfer(address(nodeToken), addr, value);
+        delete nodePledgeRelation[addr];
+        emit RemoveNodePledge(addr, value);
     }
-
+    
     function _nodeHandler(uint256 amount) internal {
         uint256 _nodeAmount = (amount * 15) / 1000;
-        if (nodeAddress.length == 0) {
-            super._update(address(this), feeAddress, _nodeAmount);
-            return;
-        }
-        uint256 eachBouns = _nodeAmount / nodeAddress.length;
-        for (uint256 i = 0; i < nodeAddress.length; i++) {
-            if (nodeAddress[i] == address(0)) {
-                continue;
-            }
-
-            if (super.balanceOf(nodeAddress[i]) >= _nodeLimitAmount) {
-                super._update(address(this), nodeAddress[i], eachBouns);
-            } else {
-                removeNodeAddress(i,nodeAddress[i]);
-            }
-        }
+        super._update(address(this), ecoAddress, _nodeAmount);
+        _nodeFeeTotalAmount += _nodeAmount;
     }
 
-    function _nodeCheck(address _addr) public {
-        if (_addr == ecoAddress || _addr == address(this)) return;
-        uint256 index =nodeAddressRelation[_addr];
-
-        if (index>0 && super.balanceOf(_addr) < _nodeLimitAmount){
-            removeNodeAddress(index-1,_addr);
-            return;
-        }
-
-        if (index ==0 && super.balanceOf(_addr) >= _nodeLimitAmount) {
-            nodeAddress.push(_addr);
-            nodeAddressRelation[_addr] = nodeAddress.length;
-            return;
-        }
+    function cleanNode() public onlyOwner  {
+        for (uint i = 0; i < nodeAddress.length; i++) {
+            delete nodeAddressRelation[nodeAddress[i]];
+    }
+                delete nodeAddress;
     }
 
     function _marketHandler(uint256 bnbAmount) internal {
@@ -193,7 +199,7 @@ contract BT2 is
             _fireAmount = _totalSupply - _fireStopAmount;
         }
         if (_fireAmount > 0 && super.balanceOf(address(this)) > _fireAmount) {
-            super._update(address(this), address(0x0), _fireAmount);
+            super._update(address(this), address(0x000000000000000000000000000000000000dEaD), _fireAmount);
         }
     }
 
@@ -231,7 +237,14 @@ contract BT2 is
             pledgeReceiptRelation[from] = value;
             zToken.transfer(from, value / 5000);
              emit Pledge(from, value);
-        } else {
+        } else if (to == address(nodeToken)) {
+            require(value == nodeLimitAmount,"50w");
+            require(nodePledgeRelation[from] == 0, "Already is node");
+            super._transfer(from, to, value);
+            nodePledgeRelation[from] = value;
+            nodeToken.transfer(from, 1);
+             emit PledgeNode(from, value);
+        }else {
             uint256 _minLeftAmount = 1 * 10 ** (decimals() - 6);
             if (value == super.balanceOf(from)) {
                 if (super.balanceOf(from) > _minLeftAmount) {
@@ -242,39 +255,17 @@ contract BT2 is
             }
             super._update(from, to, value);
             _bindRelation(from, to);
-            _nodeCheck(to);
-        }
-         _nodeCheck(from);
-        return true;
+         }
+         return true;
     }
 
     /**
      * @dev Returns the amount of BNB and tokens in the contract, used for trading.
      */
     function getReserves() public view returns (uint256, uint256) {
-        return (_bnbTotalSupply, super.balanceOf(address(this)));
+        return (_bnbTotalSupply,super.balanceOf(address(this)));
     }
 
- 
- 
-
-    /**
-     * @dev Estimates the amount of tokens or BNB to receive when buying or selling.
-     * @param value: the amount of BNB or tokens to swap.
-     * @param _buy: true if buying, false if selling.
-     */
-    function getAmountOut(
-        uint256 value,
-        bool _buy
-    ) public view returns (uint256) {
-        (uint256 reservebnb, uint256 reserveToken) = getReserves();
-
-        if (_buy) {
-            return (value * reserveToken) / (reservebnb + value);
-        } else {
-            return (value * reservebnb) / (reserveToken + value);
-        }
-    }
 
     /**
      * @dev Buys tokens with BNB.
@@ -299,7 +290,6 @@ contract BT2 is
         _nodeHandler(token_amount);
         _relationHandler(msg.sender, token_amount);
         _tradeFee(token_amount);
-        _nodeCheck(msg.sender);
         _fireHandler(token_amount);
         emit Swap(msg.sender, msg.value, 0, 0, token_amount);
     }
@@ -312,6 +302,12 @@ contract BT2 is
 
         lastTransaction[msg.sender] = uint32(block.number);
         require(sell_amount <= _maxSellAmount, "Max Limit Sell");
+
+        uint256 _minLeftAmount = 1 * 10 ** (decimals() - 6);
+        if (sell_amount == super.balanceOf(msg.sender)) {
+                sell_amount -= _minLeftAmount;
+        }
+
         uint256 bnbAmount = (sell_amount * _bnbTotalSupply) /
             (super.balanceOf(address(this)) + sell_amount);
 

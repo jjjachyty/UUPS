@@ -1,0 +1,641 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0x9F90C5cd1418c4D2Ab733d7335498149C5b14169",
+      "txHash": "0xf639adce70d28de553260b472729a4e7195c963eee9fde75c5524ac2e367c3e1",
+      "kind": "uups"
+    },
+    {
+      "address": "0xb315fA7699013baE4C87ED7a7D9ea9Eb80f41Cf8",
+      "txHash": "0x16e62edc41a41bf3d2aa2df3d79101cbc6572a4125626bd638084270a0e9ec08",
+      "kind": "uups"
+    }
+  ],
+  "impls": {
+    "2cc5a0a151ebf54351e6a82e100f4c40dcccdd45e5023cbb706ac783f6a3f09e": {
+      "address": "0xB63F495fd5B3e41773E7f6524b5FE9a4a8f2F168",
+      "txHash": "0x588bedab2532055428588dd2df71710eb48cb1d2b088968b204be84eae150e8d",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:37"
+          },
+          {
+            "label": "_bnbTotalSupply",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:38"
+          },
+          {
+            "label": "_maxBuyAmount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:39"
+          },
+          {
+            "label": "_maxSellAmount",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:40"
+          },
+          {
+            "label": "_fireStopAmount",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_string_storage",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:43"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_string_storage",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:44"
+          },
+          {
+            "label": "liquidityProvider",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_address",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:46"
+          },
+          {
+            "label": "maxWalletEnable",
+            "offset": 20,
+            "slot": "7",
+            "type": "t_bool",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:48"
+          },
+          {
+            "label": "marketAddress",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_address",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:49"
+          },
+          {
+            "label": "ecoAddress",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_address",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:50"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_address",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:51"
+          },
+          {
+            "label": "nodeAddress",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:52"
+          },
+          {
+            "label": "nodeAddressRelation",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:53"
+          },
+          {
+            "label": "communityAddress",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:54"
+          },
+          {
+            "label": "communityBonus",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:55"
+          },
+          {
+            "label": "_nodeLimitAmount",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:56"
+          },
+          {
+            "label": "tradeFeeAmount",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:57"
+          },
+          {
+            "label": "relation",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:58"
+          },
+          {
+            "label": "communityCount",
+            "offset": 0,
+            "slot": "18",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:59"
+          },
+          {
+            "label": "pledgeReceiptRelation",
+            "offset": 0,
+            "slot": "19",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:60"
+          },
+          {
+            "label": "lastRewardAt",
+            "offset": 0,
+            "slot": "20",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:61"
+          },
+          {
+            "label": "zToken",
+            "offset": 0,
+            "slot": "21",
+            "type": "t_contract(ERC20Upgradeable)1247",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:62"
+          },
+          {
+            "label": "openTradeAt",
+            "offset": 0,
+            "slot": "22",
+            "type": "t_uint256",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:63"
+          },
+          {
+            "label": "lastTransaction",
+            "offset": 0,
+            "slot": "23",
+            "type": "t_mapping(t_address,t_uint32)",
+            "contract": "BT2",
+            "src": "contracts/BT2.sol:66"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ERC20Storage)201_storage": {
+            "label": "struct ERC20Upgradeable.ERC20Storage",
+            "members": [
+              {
+                "label": "_balances",
+                "type": "t_mapping(t_address,t_uint256)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_allowances",
+                "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "_totalSupply",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "_name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "_symbol",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(InitializableStorage)65_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ERC20Upgradeable)1247": {
+            "label": "contract ERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint32)": {
+            "label": "mapping(address => uint32)",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.ERC20": [
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_balances",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:38",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_allowances",
+              "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:40",
+              "offset": 0,
+              "slot": "1"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_totalSupply",
+              "type": "t_uint256",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:42",
+              "offset": 0,
+              "slot": "2"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_name",
+              "type": "t_string_storage",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:44",
+              "offset": 0,
+              "slot": "3"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_symbol",
+              "type": "t_string_storage",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:45",
+              "offset": 0,
+              "slot": "4"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "a5020a54d7286cf9ff250057a4e9a274dd78747800491dc936fd4c7680007664": {
+      "address": "0xd9E6325f4fAa0DfEcDbFC6Fb46CDDc30713e7f05",
+      "txHash": "0x95145f8480a276f601ad2058c8c1534dd77b1afb36f12a4df4df33718986813c",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "zPlanToken",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(ZPlan)2239",
+            "contract": "Z",
+            "src": "contracts/BT2_Z.sol:29"
+          },
+          {
+            "label": "redemptionIntervals",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "Z",
+            "src": "contracts/BT2_Z.sol:30"
+          },
+          {
+            "label": "redemptionRelation",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_address,t_struct(redemption)2244_storage)",
+            "contract": "Z",
+            "src": "contracts/BT2_Z.sol:31"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ERC20Storage)201_storage": {
+            "label": "struct ERC20Upgradeable.ERC20Storage",
+            "members": [
+              {
+                "label": "_balances",
+                "type": "t_mapping(t_address,t_uint256)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_allowances",
+                "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "_totalSupply",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "_name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "_symbol",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(InitializableStorage)65_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(ZPlan)2239": {
+            "label": "contract ZPlan",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_struct(redemption)2244_storage)": {
+            "label": "mapping(address => struct redemption)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(redemption)2244_storage": {
+            "label": "struct redemption",
+            "members": [
+              {
+                "label": "time",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.ERC20": [
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_balances",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:38",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_allowances",
+              "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:40",
+              "offset": 0,
+              "slot": "1"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_totalSupply",
+              "type": "t_uint256",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:42",
+              "offset": 0,
+              "slot": "2"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_name",
+              "type": "t_string_storage",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:44",
+              "offset": 0,
+              "slot": "3"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_symbol",
+              "type": "t_string_storage",
+              "src": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol:45",
+              "offset": 0,
+              "slot": "4"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
