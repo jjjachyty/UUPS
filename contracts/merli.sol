@@ -32,7 +32,7 @@ contract MerliOp is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _usdtToken = ERC20Upgradeable(
             0x55d398326f99059fF775485246999027B3197955
         );
-        rechangeAddress = 0x27C932A1687dCfE7Ca1C3Fdb372e286e910CEfCF;
+        rechangeAddress = 0x1355d25d6aB84E614597f9265aa04AEc17c3e3Cd;
         whiteList[owner()] = true;
     }
 
