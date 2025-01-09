@@ -10,17 +10,23 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 
 contract MultiNFTAuction  is Initializable, ERC721Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
     // 定义拍卖结构体
+
+    struct AuctionBid{
+        address addr;
+        uint256 price;
+        uint256 createAt; 
+    }
     struct Auction {
         ERC721Upgradeable nft; // 拍卖的NFT合约地址
         uint256 nftId; // NFT的唯一ID
-        uint256 lastPrice; // 金额
-        address lastBidder; // 最后出价者
         uint256 expiredTime; // 创建时间
-        mapping(address => uint256) bids; // 每个出价者的出价金额
+        uint256 lastPrice;//最新价格
+        AuctionBid[] bids; // 每个出价者的出价金额
     }
     // 用户与推荐人的关系映射 (每个用户只能绑定一个推荐人)
     mapping(address => address) public userReferrer;
     mapping(uint256 => Auction) public auctions; // 所有拍卖的映射
+    mapping(uint256 => uint256) public auctionNfts; // 所有拍卖的映射
     uint256 public auctionCounter; // 拍卖计数器
     string public baseURI;
 
@@ -56,9 +62,10 @@ contract MultiNFTAuction  is Initializable, ERC721Upgradeable, OwnableUpgradeabl
     ) external onlyOwner {
         Auction storage auction = auctions[auctionCounter++];
         auction.nft = ERC721Upgradeable(_nft);
+        require(auction.nft.ownerOf(_nftId) == msg.sender,"nft not yours");
         auction.nftId = _nftId;
         auction.lastPrice = _price;
-        auction.lastBidder = msg.sender;
+        auction.bids.push(AuctionBid(msg.sender,_price, block.timestamp));
         auction.expiredTime = block.timestamp+NFT_EXPIRED_TIME;
         emit AuctionCreated(auctionCounter - 1, _nft, _nftId);
     }
@@ -86,32 +93,36 @@ function getDayStart() public view returns (uint256) {
 // 用户出价
 function placeBid(uint256 auctionId) external payable {
     Auction storage auction = auctions[auctionId];
-    require(auction.lastPrice > 0, "nft price must gt 0"); // 检查出价是否符合规则
-    require(auction.lastBidder != address(0), "nft address must not null"); // 检查出价是否符合规则
+    require(auction.bids.length > 0, "nft price must gt 0"); // 检查出价是否符合规则
     require(auction.expiredTime >= block.timestamp, "nft has end"); // 检查出价是否符合规则
-
-    auction.lastPrice = auction.lastPrice * NFT_PRICE_INCR / 100; // 每次出价增加10%
-    // 如果有之前的最高出价者，返还其奖励 
-    payable(auction.lastBidder).transfer((auction.lastPrice * LAST_PERCENT) / 1000);// 94.5% 返还给上一最高出价者
-    payable(TOP10_RECEIVE_ADDRESS).transfer((auction.lastPrice * TOP10_FEE_PERCENT) / 1000);
-    payable(FOUNDATION_RECEIVE_ADDRESS).transfer((auction.lastPrice * FOUNDATION_FEE_PERCENT) / 1000);
-    payable(LUCKY_POOL_RECEIVE_ADDRESS).transfer((auction.lastPrice * TEAM_FEE_PERCENT) / 1000);
+    
+    AuctionBid memory bid = auction.bids[auction.bids.length-1];
+    uint256 newPrice = bid.price * NFT_PRICE_INCR / 10000; // 每次出价增加10%
+    require(msg.value== newPrice,"price incorrect"); //确保价格
+     // 如果有之前的最高出价者，返还其奖励 
+    payable(bid.addr).transfer((newPrice * LAST_PERCENT) / 1000);// 94.5% 返还给上一最高出价者
+    payable(TOP10_RECEIVE_ADDRESS).transfer((newPrice * TOP10_FEE_PERCENT) / 1000);
+    payable(FOUNDATION_RECEIVE_ADDRESS).transfer((newPrice * FOUNDATION_FEE_PERCENT) / 1000);
+    payable(LUCKY_POOL_RECEIVE_ADDRESS).transfer((newPrice * TEAM_FEE_PERCENT) / 1000);
 
     //当天参与过竞拍的推荐人1%分成
     if ((userReferrer[msg.sender] != address(0)) && lastParticipationDay[userReferrer[msg.sender]] >=getDayStart()) {
-        payable(userReferrer[msg.sender]).transfer((auction.lastPrice * REFERRER_FEE_PERCENT) / 1000);
+        payable(userReferrer[msg.sender]).transfer((newPrice * REFERRER_FEE_PERCENT) / 1000);
     }
-
+    auction.lastPrice = newPrice;
     // 更新拍卖信息
-    auction.lastBidder = msg.sender;
-    auction.bids[msg.sender] += auction.lastPrice; // 更新用户出价金额
+    auction.bids.push(AuctionBid(msg.sender,newPrice, block.timestamp)); // 更新用户出价金额
     // 直接转移NFT所有权给当前最高出价者
-    auction.nft.transferFrom(auction.lastBidder, msg.sender, auction.nftId);
+    auction.nft.transferFrom(bid.addr, msg.sender, auction.nftId);
     // 更新用户当天的参与状态
     lastParticipationDay[msg.sender] = block.timestamp;
     emit BidPlaced(auctionId, msg.sender, msg.value);
 }
 
+
+  function getAuctionBids(uint256 _index) public view returns (AuctionBid[] memory) {
+        return auctions[_index].bids;
+}
 
     function initialize(address initialOwner) initializer public {
         __ERC721_init("MyToken", "MTK");
