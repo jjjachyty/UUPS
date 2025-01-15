@@ -14,8 +14,8 @@ $env:https_proxy="http://127.0.0.1:1082"
 @REM set http_proxy=http://127.0.0.1:1082  https_proxy=http://127.0.0.1:1082
 
 ganache-cli -f https://bsc-dataseed1.ninicoin.io  -e 10000 --account="0x6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f,100000000000000000000000" -h 0.0.0.0 -p 8545
-ganache-cli -f https://bsc.nodereal.io -e 10000 --account="0x6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f,100000000000000000000000" -h 0.0.0.0 -p 8545
-	
+ganache-cli  -e 10000 --account="0x6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f,100000000000000000000000" --gasPrice 2000000000 --gasLimit 30000000 --callGasLimit 50000000 --chainId 1337 --hardfork shanghai -h 0.0.0.0 -p 8545 
+docker run --detach --name ganache vegaprotocol/ganache:latest --publish 8545:8545 -e 10000 --account="0x6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f,100000000000000000000000" -h 0.0.0.0 -p 8545
 
 https://bsctestapi.terminet.io/rpc	
 
