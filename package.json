@@ -5,13 +5,15 @@
     "@nomicfoundation/hardhat-verify": "^2.0.10",
     "@nomiclabs/buidler": "^1.4.8",
     "@nomiclabs/hardhat-etherscan": "^3.1.8",
-    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@openzeppelin/contracts-upgradeable": "^5.2.0",
     "hardhat": "^2.22.10"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-ignition": "^0.15.5",
     "@openzeppelin/contracts": "^5.1.0",
     "@openzeppelin/hardhat-upgrades": "^3.2.1",
-    "@openzeppelin/upgrades-core": "^1.33.1"
+    "@openzeppelin/upgrades-core": "^1.33.1",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0"
   }
 }

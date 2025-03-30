@@ -23,3 +23,4 @@ https://bsctestapi.terminet.io/rpc
 
 npx hardhat ignition deploy ./ignition/modules/BT2.ts --network testnet 
 npx hardhat  verify --network mainnet 0xA7FCdae2d8dB37a3E45e615F4f901F78De279A79
+ganache-cli -e 10000 --account="0x6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f,100000000000000000000000" -h 0.0.0.0 -p 8545
