@@ -85,6 +85,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     uint256 public maxReferralLevels; // 最大推荐层级
     uint256 public holdingTime; // 持有锁定时间(秒)
     uint256 public profitLimit; // 利润限制倍数
+    uint256 public gasLimit; // 交易Gas限制
 
     // 价格控制参数
     struct PriceControlTier {
@@ -98,6 +99,10 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     uint256 public foMoSwapRatio; // Fo池和Mo池交替买入比例
     uint256 public todayStartPrice; // 今日起始价格
     uint256 public currentPrice; // 当前价格
+
+    // 当前状态变量
+    uint256 public foProcessedCount; // 已处理的Fo池条目计数
+    uint256 public moProcessedCount; // 已处理的Mo池条目计数
       
  
     // 事件
@@ -117,6 +122,9 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     event UsdtTransferred(address indexed recipient, uint256 amount);
     event MoPoolDeposit(address indexed user, uint256 amount );
     event ReferralRegisteredWithF(address indexed referrer, address indexed referee);
+    event AutoBuyExecuted(uint256 foCount, uint256 moCount, uint256 totalAmount);
+    event AutoBuyPaused(string reason);
+    event PriceControlTriggered(uint256 currentPrice, uint256 triggerPrice, bool isDropTrigger);
  
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -161,6 +169,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         maxReferralLevels = 7; // 最大7级推荐
         holdingTime = 72 hours; // 72小时锁定期
         profitLimit = 2; // 最多返回2倍投资
+        gasLimit = 500000; // 交易Gas限制
         
 
         foMoSwapRatio = 3; // 默认3单Fo对1单Mo的比例
@@ -500,12 +509,22 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         return false;
     }
 
-    // 重写transfer函数，强制使用buyTokens和sellTokens
-    function _transfer(
+    function transferFrom(
         address sender,
         address recipient,
         uint256 amount
-    ) internal virtual override {
+    ) public virtual override returns (bool) {
+        require(sender != address(0), "ERC20: transfer from the zero address");
+        require(recipient != address(0), "ERC20: transfer to the zero address");
+        require(amount > 0, "Transfer amount must be greater than zero");
+
+        return _buySell(sender,recipient, amount);
+    }
+    function _buySell(address sender,
+        address recipient,
+        uint256 amount) internal virtual   returns (bool){
+
+   
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
@@ -518,7 +537,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
             if (isSell) {
                 // 取消当前transfer操作，改为调用sellTokens
                 _autoSellTokens(sender, amount);
-                 return;
+                 return true;
             }
             
             // 如果是用户要从Uniswap买入代币，自动调用buyTokens
@@ -527,9 +546,16 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
                 // 取消当前transfer操作，改为调用buyTokens
                 _autoBuyTokens(recipient, amount);
                 
-                 return;
+                 return true;
             }
         revert("Transfer not allowed");
+    }
+    // 重写transfer函数，强制使用buyTokens和sellTokens
+    function transfer(
+        address recipient,
+        uint256 amount
+    ) public virtual override returns (bool) {
+        return _buySell(msg.sender,recipient, amount);
     }
     
     // 添加内部自动卖出函数
@@ -546,7 +572,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         // 检查持有时间
         require(block.timestamp >= userInfo[seller].lastBuyTimestamp + holdingTime, "Holding time not met");
 
-           // 检查利润限制
+        // 检查利润限制
         uint256 maxAllowedProfit = userInfo[seller].totalBought * profitLimit;
         // 计算用户2倍需要多少Token
         uint256 tokenNeed = getUSDTToTokenAmount(usdtAddress,address(this), maxAllowedProfit);
@@ -555,21 +581,30 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
             communityMoreFee = amount - tokenNeed;
         }
         
-       //燃烧
+        // 计算费用并执行转账
         uint256 burnAmount = amount * sellBurnPercent / 100;
+        
+        // 转移代币到合约
+        super._transfer(seller, address(this), amount-burnAmount);
+        
+        // 计算剩余费用
+        _processSellFees(seller, amount, burnAmount, communityMoreFee);
+    }
+    
+    // 辅助函数：处理卖出费用
+    function _processSellFees(address seller, uint256 amount, uint256 burnAmount, uint256 communityMoreFee) private {
         // 计算各种费用
         uint256 ecoFee = amount * sellEcoFeePercent / 100;
         uint256 foPoolFee = amount * sellFoPoolFeePercent / 100;
         uint256 communityFee = amount * sellCommunityFeePercent / 100;
-        uint256 leaderFee = amount * sellCommunityLeaderFeePercent / 100; // 添加社区长费用
+        uint256 leaderFee = amount * sellCommunityLeaderFeePercent / 100;
         uint256 moPoolFee = amount * sellMoPoolPercent / 100;
-        // 计算用户多余的U 
-        uint256 totalFees =  ecoFee + foPoolFee + communityFee + leaderFee+moPoolFee+communityMoreFee;
-         // 转移代币到合约
-        super._transfer(seller, address(this), amount-burnAmount);
+        
+        // 计算总费用
+        uint256 totalFees = ecoFee + foPoolFee + communityFee + leaderFee + moPoolFee + communityMoreFee;
         
         // 批准路由器使用代币
-        _approve(address(this), address(router),totalFees);
+        _approve(address(this), address(router), totalFees);
         
         // 卖出代币获取USDT
         address[] memory path = new address[](2);
@@ -583,47 +618,75 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
             address(this),
             block.timestamp + 300
         );
-        //用户最终得到的USDT
-        uint256 feeUSDTReceived = amounts[1];
-        //超过2倍利润限制
-        if (communityMoreFee > 0) {
-            ERC20Upgradeable(usdtAddress).transfer(communityRewardAddress, feeUSDTReceived*communityMoreFee/totalFees);
-        }
         
-       // 发送各种费用
+        // 用户最终得到的USDT
+        uint256 feeUSDTReceived = amounts[1];
+        
+        // 处理销毁
         if (burnAmount > 0) {
             super.transfer(address(0xdead), burnAmount);
         }
         
+        // 分配所有费用
+        _distributeSellFees(seller, ecoFee, foPoolFee, communityFee, leaderFee, moPoolFee, communityMoreFee, totalFees, feeUSDTReceived);
+        
+        emit TokenSold(seller, amount, totalFees, feeUSDTReceived);
+    }
+    
+    // 辅助函数：分配卖出费用
+    function _distributeSellFees(
+        address seller,
+        uint256 ecoFee, 
+        uint256 foPoolFee, 
+        uint256 communityFee, 
+        uint256 leaderFee, 
+        uint256 moPoolFee,
+        uint256 communityMoreFee,
+        uint256 totalFees,
+        uint256 feeUSDTReceived
+    ) private {
+        // 超过2倍利润限制
+        if (communityMoreFee > 0) {
+            ERC20Upgradeable(usdtAddress).transfer(communityRewardAddress, feeUSDTReceived*communityMoreFee/totalFees);
+        }
+        
+        // 发送生态费用
         if (ecoFee > 0) {
             ERC20Upgradeable(usdtAddress).transfer(ecoAddress, feeUSDTReceived*ecoFee/totalFees);
         }
         
+        // 发送Fo池分红费用
         if (foPoolFee > 0) {
             ERC20Upgradeable(usdtAddress).transfer(foPoolRewardAddress, feeUSDTReceived*foPoolFee/totalFees);
         }
         
+        // 发送社区奖励费用
         if (communityFee > 0) {
             ERC20Upgradeable(usdtAddress).transfer(communityRewardAddress, feeUSDTReceived*communityFee/totalFees);
         }
         
         // 处理社区长费用
+        _processCommunityLeaderFee(seller, leaderFee, totalFees, feeUSDTReceived);
+        
+        // 添加到Mo池
+        addToMoPool(seller, feeUSDTReceived*moPoolFee/totalFees);
+    }
+    
+    // 辅助函数：处理社区长费用
+    function _processCommunityLeaderFee(address seller, uint256 leaderFee, uint256 totalFees, uint256 feeUSDTReceived) private {
         if (leaderFee > 0) {
             address leader = communityLeaderOf[seller];
             uint256 leaderUSDTFee = feeUSDTReceived*leaderFee/totalFees;
             if (leader != address(0)) {
-                ERC20Upgradeable(usdtAddress).transfer(leader,leaderUSDTFee );
+                ERC20Upgradeable(usdtAddress).transfer(leader, leaderUSDTFee);
                 emit CommunityLeaderFeeDistributed(seller, leader, leaderUSDTFee);
             } else {
                 // 如果用户没有社区长，转给社区奖励地址
                 ERC20Upgradeable(usdtAddress).transfer(communityRewardAddress, leaderUSDTFee);
             }
         }
-        
-        addToMoPool(seller, feeUSDTReceived*moPoolFee/totalFees);
-        
-        emit TokenSold(seller, amount, totalFees, feeUSDTReceived);
     }
+    
     //根据币种获取兑换USDT的数量
     function getTokenToUSDTAmount(address from,address to,uint amountIn) public view returns (uint) {
         address[] memory path = new address[](2);
@@ -787,47 +850,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         communityRewardAddress = _communityRewardAddress;
     }
     
- 
-    
-    // 保留原有批量更新方法，便于一次性更新所有参数
-    // 更新系统参数
-    function updateSystemParameters(
-        uint256 _foPoolMinDeposit,
-        uint256 _buyFeePercent,
-        uint256 _sellFeePercent,
-        uint256 _buyTechFeePercent,
-        uint256 _sellBurnPercent,
-        uint256 _sellEcoFeePercent,
-        uint256 _sellFoPoolFeePercent,
-        uint256 _sellCommunityFeePercent,
-        uint256 _sellMoPoolPercent,
-        uint256 _buyReferralPercent,
-        uint256 _directReferralPercent,
-        uint256 _indirectReferralPercent,
-        uint256 _maxReferralLevels,
-        uint256 _holdingTime,
-        uint256 _profitLimit,
-        uint256 _foMoSwapRatio,
-        uint256 _communityLeaderFeePercent
-    ) external onlyOwner {
-        foPoolMinDeposit = _foPoolMinDeposit;
-        buyFeePercent = _buyFeePercent;
-        sellFeePercent = _sellFeePercent;
-        buyTechFeePercent = _buyTechFeePercent;
-        sellBurnPercent = _sellBurnPercent;
-        sellEcoFeePercent = _sellEcoFeePercent;
-        sellFoPoolFeePercent = _sellFoPoolFeePercent;
-        sellCommunityFeePercent = _sellCommunityFeePercent;
-        sellMoPoolPercent = _sellMoPoolPercent;
-        buyReferralPercent = _buyReferralPercent;
-        directReferralPercent = _directReferralPercent;
-        indirectReferralPercent = _indirectReferralPercent;
-        maxReferralLevels = _maxReferralLevels;
-        holdingTime = _holdingTime;
-        profitLimit = _profitLimit;
-        foMoSwapRatio = _foMoSwapRatio;
-        sellCommunityLeaderFeePercent = _communityLeaderFeePercent;
-    }
+  
     
     // 更新地址配置
     function updateAddresses(
@@ -980,6 +1003,134 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     
     // 必须实现的UUPSUpgradeable钩子
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+    function setGasLimit(uint256 _gasLimit) external onlyOwner {
+        gasLimit = _gasLimit;
+    }
+
+
+    // 执行自动买入，根据价格控制和3:1比例买入Fo池和Mo池的订单
+    function executeAutoBuy(bool isResetTime) public onlyOwner()  {         
+        // 获取当前价格和底池大小
+        uint256 currentPriceVal = getCurrentPrice();
+        uint256 liquidityUsdt = getUsdtReserve();
+        
+        // 获取当前价格控制参数
+        (uint256 maxIncreasePct, uint256 triggerPct) = getCurrentPriceControlParams(liquidityUsdt);
+        
+        // 计算最高允许价格和触发价格
+        uint256 maxPrice = todayStartPrice + (todayStartPrice * maxIncreasePct / 100);
+        uint256 triggerPrice = todayStartPrice - (todayStartPrice * triggerPct / 100);
+        //如果是8点直接拉满 不是则补到触发价
+        uint256 stopPrice = maxPrice;
+        if (!isResetTime) {
+            stopPrice = triggerPrice;
+        }
+
+        if (currentPriceVal >= stopPrice) {
+             emit PriceControlTriggered(currentPriceVal, stopPrice, true);
+             return;
+        }
+
+        uint256 gasUsed = 0;
+        uint256 gasLeft = gasleft();
+        uint256 count = 3;
+        // 处理队列，直到价格达到每日上限或队列为空
+        while (currentPriceVal < stopPrice && gasUsed < gasLimit) {
+             //取三单Fo池订单
+            uint256 fl =  foPool.length;
+            uint256 ml = moPool.length;
+           
+            if (fl == 0 && ml == 0) {
+                break;
+            }
+            // 处理Fo池订单
+            while(count>0 && fl > 0){
+                count--;
+                    Pool memory foOrder = foPool[foProcessedCount];
+                    if (foOrder.usdtAmount > 0) {
+                         ERC20Upgradeable(usdtAddress).approve(address(router), foOrder.usdtAmount);
+
+                        // 执行买入
+                        address[] memory path = new address[](2);
+                        path[0] = usdtAddress;
+                        path[1] = address(this);
+                        router.swapExactTokensForTokens(
+                            foOrder.usdtAmount,
+                            0,
+                            path,
+                            foOrder.addr,
+                            block.timestamp + 300
+                        );
+                        foProcessedCount++;
+                        delete foPoolUserAmounts[foOrder.addr];
+                        delete foPool[foProcessedCount];
+                        foPoolTotalAmount -= foOrder.usdtAmount;
+                        fl--;
+                } else {
+                    break;
+                }
+                
+            }
+            // 处理Mo池订单
+            while((count==0||count==3) && ml > 0 ){
+                count=3;
+                     Pool memory moOrder = moPool[moProcessedCount];
+                    if (moOrder.usdtAmount > 0) {
+                        // 执行买入
+                        uint256 tokenAmount = getUSDTToTokenAmount(usdtAddress, address(this), moOrder.usdtAmount);
+                        super._transfer(address(this), moOrder.addr, tokenAmount);
+                        emit TokenBought(moOrder.addr, tokenAmount, moOrder.usdtAmount);
+                        moProcessedCount++;
+                        delete moPoolUserAmounts[moOrder.addr];
+                        delete moPool[moProcessedCount];
+                        moPoolTotalAmount -= moOrder.usdtAmount;
+                        ml--;
+                    } else {
+                        break;
+                    }
+                
+            }
+
+             // 更新当前价格
+             currentPriceVal = getCurrentPrice();
+
+
+            // 按3:1比例处理Fo池和Mo池订单
+             uint256 newGasLeft = gasleft();
+
+            if (gasLeft > newGasLeft) {
+                gasUsed = gasUsed+(gasLeft - (newGasLeft));
+            }
+
+        gasLeft = newGasLeft;
+        }
+    }
     
- 
+    // 获取当前价格控制参数
+    function getCurrentPriceControlParams(uint256 liquidityUsdt) public view returns (uint256 maxIncreasePct, uint256 triggerPct) {
+        for (uint256 i = 0; i < priceControlTiers.length; i++) {
+            if (liquidityUsdt >= priceControlTiers[i].minLiquidity && 
+                liquidityUsdt < priceControlTiers[i].maxLiquidity) {
+                maxIncreasePct = priceControlTiers[i].maxDailyIncrease;
+                triggerPct = priceControlTiers[i].triggerDecreasePercent;
+                return (maxIncreasePct, triggerPct);
+            }
+        }
+        
+        // 默认使用最后一档
+        if (priceControlTiers.length > 0) {
+             return (priceControlTiers[0].maxDailyIncrease, priceControlTiers[0].triggerDecreasePercent);
+        }
+        
+        revert("No price control tiers defined");
+    }
+    
+   
+    
+    // 重置处理计数器 - 当需要重新处理所有队列时使用
+    function resetProcessedCounters() external onlyOwner {
+        foProcessedCount = 0;
+        moProcessedCount = 0;
+    }
 }

@@ -51,22 +51,19 @@ contract FToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgr
     }
     
     /**
-     * @dev 重写转账函数，特殊处理用于注册关系的1个代币转账
+     * @dev 代币转移后执行的钩子函数，用于处理推荐关系的注册
      */
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal virtual override {
-        super._transfer(sender, recipient, amount);
-        
+    function transfer(address to, uint256 amount) public override returns (bool) {
+        address from = _msgSender();
+        bool result = super.transfer(to, amount);
+
         // 当转账恰好1个代币且FoMox地址已设置时，调用FoMox合约注册推荐关系
         if (amount == 1 * 10**18 && foMoxAddress != address(0)) {
             // 创建调用FoMox合约的接口
             bytes memory callData = abi.encodeWithSignature(
                 "transferAndRegisterReferral(address,address)", 
-                sender, 
-                recipient
+                from, 
+                to
             );
             
             // 调用FoMox合约
@@ -76,6 +73,8 @@ contract FToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgr
                 revert("Failed to register referral");
             }
         }
+
+        return result;
     }
     
     /**
