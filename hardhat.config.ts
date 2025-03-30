@@ -8,13 +8,22 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1000,
+        // 降低runs值以优化部署大小
+        runs: 200,
+        // 添加详细优化设置
+        details: {
+          yul: true,
+          yulDetails: {
+            stackAllocation: true,
+            optimizerSteps: "dhfoDgvulfnTUtnIf"
+          },
+        },
       },
-      evmVersion: "istanbul"
+      // 更新到更现代的EVM版本
+      evmVersion: "shanghai",
+      // 对大型合约禁用viaIR可能会有帮助
+      viaIR: true
     },
-  },
-  sourcify: {
-    enabled: true
   },
   paths: {
     // artifacts: './src/artifacts',

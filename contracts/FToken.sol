@@ -24,7 +24,7 @@ contract FToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgr
      */
     function initialize(uint256 _initialSupply) public initializer {
         __ERC20_init("F Token", "F");
-        __Ownable_init(msg.sender);
+        __Ownable_init();
         __UUPSUpgradeable_init();
         
         // 铸造初始代币给部署者

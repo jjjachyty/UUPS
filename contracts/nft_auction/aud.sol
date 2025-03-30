@@ -126,7 +126,7 @@ function placeBid(uint256 auctionId) external payable {
 
     function initialize(address initialOwner) initializer public {
         __ERC721_init("MyToken", "MTK");
-        __Ownable_init(initialOwner);
+        __Ownable_init();
         __UUPSUpgradeable_init();
 
     FOUNDATION_RECEIVE_ADDRESS = 0xfDb36E302FF8A379ED10566002F9AcE18fA576Ee; // 基金会收款地址

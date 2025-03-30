@@ -4,7 +4,7 @@ const { ethers, upgrades } = require("hardhat");
 describe("FToken", function () {
   let FToken, fToken, FoMox, foMox;
   let owner, user1, user2, user3;
-  let initialSupply = ethers.utils.parseEther("10000000"); // 1000万枚代币
+  let initialSupply = ethers.parseEther("10000000"); // 1000万枚代币
 
   beforeEach(async function () {
     // 获取测试账户
@@ -16,13 +16,13 @@ describe("FToken", function () {
       initializer: 'initialize',
       kind: 'uups'
     });
-    await fToken.deployed();
-    
+    console.log("FToken合约地址:", fToken.target);
+     
     // 部署FoMox合约（简化版，仅用于测试推荐关系）
     FoMox = await ethers.getContractFactory("FoMox");
     foMox = await upgrades.deployProxy(FoMox, [
-      "0x0000000000000000000000000000000000000000", // 模拟USDT地址
-      "0x0000000000000000000000000000000000000000", // 模拟路由器地址
+      "0x55d398326f99059fF775485246999027B3197955", // 模拟USDT地址
+      "0x10ED43C718714eb63d5aA57B78B54704E256024E", // 模拟路由器地址
       owner.address,
       owner.address,
       owner.address,
@@ -31,11 +31,10 @@ describe("FToken", function () {
       initializer: 'initialize',
       kind: 'uups'
     });
-    await foMox.deployed();
-    
+     
     // 设置合约互相关联
-    await fToken.setFoMoxAddress(foMox.address);
-    await foMox.setFTokenAddress(fToken.address);
+    await fToken.setFoMoxAddress(foMox.target);
+    await foMox.setFTokenAddress(fToken.target);
   });
 
   describe("基本功能", function () {
