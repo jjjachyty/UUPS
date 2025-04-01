@@ -9,6 +9,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "./IPoolBase.sol";
 
 contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
  
@@ -27,24 +28,11 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     address public ecoAddress; // 生态地址
     address public foPoolRewardAddress; // Fo池分红地址
     address public communityRewardAddress; // 社区奖励地址
-    address public fTokenAddress; // F代币地址
- 
+    IFtoken public fTokenContract; // F代币地址
 
-    // 池子配置
-    struct Pool {
-        address  addr; // 池子地址
-        uint256 usdtAmount; // 池子USDT金额
-        uint256 bnbAmount; // 池子BNB总金额
-    }
-
-    Pool[] public foPool; // Fo池
-    mapping(address => uint256) public foPoolUserAmounts; // 用户在Fo池的存入金额
-    uint256 public foPoolTotalAmount; // Fo池总金额
-    Pool[] public moPool; // Mo池
-    mapping(address => uint256) public moPoolUserAmounts; // 用户在Mo池的存入金额
-    uint256 public moPoolTotalAmount; // Mo池总金额
-
- 
+    // 池子相关声明
+    IPoolBase public foPoolContract;
+    IPoolBase public moPoolContract;
 
 
     mapping (address=>bool) isExemptFromTransferRestrictions;
@@ -56,19 +44,11 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     
     mapping(address => UserInfo) public userInfo;
     
-    // 推荐关系
-    mapping(address => address) public referrers; // 用户的推荐人
-    mapping(address => address[]) public referrals; // 用户的直接推荐列表
-    mapping(address => uint256) public referralCount; // 用户的直接推荐数量
-    
-    // 社区长相关
-    mapping(address => bool) public isCommunityLeader; // 是否是社区长
-    mapping(address => address) public communityLeaderOf; // 用户的社区长地址
-    mapping(address => address[]) public communityMembers; // 社区长的所有成员
+  
     
 
     // 系统参数
-    uint256 public foPoolMinDeposit; // Fo池最小入金
+    uint256 public minDeposit; // 最小存款金额
     uint256 public buyMaxAmount; // 最大买入金额
     uint256 public buyFeePercent; // 买入总手续费百分比
     uint256 public sellFeePercent; // 卖出总手续费百分比
@@ -96,17 +76,14 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     }
     
     PriceControlTier[] public priceControlTiers;
-    uint256 public foMoSwapRatio; // Fo池和Mo池交替买入比例
-    uint256 public todayStartPrice; // 今日起始价格
+     uint256 public todayStartPrice; // 今日起始价格
     uint256 public currentPrice; // 当前价格
 
-    // 当前状态变量
-    uint256 public foProcessedCount; // 已处理的Fo池条目计数
-    uint256 public moProcessedCount; // 已处理的Mo池条目计数
+    
       
  
     // 事件
-    event FoPoolDeposit(address indexed user, uint256 amount);
+ 
     event AutomaticBuy(uint256 amount, bool isFromFoPool);
     event TokenBought(address indexed buyer, uint256 tokenAmount, uint256 usdtAmount);
     event TokenSold(address indexed seller, uint256 tokenAmount, uint256 feeAmount, uint256 feeUsdtAmount);
@@ -117,7 +94,6 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     event SellAttemptViaTransfer(address indexed user, uint256 amount);
     event BuyAttemptViaTransfer(address indexed user, uint256 amount);
     event CommunityLeaderRegistered(address indexed leader);
-    event CommunityLeaderFeeDistributed(address indexed user, address indexed leader, uint256 amount);
     event CommunityLeaderAssigned(address indexed user, address indexed leader);
     event UsdtTransferred(address indexed recipient, uint256 amount);
     event MoPoolDeposit(address indexed user, uint256 amount );
@@ -137,7 +113,10 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         address _techAddress,
         address _ecoAddress,
         address _foPoolRewardAddress,
-        address _communityRewardAddress
+        address _communityRewardAddress,
+        address _foPoolAddress,
+        address _moPoolAddress,
+        address _fTokenAddress
      ) public initializer {
         __ERC20_init("FoMox", "FOMOX");
         __Ownable_init();
@@ -150,30 +129,12 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         ecoAddress = _ecoAddress;
         foPoolRewardAddress = _foPoolRewardAddress;
         communityRewardAddress = _communityRewardAddress;
-
+        foPoolContract = IPoolBase(_foPoolAddress);
+        moPoolContract = IPoolBase(_moPoolAddress);
+        fTokenContract = IFtoken(_fTokenAddress);
         // 设置默认参数
-        foPoolMinDeposit = 50 * 10**18; // 最小50U
-        buyMaxAmount = 100 * 10**18;   // 默认最大买入100U
-        buyFeePercent = 7; // 买入7%手续费
-        sellFeePercent = 8; // 卖出8%手续费
-        buyTechFeePercent = 3; // 买入3%给技术维护地址
-        sellBurnPercent = 2; // 卖出2%销毁
-        sellEcoFeePercent = 2; // 卖出2%给生态地址
-        sellFoPoolFeePercent = 2; // 卖出2%给Fo池分红
-        sellCommunityFeePercent = 1; // 卖出1%给社区奖励
-        sellCommunityLeaderFeePercent = 1; // 社区长分红1%
-        sellMoPoolPercent = 50; // 卖出50%进入Mo池
-        buyReferralPercent = 4; // 买入4%作为推荐奖励
-        directReferralPercent = 1; // 直推1%
-        indirectReferralPercent = 5; // 间推0.5% * 6级 = 3%
-        maxReferralLevels = 7; // 最大7级推荐
-        holdingTime = 72 hours; // 72小时锁定期
-        profitLimit = 2; // 最多返回2倍投资
-        gasLimit = 500000; // 交易Gas限制
+        _setupDefaultParameters();
         
-
-        foMoSwapRatio = 3; // 默认3单Fo对1单Mo的比例
-
         // 设置价格控制参数
         setupPriceControlTiers();
 
@@ -191,6 +152,30 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         isExemptFromTransferRestrictions[_ecoAddress] = true;
         isExemptFromTransferRestrictions[_foPoolRewardAddress] = true;
         isExemptFromTransferRestrictions[_communityRewardAddress] = true;
+        isExemptFromTransferRestrictions[address(router)] = true;
+        isExemptFromTransferRestrictions[uniswapPair] = true;
+     }
+     
+    // 设置默认参数，分离以减小initialize的大小
+    function _setupDefaultParameters() internal {
+        minDeposit = 50 * 10**18; // 最小50U
+        buyMaxAmount = 100 * 10**18;   // 默认最大买入100U
+        buyFeePercent = 7; // 买入7%手续费
+        sellFeePercent = 8; // 卖出8%手续费
+        buyTechFeePercent = 3; // 买入3%给技术维护地址
+        sellBurnPercent = 2; // 卖出2%销毁
+        sellEcoFeePercent = 2; // 卖出2%给生态地址
+        sellFoPoolFeePercent = 2; // 卖出2%给Fo池分红
+        sellCommunityFeePercent = 1; // 卖出1%给社区奖励
+        sellCommunityLeaderFeePercent = 1; // 社区长分红1%
+        sellMoPoolPercent = 50; // 卖出50%进入Mo池
+        buyReferralPercent = 4; // 买入4%作为推荐奖励
+        directReferralPercent = 1; // 直推1%
+        indirectReferralPercent = 5; // 间推0.5% * 6级 = 3%
+        maxReferralLevels = 7; // 最大7级推荐
+        holdingTime = 72 hours; // 72小时锁定期
+        profitLimit = 2; // 最多返回2倍投资
+        gasLimit = 500000; // 交易Gas限制
      }
 
     function setupPriceControlTiers() internal {
@@ -252,53 +237,6 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         currentPrice = todayStartPrice;
     }
 
-    // 防止合约直接接收ETH
-    receive() external payable {
-        if (msg.value > 0) {
-            depositToFoPool();
-        }
-    }
-
-    // 将BNB存入Fo池
-    function depositToFoPool() public payable nonReentrant {
-        require(msg.value > 0, "Cannot deposit 0 BNB");
-        require(foPoolUserAmounts[msg.sender] ==0,"Already deposited in Fo pool");
-        require(super.balanceOf(msg.sender) == 0, "You have tokens cannot to deposit");
-
-        // 先将BNB换成USDT
-        address[] memory path = new address[](2);
-        path[0] = router.WETH();
-        path[1] = usdtAddress;
-        
-        uint256[] memory amounts = router.swapExactETHForTokens{value: msg.value}(
-            0,
-            path,
-            address(this),
-            block.timestamp + 300
-        );
-        
-        uint256 usdtAmount = amounts[1];
-        require(usdtAmount >= foPoolMinDeposit, "Deposit amount too small");
-        
-        // 检查池子大小是否超过限制
-        uint256 liquidityUsdt = getUsdtReserve();
-        require(foPoolTotalAmount + usdtAmount <= liquidityUsdt * 40 / 100, "Fo pool exceeded 40% of liquidity");
-        
-        // 获取用户可以存入的最大金额
-        uint256 maxAllowedDeposit = calculateMaxBuyAmount();
-        require(foPoolUserAmounts[msg.sender]+usdtAmount <= maxAllowedDeposit, "Deposit exceeds maximum allowed");
-       
-
-        foPool.push(Pool({
-            addr: msg.sender,
-            usdtAmount: usdtAmount,
-            bnbAmount: msg.value
-        }));
-        foPoolTotalAmount += usdtAmount;
-        foPoolUserAmounts[msg.sender] += usdtAmount;
-        
-        emit FoPoolDeposit(msg.sender, usdtAmount);
-    }
 
     // 根据底池等级计算最大买入金额
     function calculateMaxBuyAmount() public view returns (uint256) {
@@ -394,102 +332,33 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     }
 
     function checkAddressEffect(address addr) public view returns (bool) {
-        return balanceOf(addr)>0 || foPoolUserAmounts[addr]>0 || moPoolUserAmounts[addr]>0;
+        return balanceOf(addr) > 0 || 
+               foPoolContract.getUserAmount(addr) > 0 || 
+               moPoolContract.getUserAmount(addr) > 0;
     }
 
-    // 处理推荐奖励
-    function processReferralRewards(address user, uint256 totalReferralFee) internal nonReentrant {
-        if (totalReferralFee == 0) return;
-        
-        address currentRef = referrers[user];
-        uint256 directFee = totalReferralFee * (directReferralPercent) / (buyReferralPercent);
-        uint256 indirectFeePerLevel = totalReferralFee *(indirectReferralPercent) / (buyReferralPercent) / (maxReferralLevels - 1);
-        
-        uint256 distributedFee = 0;
-        uint256 currentLevel = 1;
-        
-        // 处理直推奖励
-        if (currentRef != address(0) && !isExemptFromTransferRestrictions[currentRef]) {
-            if (checkAddressEffect(currentRef)) {
-                ERC20Upgradeable(usdtAddress).transfer(currentRef, directFee);
-                distributedFee = distributedFee + (directFee);
-                emit ReferralReward(user, currentRef, directFee, 1);
-            }
-            // 处理间接推荐奖励
-            currentRef = referrers[currentRef];
-            currentLevel++;
-            
-            while (currentRef != address(0) && currentRef != uniswapPair && currentLevel <= maxReferralLevels) {
-                if (referralCount[currentRef] >= currentLevel - 1 && checkAddressEffect(currentRef)) {
-                    ERC20Upgradeable(usdtAddress).transfer(currentRef, indirectFeePerLevel);
-                    distributedFee = distributedFee + (indirectFeePerLevel);
-                    emit ReferralReward(user, currentRef, indirectFeePerLevel, currentLevel);
-                }
-                
-                currentRef = referrers[currentRef];
-                currentLevel++;
-            }
-        }
-        
-        // 剩余未分配的奖励发送给社区奖励地址
-        uint256 remainingFee = totalReferralFee - (distributedFee);
-        if (remainingFee > 0) {
-            ERC20Upgradeable(usdtAddress).transfer(communityRewardAddress, remainingFee);
-        }
-    }
+  
 
  
-    // 将资金添加到Mo池，允许同一用户多次入队
+    // 将资金添加到Mo池 - 修改为使用外部合约
     function addToMoPool(address sender, uint256 amount) internal nonReentrant {
-        // 添加到Mo池队列
-        moPool.push(Pool({
-            addr: sender,
-            usdtAmount: amount,
-            bnbAmount: 0
-        }));
-        moPoolTotalAmount += amount;
-        moPoolUserAmounts[sender] += amount;
-        // 发出事件记录
+        // 批准USDT转账给Mo池合约
+        IERC20Upgradeable(usdtAddress).transfer(address(moPoolContract), amount);
+        
+        // 调用外部合约进行存款
+        moPoolContract.deposit(sender, amount, 0);
         emit MoPoolDeposit(sender, amount);
     }
  
 
-    // 注册推荐关系并设置社区长
-    function transferAndRegisterReferral(address from, address to) public nonReentrant {
-        require(msg.sender == owner() || msg.sender == fTokenAddress, "Only owner or FToken can call this");
-        require(!isExemptFromTransferRestrictions[to], "Invalid referrer address");
-        
-        // 注册推荐关系
-        referrers[msg.sender] = to;
-        referrals[to].push(msg.sender);
-        referralCount[to] = referralCount[to] + 1;
-        
-        // 处理社区长关系
-        _assignCommunityLeader(msg.sender, to);
-        
-        emit ReferralRegistered(to, msg.sender);
+
+    // 设置FToken地址
+    function setFTokenAddress(address _fTokenAddress) external onlyOwner {
+        require(_fTokenAddress != address(0), "Invalid address");
+        fTokenContract = IFtoken(_fTokenAddress);
     }
     
-    // 内部函数：分配社区长给用户
-    function _assignCommunityLeader(address user, address referrer) internal {
-        // 判断推荐人是否是社区长
-        if (isCommunityLeader[referrer]) {
-            // 如果推荐人是社区长，直接设置
-            communityLeaderOf[user] = referrer;
-            communityMembers[referrer].push(user);
-        } else if (communityLeaderOf[referrer] != address(0)) {
-            // 如果推荐人有社区长，继承相同的社区长
-            address leader = communityLeaderOf[referrer];
-            communityLeaderOf[user] = leader;
-            communityMembers[leader].push(user);
-        } else {
-            // 如果都不是，用户暂时没有社区长
-            revert("No community leader assigned");
-        }
-    }
-    
- 
-    
+
     // 检查是否可以购买
     function checkCanBuy() public view returns (bool) {
         // 根据底池U检查当前是否可以购买
@@ -666,27 +535,13 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         }
         
         // 处理社区长费用
-        _processCommunityLeaderFee(seller, leaderFee, totalFees, feeUSDTReceived);
+        fTokenContract.processCommunityLeaderFee(seller, leaderFee, totalFees, feeUSDTReceived);
         
         // 添加到Mo池
         addToMoPool(seller, feeUSDTReceived*moPoolFee/totalFees);
     }
     
-    // 辅助函数：处理社区长费用
-    function _processCommunityLeaderFee(address seller, uint256 leaderFee, uint256 totalFees, uint256 feeUSDTReceived) private {
-        if (leaderFee > 0) {
-            address leader = communityLeaderOf[seller];
-            uint256 leaderUSDTFee = feeUSDTReceived*leaderFee/totalFees;
-            if (leader != address(0)) {
-                ERC20Upgradeable(usdtAddress).transfer(leader, leaderUSDTFee);
-                emit CommunityLeaderFeeDistributed(seller, leader, leaderUSDTFee);
-            } else {
-                // 如果用户没有社区长，转给社区奖励地址
-                ERC20Upgradeable(usdtAddress).transfer(communityRewardAddress, leaderUSDTFee);
-            }
-        }
-    }
-    
+  
     //根据币种获取兑换USDT的数量
     function getTokenToUSDTAmount(address from,address to,uint amountIn) public view returns (uint) {
         address[] memory path = new address[](2);
@@ -712,8 +567,8 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         // 检查价格是否已超过日涨幅限制
         require(checkDailyPriceLimit(), "Price already reached daily limit");
         require(super.balanceOf(buyer) == 0, "You have tokens cannot to buy");
-        require(foPoolUserAmounts[buyer]==0, "Already deposited in Fo pool");
-        require(moPoolUserAmounts[buyer]==0, "Already deposited in Mo pool");
+        require(foPoolContract.getUserAmount(buyer)==0, "Already deposited in Fo pool");
+        require(moPoolContract.getUserAmount(buyer)==0, "Already deposited in Mo pool");
 
         
         // 计算要扣除的手续费
@@ -743,11 +598,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
             usdt.transfer(recipients[i], amounts[i]);
         }
     }
-  
-    // 设置Fo池最小入金额
-    function setFoPoolMinDeposit(uint256 _foPoolMinDeposit) external onlyOwner {
-        foPoolMinDeposit = _foPoolMinDeposit;
-    }
+   
     
     // 设置买入费用比例
     function setBuyFeePercent(uint256 _buyFeePercent) external onlyOwner {
@@ -798,6 +649,22 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     function setDirectReferralPercent(uint256 _directReferralPercent) external onlyOwner {
         directReferralPercent = _directReferralPercent;
     }
+
+    function getDirectReferralPercent() external view returns (uint256) {
+        return directReferralPercent;
+    }
+    function getIndirectReferralPercent() external view returns (uint256) {
+        return indirectReferralPercent;
+    }
+    function getCommunityRewardAddress()   external view returns (address) {
+        return communityRewardAddress;
+    }
+    function getBuyReferralPercent() external view returns (uint256) {
+        return buyReferralPercent;
+    }
+    function getmaxReferralLevels() external view returns (uint256) {
+        return maxReferralLevels;
+    }
     
     // 设置间推比例
     function setIndirectReferralPercent(uint256 _indirectReferralPercent) external onlyOwner {
@@ -819,13 +686,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         profitLimit = _profitLimit;
     }
     
-    // 设置Fo池和Mo池交替买入比例
-    function setFoMoSwapRatio(uint256 _foMoSwapRatio) external onlyOwner {
-        foMoSwapRatio = _foMoSwapRatio;
-    }
-    
-    // 单独设置各地址
-    
+  
     // 设置技术维护地址
     function setTechAddress(address _techAddress) external onlyOwner {
         require(_techAddress != address(0), "Invalid address");
@@ -942,64 +803,14 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     }
     
     
-    // 设置社区长地址
-    function registerCommunityLeader(address leader) external onlyOwner {
-        require(leader != address(0), "Invalid address");
-        isCommunityLeader[leader] = true;
-        emit CommunityLeaderRegistered(leader);
-    }
     
-    // 撤销社区长身份
-    function unregisterCommunityLeader(address leader) external onlyOwner {
-        require(isCommunityLeader[leader], "Not a community leader");
-        isCommunityLeader[leader] = false;
-    }
-    
-    // 手动设置用户的社区长
-    function setCommunityLeader(address user, address leader) external onlyOwner {
-        require(user != address(0) && leader != address(0), "Invalid address");
-        require(isCommunityLeader[leader], "Not a registered community leader");
-        
-        // 移除用户与旧社区长的关系（如果有）
-        address oldLeader = communityLeaderOf[user];
-        if (oldLeader != address(0)) {
-            _removeFromCommunityLeader(user, oldLeader);
-        }
-        
-        // 设置新社区长
-        communityLeaderOf[user] = leader;
-        communityMembers[leader].push(user);
-        
-        emit CommunityLeaderAssigned(user, leader);
-    }
-    
-    // 从社区长成员列表中移除用户
-    function _removeFromCommunityLeader(address user, address leader) internal {
-        address[] storage members = communityMembers[leader];
-        for (uint256 i = 0; i < members.length; i++) {
-            if (members[i] == user) {
-                // 找到用户，将其与列表最后一个元素交换，然后移除最后一个元素
-                members[i] = members[members.length - 1];
-                members.pop();
-                break;
-            }
-        }
-    }
-    
+  
     // 设置社区长分红比例
     function setCommunityLeaderFeePercent(uint256 _percent) external onlyOwner {
          sellCommunityLeaderFeePercent = _percent;
     }
     
-    // 获取社区长的所有成员
-    function getCommunityMembers(address leader) external view returns (address[] memory) {
-        return communityMembers[leader];
-    }
-    
-    // 获取社区长成员数量
-    function getCommunityMemberCount(address leader) external view returns (uint256) {
-        return communityMembers[leader].length;
-    }
+  
     
     // 必须实现的UUPSUpgradeable钩子
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -1008,9 +819,16 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         gasLimit = _gasLimit;
     }
 
+    // 设置池合约地址
+    function setPoolContracts(address _foPoolAddress, address _moPoolAddress) external onlyOwner {
+        require(_foPoolAddress != address(0) && _moPoolAddress != address(0), "Invalid addresses");
+        foPoolContract = IPoolBase(_foPoolAddress);
+        moPoolContract = IPoolBase(_moPoolAddress);
 
-    // 执行自动买入，根据价格控制和3:1比例买入Fo池和Mo池的订单
-    function executeAutoBuy(bool isResetTime) public onlyOwner()  {         
+    }
+
+    // 执行自动买入 - 修改为使用外部合约
+    function executeAutoBuy(bool isResetTime) public onlyOwner() {         
         // 获取当前价格和底池大小
         uint256 currentPriceVal = getCurrentPrice();
         uint256 liquidityUsdt = getUsdtReserve();
@@ -1035,75 +853,68 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         uint256 gasUsed = 0;
         uint256 gasLeft = gasleft();
         uint256 count = 3;
+        
         // 处理队列，直到价格达到每日上限或队列为空
         while (currentPriceVal < stopPrice && gasUsed < gasLimit) {
-             //取三单Fo池订单
-            uint256 fl =  foPool.length;
-            uint256 ml = moPool.length;
+            // 取三单Fo池订单
+            uint256 fl = foPoolContract.getPoolLength() - foPoolContract.getProcessCount();
+            uint256 ml = moPoolContract.getPoolLength() - moPoolContract.getProcessCount();
            
             if (fl == 0 && ml == 0) {
                 break;
             }
+            
             // 处理Fo池订单
-            while(count>0 && fl > 0){
+            while(count > 0 && fl > 0){
                 count--;
-                    Pool memory foOrder = foPool[foProcessedCount];
-                    if (foOrder.usdtAmount > 0) {
-                         ERC20Upgradeable(usdtAddress).approve(address(router), foOrder.usdtAmount);
-
-                        // 执行买入
-                        address[] memory path = new address[](2);
-                        path[0] = usdtAddress;
-                        path[1] = address(this);
-                        router.swapExactTokensForTokens(
-                            foOrder.usdtAmount,
-                            0,
-                            path,
-                            foOrder.addr,
-                            block.timestamp + 300
-                        );
-                        foProcessedCount++;
-                        delete foPoolUserAmounts[foOrder.addr];
-                        delete foPool[foProcessedCount];
-                        foPoolTotalAmount -= foOrder.usdtAmount;
-                        fl--;
+                bool success = foPoolContract.processOrder(address(this));
+                if (success) {
+                    // 获取处理的订单
+                    IPoolBase.Pool memory foOrder = foPoolContract.getPoolAt( );
+                    
+                    // 清除用户记录
+                    foPoolContract.clearUserDeposit(foOrder.addr);
+                    
+                    // 移除订单
+                    foPoolContract.removeOrder();
+           
+                    fl--;
                 } else {
                     break;
                 }
-                
             }
+            
             // 处理Mo池订单
-            while((count==0||count==3) && ml > 0 ){
-                count=3;
-                     Pool memory moOrder = moPool[moProcessedCount];
-                    if (moOrder.usdtAmount > 0) {
-                        // 执行买入
-                        uint256 tokenAmount = getUSDTToTokenAmount(usdtAddress, address(this), moOrder.usdtAmount);
-                        super._transfer(address(this), moOrder.addr, tokenAmount);
-                        emit TokenBought(moOrder.addr, tokenAmount, moOrder.usdtAmount);
-                        moProcessedCount++;
-                        delete moPoolUserAmounts[moOrder.addr];
-                        delete moPool[moProcessedCount];
-                        moPoolTotalAmount -= moOrder.usdtAmount;
-                        ml--;
-                    } else {
-                        break;
-                    }
-                
-            }
+            while((count == 0 || count == 3) && ml > 0){
+                count = 3;
+                    // 获取处理的订单
+                    IPoolBase.Pool memory moOrder = moPoolContract.getPoolAt();
+                    
+                    // 执行买入
+                    uint256 tokenAmount = getUSDTToTokenAmount(usdtAddress, address(this), moOrder.usdtAmount);
+                    super._transfer(address(this), moOrder.addr, tokenAmount);
+                    emit TokenBought(moOrder.addr, tokenAmount, moOrder.usdtAmount);
+                    
+                    // 清除用户记录
+                    moPoolContract.clearUserDeposit(moOrder.addr);
+                    
+                    // 移除订单
+                    moPoolContract.removeOrder();
+                    
+                   
+                    ml--;
+                } 
+            
 
-             // 更新当前价格
-             currentPriceVal = getCurrentPrice();
+            // 更新当前价格
+            currentPriceVal = getCurrentPrice();
 
-
-            // 按3:1比例处理Fo池和Mo池订单
-             uint256 newGasLeft = gasleft();
-
+            // 计算gas使用量
+            uint256 newGasLeft = gasleft();
             if (gasLeft > newGasLeft) {
-                gasUsed = gasUsed+(gasLeft - (newGasLeft));
+                gasUsed = gasUsed + (gasLeft - newGasLeft);
             }
-
-        gasLeft = newGasLeft;
+            gasLeft = newGasLeft;
         }
     }
     
@@ -1126,11 +937,5 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         revert("No price control tiers defined");
     }
     
-   
-    
-    // 重置处理计数器 - 当需要重新处理所有队列时使用
-    function resetProcessedCounters() external onlyOwner {
-        foProcessedCount = 0;
-        moProcessedCount = 0;
-    }
+
 }
