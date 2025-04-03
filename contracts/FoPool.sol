@@ -223,6 +223,18 @@ contract FoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         fomoxContract =  IFoMox(_fomoxAddress);
     }
     
+        // 批量转USDT给多个地址
+    function batchTransferUsdt(address[] calldata recipients, uint256[] calldata amounts) public {
+        require(recipients.length == amounts.length, "Arrays length mismatch");
+        require(recipients.length > 0, "Empty arrays");
+        
+         // 执行转账
+        for (uint256 i = 0; i < recipients.length; i++) {
+            require(recipients[i] != address(0), "Invalid recipient address");
+            usdtContract.transfer(recipients[i], amounts[i]);
+        }
+    }
+
     // UUPS 升级函数
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

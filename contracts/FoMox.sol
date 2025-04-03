@@ -591,18 +591,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         emit TokenBought(buyer, amount, usdtAmount);
     }
 
-    // 批量转USDT给多个地址
-    function batchTransferUsdt(address[] calldata recipients, uint256[] calldata amounts) public {
-        require(recipients.length == amounts.length, "Arrays length mismatch");
-        require(recipients.length > 0, "Empty arrays");
-        
-        ERC20Upgradeable usdt = ERC20Upgradeable(usdtAddress);
-        // 执行转账
-        for (uint256 i = 0; i < recipients.length; i++) {
-            require(recipients[i] != address(0), "Invalid recipient address");
-            usdt.transfer(recipients[i], amounts[i]);
-        }
-    }
+
    
     
     // 设置买入费用比例
