@@ -12,7 +12,7 @@ interface IPoolBase {
     function getUserAmount(address user) external view returns (uint256);
     function getTotalAmount() external view returns (uint256);
     function getPoolLength() external view returns (uint256);
-    function getProcessCount() external view returns (uint256);
+    function getProcessedCount() external view returns (uint256);
     function getPoolAt( ) external view returns (Pool memory);
     function processOrder( address to) external returns (bool);
     function removeOrder() external;

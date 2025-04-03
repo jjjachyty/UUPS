@@ -9,28 +9,21 @@ const config: HardhatUserConfig = {
       optimizer: {
         enabled: true,
         // 降低runs值以优化部署大小
-        runs: 200,
-        // 添加详细优化设置
-        details: {
-          yul: true,
-          yulDetails: {
-            stackAllocation: true,
-            optimizerSteps: "dhfoDgvulfnTUtnIf"
-          },
-        },
+        runs: 1000,
+     
       },
       // 更新到更现代的EVM版本
-      evmVersion: "shanghai",
+      evmVersion: "paris",
       // 对大型合约禁用viaIR可能会有帮助
       viaIR: true
-    },
-  },
+    }},
   paths: {
     // artifacts: './src/artifacts',
     sources:'./contracts'
   },
   networks: {
     hardhat: {
+      allowUnlimitedContractSize: true,
     },
     localhost: {
       url: "http://127.0.0.1:8545"

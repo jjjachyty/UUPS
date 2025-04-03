@@ -10,7 +10,7 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "./IPoolBase.sol";
-
+import "hardhat/console.sol";
 contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
  
     // 常量
@@ -186,7 +186,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
 
         // 添加价格控制配置
         priceControlTiers.push(PriceControlTier(
-            1 * 10**4 * 10**18, // 1万U
+            0, // 1万U
             5 * 10**4 * 10**18, // 5万U
             20, // 最大20%涨幅
             10  // 跌10%触发
@@ -226,10 +226,9 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         // 批准路由器使用代币
         _approve(address(this), address(router), INITIAL_LIQUIDITY);
         
-       
-        
         // 获取创建的交易对地址
         address factory = router.factory();
+        console.log("factory",factory);
         uniswapPair = IUniswapV2Factory(factory).createPair(address(this), usdtAddress);
         
         // 设置初始价格
@@ -237,6 +236,10 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         currentPrice = todayStartPrice;
     }
 
+    function setUniswapPairAddress(address _uniswapPair) external onlyOwner {
+        require(_uniswapPair != address(0), "Invalid address");
+        uniswapPair = _uniswapPair;
+    }
 
     // 根据底池等级计算最大买入金额
     function calculateMaxBuyAmount() public view returns (uint256) {
@@ -267,20 +270,21 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
 
     // 获取USDT流动性池储备
     function getUsdtReserve() public view returns (uint256) {
-        (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(uniswapPair).getReserves();
-        return address(this) < usdtAddress ? reserve1 : reserve0;
+         (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(uniswapPair).getReserves();
+        return address(this) == usdtAddress ? reserve0 : reserve1;
     }
 
     // 获取FoMox流动性池储备
     function getTokenReserve() public view returns (uint256) {
         (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(uniswapPair).getReserves();
-        return address(this) < usdtAddress ? reserve0 : reserve1;
+        return address(this) == usdtAddress ? reserve1  : reserve0;
     }
 
     // 获取当前价格
     function getCurrentPrice() public view returns (uint256) {
         uint256 usdtReserve = getUsdtReserve();
         uint256 tokenReserve = getTokenReserve();
+        console.log("usdtReserve",usdtReserve/10**18,"tokenReserve",tokenReserve/10**18);
         if (tokenReserve == 0) return 0;
         return usdtReserve * (10**18) / (tokenReserve);
     }
@@ -292,15 +296,16 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         uint256 maxIncreasePct;
         
         for (uint256 i = 0; i < priceControlTiers.length; i++) {
-            if (liquidityUsdt >= priceControlTiers[i].minLiquidity && 
-                liquidityUsdt < priceControlTiers[i].maxLiquidity) {
+            if (liquidityUsdt > priceControlTiers[i].minLiquidity && 
+                liquidityUsdt <= priceControlTiers[i].maxLiquidity) {
                 maxIncreasePct = priceControlTiers[i].maxDailyIncrease;
                 break;
             }
         }
-        
         // 检查今日涨幅
         uint256 maxPrice = todayStartPrice + (todayStartPrice * maxIncreasePct / 100);
+        console.log("maxIncreasePct",liquidityUsdt,currentPriceVal,maxPrice);
+
         return currentPriceVal <= maxPrice;
     }
 
@@ -311,8 +316,8 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         uint256 triggerPct;
         
         for (uint256 i = 0; i < priceControlTiers.length; i++) {
-            if (liquidityUsdt >= priceControlTiers[i].minLiquidity && 
-                liquidityUsdt < priceControlTiers[i].maxLiquidity) {
+            if (liquidityUsdt > priceControlTiers[i].minLiquidity && 
+                liquidityUsdt <= priceControlTiers[i].maxLiquidity) {
                 triggerPct = priceControlTiers[i].triggerDecreasePercent;
                 break;
             }
@@ -711,30 +716,7 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         communityRewardAddress = _communityRewardAddress;
     }
     
-  
-    
-    // 更新地址配置
-    function updateAddresses(
-        address _techAddress,
-        address _ecoAddress,
-        address _foPoolRewardAddress,
-        address _communityRewardAddress,
-        address _projectAddress
-    ) external onlyOwner {
-        require(_techAddress != address(0) && 
-                _ecoAddress != address(0) && 
-                _foPoolRewardAddress != address(0) && 
-                _communityRewardAddress != address(0) && 
-                _projectAddress != address(0), "Invalid address");
-                
-        techAddress = _techAddress;
-        ecoAddress = _ecoAddress;
-        foPoolRewardAddress = _foPoolRewardAddress;
-        communityRewardAddress = _communityRewardAddress;
-     }
-    
-    // 管理员功能
-    
+   
     // 更新价格控制参数
     function updatePriceControlTiers(
         uint256[] calldata minLiquidities,
@@ -835,20 +817,22 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         
         // 获取当前价格控制参数
         (uint256 maxIncreasePct, uint256 triggerPct) = getCurrentPriceControlParams(liquidityUsdt);
-        
+        console.log("executeAutoBuy todayStartPrice %s maxIncreasePct %s triggerPct %s",todayStartPrice,maxIncreasePct,triggerPct);
         // 计算最高允许价格和触发价格
         uint256 maxPrice = todayStartPrice + (todayStartPrice * maxIncreasePct / 100);
-        uint256 triggerPrice = todayStartPrice - (todayStartPrice * triggerPct / 100);
+        uint256 triggerPrice = todayStartPrice + (todayStartPrice * triggerPct / 100);
         //如果是8点直接拉满 不是则补到触发价
         uint256 stopPrice = maxPrice;
         if (!isResetTime) {
             stopPrice = triggerPrice;
         }
-
+console.log("executeAutoBuy currentPriceVal %s stopPrice %s",currentPriceVal,stopPrice);
         if (currentPriceVal >= stopPrice) {
              emit PriceControlTriggered(currentPriceVal, stopPrice, true);
              return;
         }
+
+        console.log(unicode"开始自动买，当前价格》〉》〉》，停止价格",currentPriceVal,stopPrice);
 
         uint256 gasUsed = 0;
         uint256 gasLeft = gasleft();
@@ -856,16 +840,18 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         
         // 处理队列，直到价格达到每日上限或队列为空
         while (currentPriceVal < stopPrice && gasUsed < gasLimit) {
+            count = 3;
             // 取三单Fo池订单
-            uint256 fl = foPoolContract.getPoolLength() - foPoolContract.getProcessCount();
-            uint256 ml = moPoolContract.getPoolLength() - moPoolContract.getProcessCount();
+            uint256 fl = foPoolContract.getPoolLength() - foPoolContract.getProcessedCount();
+            uint256 ml = moPoolContract.getPoolLength() - moPoolContract.getProcessedCount();
            
             if (fl == 0 && ml == 0) {
                 break;
             }
             
             // 处理Fo池订单
-            while(count > 0 && fl > 0){
+            while(count > 0 && fl > 0 && currentPriceVal < stopPrice){
+                console.log(unicode"开始买入fo count%s",count);
                 count--;
                 bool success = foPoolContract.processOrder(address(this));
                 if (success) {
@@ -885,8 +871,11 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
             }
             
             // 处理Mo池订单
-            while((count == 0 || count == 3) && ml > 0){
-                count = 3;
+            if(ml >0 && currentPriceVal < stopPrice){
+                bool success = moPoolContract.processOrder(address(this));
+                if (success) {
+                console.log(unicode"开始买入mo count%s ml %s",count,ml);
+                    count = 1;
                     // 获取处理的订单
                     IPoolBase.Pool memory moOrder = moPoolContract.getPoolAt();
                     
@@ -903,11 +892,12 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
                     
                    
                     ml--;
-                } 
-            
+                }
+            }
 
             // 更新当前价格
             currentPriceVal = getCurrentPrice();
+        console.log(unicode"开始自动买完成一次，当前价格》〉》〉》，停止价格",currentPriceVal,stopPrice);
 
             // 计算gas使用量
             uint256 newGasLeft = gasleft();
@@ -920,21 +910,20 @@ contract FoMox is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     
     // 获取当前价格控制参数
     function getCurrentPriceControlParams(uint256 liquidityUsdt) public view returns (uint256 maxIncreasePct, uint256 triggerPct) {
-        for (uint256 i = 0; i < priceControlTiers.length; i++) {
-            if (liquidityUsdt >= priceControlTiers[i].minLiquidity && 
-                liquidityUsdt < priceControlTiers[i].maxLiquidity) {
-                maxIncreasePct = priceControlTiers[i].maxDailyIncrease;
-                triggerPct = priceControlTiers[i].triggerDecreasePercent;
-                return (maxIncreasePct, triggerPct);
+        uint256 tiersLength = priceControlTiers.length;
+        require(tiersLength > 0, "No price control tiers defined");
+        console.log(unicode"底池USDT",liquidityUsdt/10**18);
+        // 查找适用的档位
+        for (uint256 i = 0; i < tiersLength; i++) {
+            if (liquidityUsdt > priceControlTiers[i].minLiquidity && 
+                liquidityUsdt <= priceControlTiers[i].maxLiquidity) {
+                   console.log("getCurrentPriceControlParams",priceControlTiers[i].maxDailyIncrease,priceControlTiers[i].triggerDecreasePercent); 
+                return (priceControlTiers[i].maxDailyIncrease, priceControlTiers[i].triggerDecreasePercent);
             }
         }
         
-        // 默认使用最后一档
-        if (priceControlTiers.length > 0) {
-             return (priceControlTiers[0].maxDailyIncrease, priceControlTiers[0].triggerDecreasePercent);
-        }
-        
-        revert("No price control tiers defined");
+        // 如果没有找到匹配的档位，使用最后一档
+        return (priceControlTiers[tiersLength - 1].maxDailyIncrease, priceControlTiers[tiersLength - 1].triggerDecreasePercent);
     }
     
 

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "../IPoolBase.sol";
+import "hardhat/console.sol";
 
 contract MockPoolBase is IPoolBase {
     address public fomoxAddress;
@@ -30,9 +31,7 @@ contract MockPoolBase is IPoolBase {
         userAmounts[user] = amount;
     }
     
-    function getProcessedCount() external view returns (uint256) {
-        return processedCount;
-    }
+  
     
     // IPoolBase 接口实现
     function deposit(address user, uint256 usdtAmount, uint256 bnbAmount) external override {
@@ -44,7 +43,7 @@ contract MockPoolBase is IPoolBase {
         return userAmounts[user];
     }
     
-    function getTotalAmount() external view override returns (uint256) {
+    function getTotalAmount() external view   returns (uint256) {
         return totalAmount;
     }
     
@@ -61,6 +60,7 @@ contract MockPoolBase is IPoolBase {
     }
     
     function processOrder(address to) external override returns (bool) {
+        console.log("processOrder", processedCount, poolLength);
         processedCount++;
         return true;
     }
@@ -75,7 +75,7 @@ contract MockPoolBase is IPoolBase {
         userAmounts[user] = 0;
     }
     
-    function getProcessCount() external view override returns (uint256) {
+    function getProcessedCount() external view override returns (uint256) {
         return processedCount;
     }
 }

@@ -71,7 +71,7 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         return userAmounts[user];
     }
     
-    function getTotalAmount() external view override returns (uint256) {
+    function getTotalAmount() external view override  returns (uint256) {
         return totalAmount;
     }
     
@@ -119,10 +119,8 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         );
         
          emit OrderProcessed(order.addr, order.usdtAmount, processCount);
-        delete userAmounts[order.addr];
-        delete pools[processCount];
         processCount++;
-        // 删除订单
+        
         return true;
     }
     
@@ -133,7 +131,7 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         
         // 减少总量和用户存款
         totalAmount -= order.usdtAmount;
-        userAmounts[order.addr] -= order.usdtAmount;
+        delete userAmounts[order.addr];
         
         // 删除订单
        delete pools[processCount];
@@ -144,7 +142,7 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         userAmounts[user] = 0;
     }
     
-    function getProcessCount() external view override returns (uint256) {
+    function getProcessedCount() external view override returns (uint256) {
         return processCount;
     }
 

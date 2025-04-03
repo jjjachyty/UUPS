@@ -9,9 +9,9 @@ contract MockUniswapV2Router02 {
     address public immutable usdtAddress;
     uint256 private swapExactETHForTokensAmount;
     
-    constructor(address _usdtAddress) {
+    constructor(address _usdtAddress,address _factory) {
         WETH = address(this);
-        factory = address(this);
+        factory = _factory;
         usdtAddress = _usdtAddress;
         swapExactETHForTokensAmount = 0;
     }
@@ -61,6 +61,8 @@ contract MockUniswapV2Router02 {
         // 模拟创建交易对的返回值
         // 这在实际Router中是调用factory.createPair
     }
+
+     
 
     function setTokenToUsdtRate(uint256 tokenAmount, uint256 usdtAmount) external {
         // 设置模拟兑换率

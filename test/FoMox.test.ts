@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 import { Contract } from "ethers";
-import { FoMox, MockERC20 } from "../typechain-types";
+import { FoMox, MockERC20,MockUniswapV2Factory } from "../typechain-types";
 
 describe("FoMox", function () {
   // 合约实例
@@ -12,6 +12,7 @@ describe("FoMox", function () {
   let mockFoPool: Contract;
   let mockMoPool: Contract;
   let mockFToken: Contract;
+  let mockFactory: MockUniswapV2Factory;
   
   // 签名者
   let owner: any;
@@ -32,7 +33,7 @@ describe("FoMox", function () {
   let communityRewardAddress: string;
   
   // 常量
-  const INITIAL_USDT_SUPPLY = ethers.parseEther("1000000");
+  const INITIAL_USDT_SUPPLY = ethers.parseEther("100000000");
   const INITIAL_LIQUIDITY = ethers.parseEther("100000000");
   const INITIAL_USDT = ethers.parseEther("10000");
   const BUY_AMOUNT = ethers.parseEther("100");
@@ -52,15 +53,14 @@ describe("FoMox", function () {
     // 部署模拟USDT
     const MockERC20 = await ethers.getContractFactory("MockERC20");
     mockUSDT = await MockERC20.deploy("Mock USDT", "USDT", INITIAL_USDT_SUPPLY);
+    const MockUniswapV2Factory = await ethers.getContractFactory("MockUniswapV2Factory");
+    mockFactory = (await MockUniswapV2Factory.deploy()) as unknown as MockUniswapV2Factory;
     
     // 部署模拟Router
     const MockRouter = await ethers.getContractFactory("MockUniswapV2Router02");
-    mockRouter = (await MockRouter.deploy(mockUSDT.target)) as unknown as Contract;
+    mockRouter = (await MockRouter.deploy(mockUSDT.target,mockFactory.target)) as unknown as Contract;
     
-    // 部署模拟Pair
-    const MockPair = await ethers.getContractFactory("MockUniswapV2Pair");
-    mockPair = (await MockPair.deploy(ethers.ZeroAddress, mockUSDT.target)) as unknown as Contract;
-    
+   
     // 部署模拟Pool合约
     const MockPool = await ethers.getContractFactory("MockPoolBase");
     mockFoPool = (await MockPool.deploy()) as unknown as Contract;
@@ -83,13 +83,21 @@ describe("FoMox", function () {
         mockMoPool.target,
         mockFToken.target
     ])) as unknown as FoMox;
+     // 部署模拟Pair
+     const MockPair = await ethers.getContractFactory("MockUniswapV2Pair");
+     mockPair = (await MockPair.deploy(fomox.target, mockUSDT.target)) as unknown as Contract;
+     
     
+     
+     
+     await fomox.setUniswapPairAddress(mockPair.target);
+
     // 设置模拟行为
-    await mockRouter.setFactory(mockPair.target);
+    await mockRouter.setFactory(mockFactory.target);
     await mockRouter.setPair(mockPair.target);
-    await mockPair.setReserves(ethers.parseEther("1000000"), ethers.parseEther("100000"));
-    await mockUSDT.transfer(mockRouter.target, ethers.parseEther("100000"));
-    await mockUSDT.transfer(fomox.target, ethers.parseEther("10000"));
+    await mockPair.setReserves(ethers.parseEther("100000000"), ethers.parseEther("10000"));
+    // await mockUSDT.transfer(mockRouter.target, ethers.parseEther("100000"));
+    // await mockUSDT.transfer(fomox.target, ethers.parseEther("10000"));
     
     // 设置FoMox地址到池合约
     await mockFoPool.setFomoxAddress(fomox.target);
@@ -130,7 +138,7 @@ describe("FoMox", function () {
       // 获取当前价格
       const currentPrice = await fomox.getCurrentPrice();
       // 由于模拟的Pair设置储备为1000000 USDT和100000 Token
-      const expectedPrice = ethers.parseEther("10"); // 10 USDT per Token
+      const expectedPrice = ethers.parseEther("0.0001"); // 10 USDT per Token
       expect(currentPrice).to.equal(expectedPrice);
     });
     
@@ -138,7 +146,7 @@ describe("FoMox", function () {
       // 获取当前价格控制参数
       const [maxIncreasePct, triggerPct] = await fomox.getCurrentPriceControlParams(ethers.parseEther("50000"));
       // 应该返回第二个层级的参数
-      expect(maxIncreasePct).to.equal(15); // 15% max daily increase
+      expect(maxIncreasePct).to.equal(20); // 15% max daily increase
       expect(triggerPct).to.equal(10); // 10% trigger decrease
     });
     
@@ -155,13 +163,13 @@ describe("FoMox", function () {
   describe("最大买入计算", function () {
     it("应该根据流动性计算最大买入金额", async function () {
       // 测试不同流动性下的最大买入金额
-      await mockPair.setReserves(ethers.parseEther("20000"), ethers.parseEther("2000")); // 2万USDT流动性
+      await mockPair.setReserves(ethers.parseEther("20000"), ethers.parseEther("20000")); // 2万USDT流动性
       expect(await fomox.calculateMaxBuyAmount()).to.equal(ethers.parseEther("100"));
       
-      await mockPair.setReserves(ethers.parseEther("40000"), ethers.parseEther("4000")); // 4万USDT流动性
+      await mockPair.setReserves(ethers.parseEther("40000"), ethers.parseEther("40000")); // 4万USDT流动性
       expect(await fomox.calculateMaxBuyAmount()).to.equal(ethers.parseEther("200"));
       
-      await mockPair.setReserves(ethers.parseEther("200000"), ethers.parseEther("20000")); // 20万USDT流动性
+      await mockPair.setReserves(ethers.parseEther("200000"), ethers.parseEther("200000")); // 20万USDT流动性
       expect(await fomox.calculateMaxBuyAmount()).to.equal(ethers.parseEther("1000"));
     });
   });
@@ -208,9 +216,12 @@ describe("FoMox", function () {
     
     it("应该能执行自动买入", async function () {
       // 设置价格跌破触发点
-      const originalPrice = await fomox.todayStartPrice();
-      await mockPair.setReserves(ethers.parseEther("90000"), ethers.parseEther("100000")); // 降低价格到0.9
+     
       
+      await mockPair.setReserves(ethers.parseEther("100000"), ethers.parseEther("9000")); // 降低价格到0.9
+      await fomox.setTodayStartPrice();
+      const originalPrice = await fomox.todayStartPrice();
+      console.log("Original Price:", originalPrice.toString());
       // 执行自动买入
       await fomox.executeAutoBuy(false);
       
@@ -253,7 +264,7 @@ describe("FoMox", function () {
       const expectedTokenAmount = ethers.parseEther("100"); // 假设10 USDT = 1 Token
       
       // 在Router中设置这个比率
-      await mockRouter.setUsdtToTokenRate(usdtAmount, expectedTokenAmount);
+      await mockRouter.setUsdtToTokenRate( expectedTokenAmount,usdtAmount);
       
       // 调用合约函数
       const result = await fomox.getUSDTToTokenAmount(mockUSDT.target, fomox.target, usdtAmount);

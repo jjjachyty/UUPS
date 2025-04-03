@@ -194,7 +194,7 @@ contract FoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         
         // 减少总量和用户存款
         totalAmount -= order.usdtAmount;
-        userAmounts[order.addr] -= order.usdtAmount;
+         delete userAmounts[order.addr];
         
         // 删除订单
        delete pools[processCount] ;
@@ -214,7 +214,7 @@ contract FoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         maxPoolPercent = _maxPoolPercent;
     }
     
-    function getProcessCount() external view returns (uint256) {
+    function getProcessedCount() external view returns (uint256) {
         return processCount;
     }
 
