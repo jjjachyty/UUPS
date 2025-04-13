@@ -14,6 +14,9 @@ contract MockPoolBase is IPoolBase {
     function setFomoxAddress(address _fomoxAddress) external {
         fomoxAddress = _fomoxAddress;
     }
+    function getInSwap() external view returns (bool) {
+        return false;
+    }
     
     function setTotalAmount(uint256 _totalAmount) external {
         totalAmount = _totalAmount;

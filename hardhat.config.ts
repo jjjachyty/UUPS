@@ -1,8 +1,12 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import '@openzeppelin/hardhat-upgrades';
+import { ethers } from "ethers";
+const BSC_URL = "https://data-seed-prebsc-1-s2.binance.org:8545";
+ 
+ 
 
-const config: HardhatUserConfig = {
+var config: HardhatUserConfig = {
   solidity: {
     version: "0.8.25",
     settings: {
@@ -24,6 +28,13 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
+      chainId:97,
+      // hardfork: "shanghai", // 添加 hardfork 参数
+      // forking: {
+      //   url: BSC_URL,
+      //   // 移除区块号参数，使用最新区块
+      //   // blockNumber: 48119779,
+      // }
     },
     localhost: {
       url: "http://127.0.0.1:8545"
@@ -31,14 +42,14 @@ const config: HardhatUserConfig = {
     testnet: {
       url: "https://data-seed-prebsc-1-s2.binance.org:8545",
       chainId: 97,
-      gasPrice: 50000000000,
-      accounts: ["6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f"]
+      // gasPrice: 50000000000,
+      accounts: [""]
     },
     mainnet: {
       url: "https://bsc.nodereal.io",
       chainId: 56,
-      gasPrice: 20000000000,
-      accounts: ["6a31bdd20acb7d510d9cd9f3f30064dc90700efd0c991533e2b60bfc5816786f"]
+      // gasPrice: 20000000000,
+      accounts: [""]
     }
   },
   etherscan: {

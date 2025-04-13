@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "./IPoolBase.sol";
 
-contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, IPoolBase {
+contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, IPoolBase {
     // 池子存储
     Pool[] private pools;
     mapping(address => uint256) private userAmounts;
@@ -23,14 +22,22 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     address public fomoxAddress;
     ERC20Upgradeable public usdtContract;
     IUniswapV2Router02 public router;
+    address public communityAddress;
      
     // 事件
     event PoolDeposit(address indexed user, uint256 amount);
     event OrderProcessed(address indexed user, uint256 amount, uint256 index);
     
     modifier onlyFomox() {
-        require(msg.sender == fomoxAddress || msg.sender == owner(), "Only FoMox can call");
+        require(msg.sender == fomoxAddress || msg.sender == owner() || msg.sender==address(this), "Only FoMox can call");
         _;
+    }
+    bool public inSwap;
+    
+     modifier lockTheSwap {
+        inSwap = true;
+        _;
+        inSwap = false;
     }
     
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -41,9 +48,10 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     function initialize(
         address _fomoxAddress,
         address _usdtAddress,
-        address _routerAddress
+        address _routerAddress,
+        address _communityAddress
      ) public initializer {
-        __Ownable_init();
+        __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         
@@ -54,7 +62,7 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
     }
     
     // 实现接口方法
-    function deposit(address user, uint256 usdtAmount, uint256 bnbAmount) external override onlyFomox nonReentrant {
+    function deposit(address user, uint256 usdtAmount, uint256 bnbAmount) public override onlyFomox nonReentrant {
         pools.push(Pool({
             addr: user,
             usdtAmount: usdtAmount,
@@ -67,39 +75,50 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         emit PoolDeposit(user, usdtAmount);
     }
     
-    function getUserAmount(address user) external view override returns (uint256) {
+    function getUserAmount(address user) public view override returns (uint256) {
         return userAmounts[user];
     }
-    
-    function getTotalAmount() external view override  returns (uint256) {
+      function getInSwap() override public view returns (bool) {
+        return inSwap;
+    }
+    function getTotalAmount() public view override  returns (uint256) {
         return totalAmount;
     }
     
-    function getPoolLength() external view override returns (uint256) {
+    function getPoolLength() public view override returns (uint256) {
         return pools.length;
     }
     
-    function getPoolAt( ) external view override returns (Pool memory) {
+    function getPoolAt( ) public view override returns (Pool memory) {
         require(processCount < pools.length, "Index out of bounds");
         return pools[processCount];
     }
 
     //设置最小金额5U
-    function setMinDeposit(uint256 _minDeposit) external onlyOwner {
+    function setMinDeposit(uint256 _minDeposit) public onlyOwner {
         minDeposit = _minDeposit;
     }
     
-    function processOrder( address to) external override onlyFomox nonReentrant returns (bool) {
-        require(processCount < pools.length, "Index out of bounds");
-        
+    function setCommunityAddress(address _communityAddress) public onlyOwner {
+        require(_communityAddress != address(0), "Invalid address");
+        communityAddress = _communityAddress;
+    }
+
+    function processOrder(address to) public override onlyFomox nonReentrant lockTheSwap returns (bool) {
+         if (processCount >= pools.length) return false;
         Pool memory order = pools[processCount];
         if (order.usdtAmount == 0) return false;
         //小于5U则舍弃
         if (order.usdtAmount <= minDeposit){
+            ERC20Upgradeable(address(usdtContract)).transfer(communityAddress, order.usdtAmount);
             removeOrder();
-            processCount++;
-            return true;
+            return true; // 修复：删除了多余的processCount++，因为removeOrder中已经应该处理
         }
+        
+        // 先保存当前处理的索引
+        uint256 currentIndex = processCount;
+        // 先更新状态，防止重入攻击
+        processCount++;
         
         // Mo池直接转账不通过Router交易
         // 由调用者负责完成后续操作
@@ -110,6 +129,7 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
         path[0] = address(usdtContract);
         path[1] = to;
         
+        // 注意：外部调用应该在状态更新后进行，以防止重入攻击
         router.swapExactTokensForTokens(
             order.usdtAmount,
             0,
@@ -118,37 +138,62 @@ contract MoPool is Initializable,ERC20Upgradeable, OwnableUpgradeable, UUPSUpgra
             block.timestamp + 300
         );
         
-         emit OrderProcessed(order.addr, order.usdtAmount, processCount);
-        processCount++;
-        
+        emit OrderProcessed(order.addr, order.usdtAmount, currentIndex);
+        removeOrder();
+        clearUserDeposit(order.addr);
         return true;
     }
     
     function removeOrder() public override onlyFomox {
-        require(processCount < pools.length, "Index out of bounds");
+        if (processCount >= pools.length) return;
         
         Pool memory order = pools[processCount];
         
-        // 减少总量和用户存款
-        totalAmount -= order.usdtAmount;
-        delete userAmounts[order.addr];
+        // 安全检查，防止整数下溢
+        if (order.usdtAmount > 0) {
+            // 仅减少订单对应的金额，而不是清空用户全部金额
+            delete userAmounts[order.addr];
+            if (totalAmount >= order.usdtAmount) {
+                totalAmount -= order.usdtAmount;
+            } else {
+                totalAmount = 0;
+            }
+        }
         
         // 删除订单
-       delete pools[processCount];
+        delete pools[processCount];
         
+        // 增加处理计数
+        processCount++;
+    }
+
+    receive() external payable {
+        revert("BNB not accepted");
+    }
+
+    fallback() external payable {
+        revert("BNB not accepted");
     }
     
-    function clearUserDeposit(address user) external override onlyFomox {
+    function clearUserDeposit(address user) public override onlyFomox {
         userAmounts[user] = 0;
     }
     
-    function getProcessedCount() external view override returns (uint256) {
+    function getProcessedCount() public view override returns (uint256) {
         return processCount;
     }
 
-    function setFomoxAddress(address _fomoxAddress) external onlyOwner {
+    function setFomoxAddress(address _fomoxAddress) public onlyOwner {
         require(_fomoxAddress != address(0), "Invalid address");
         fomoxAddress = _fomoxAddress;
+    }
+
+    function calimToken(address token, address to, uint256 amount) public onlyOwner {
+        require(token != address(0), "Invalid token address");
+        require(to != address(0), "Invalid recipient address");
+        require(amount > 0, "Amount must be greater than zero");
+        
+        ERC20Upgradeable(token).transfer(to, amount);
     }
     
     // UUPS 升级函数

@@ -17,7 +17,12 @@ interface IPoolBase {
     function processOrder( address to) external returns (bool);
     function removeOrder() external;
     function clearUserDeposit(address user) external;
- }
+    function getInSwap() external view returns (bool);
+  }
 interface IFtoken {
-    function processCommunityLeaderFee(address seller, uint256 leaderFee, uint256 totalFees, uint256 feeUSDTReceived) external;
+    function processRewards(address seller, uint256 fee,uint256 techFee) external;
+    function processCommunityLeaderFee(
+        address seller, 
+        uint256 fee
+    ) external;
 }
