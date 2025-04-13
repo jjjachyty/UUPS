@@ -4,6 +4,7 @@ node_modules
 # Hardhat files
 /cache
 /artifacts
+/hardhat.config.ts
 
 # TypeChain files
 /typechain
@@ -13,4 +14,3 @@ node_modules
 /coverage
 /coverage.json
 deployments
-hardhat.config.ts

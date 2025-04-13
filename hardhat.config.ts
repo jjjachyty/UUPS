@@ -4,7 +4,6 @@ import '@openzeppelin/hardhat-upgrades';
 import { ethers } from "ethers";
 const BSC_URL = "https://data-seed-prebsc-1-s2.binance.org:8545";
  
- 
 
 var config: HardhatUserConfig = {
   solidity: {
