@@ -21,7 +21,8 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
     // 外部合约
     address public fomoxAddress;
     ERC20Upgradeable public usdtContract;
-       
+    IUniswapV2Router02 public router;
+      
     // 事件
     event PoolDeposit(address indexed user, uint256 amount);
     event OrderProcessed(address indexed user, uint256 amount, uint256 index);
@@ -30,7 +31,14 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
         require(msg.sender == fomoxAddress || msg.sender == owner() || msg.sender==address(this), "Only FoMox can call");
         _;
     }
- 
+    bool public inSwap;
+    
+     modifier lockTheSwap {
+        inSwap = true;
+        _;
+        inSwap = false;
+    }
+    
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -38,16 +46,17 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
     
     function initialize(
         address _fomoxAddress,
-        address _usdtAddress
-       ) public initializer {
+        address _usdtAddress,
+        address _routerAddress
+      ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         
         fomoxAddress = _fomoxAddress;
         usdtContract = ERC20Upgradeable(_usdtAddress);
-        usdtContract.approve(_fomoxAddress, type(uint256).max);
-         minDeposit = 5 * 10 ** 18; // 设置最小存款为5 USDT
+        router = IUniswapV2Router02(_routerAddress);
+        minDeposit = 5 * 10 ** 18; // 设置最小存款为5 USDT
      }
     
     // 实现接口方法
@@ -67,7 +76,9 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
     function getUserAmount(address user) public view override returns (uint256) {
         return userAmounts[user];
     }
- 
+      function getInSwap() override public view returns (bool) {
+        return inSwap;
+    }
     function getTotalAmount() public view override  returns (uint256) {
         return totalAmount;
     }
@@ -86,7 +97,7 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
         minDeposit = _minDeposit;
     }
 
-    function processOrder() public override onlyFomox nonReentrant returns (bool) {
+    function processOrder(address to) public override onlyFomox nonReentrant lockTheSwap returns (bool) {
          if (processCount >= pools.length) return false;
         Pool memory order = pools[processCount];
         if (order.usdtAmount == 0) return false;
@@ -102,7 +113,23 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
         // 先更新状态，防止重入攻击
         processCount++;
         
-        IFoMox(fomoxAddress).buy(order.addr, order.usdtAmount);
+        // Mo池直接转账不通过Router交易
+        // 由调用者负责完成后续操作
+        // 执行买入操作
+        usdtContract.approve(address(router), order.usdtAmount);
+        
+        address[] memory path = new address[](2);
+        path[0] = address(usdtContract);
+        path[1] = to;
+        
+        // 注意：外部调用应该在状态更新后进行，以防止重入攻击
+        router.swapExactTokensForTokens(
+            order.usdtAmount,
+            0,
+            path,
+            order.addr,
+            block.timestamp + 300
+        );
         
         emit OrderProcessed(order.addr, order.usdtAmount, currentIndex);
         removeOrder();
@@ -152,7 +179,6 @@ contract MoPool is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentranc
     function setFomoxAddress(address _fomoxAddress) public onlyOwner {
         require(_fomoxAddress != address(0), "Invalid address");
         fomoxAddress = _fomoxAddress;
-        ERC20Upgradeable(usdtContract).approve(_fomoxAddress, type(uint256).max);
     }
 
     function calimToken(address token, address to, uint256 amount) public onlyOwner {

@@ -1,10 +1,9 @@
 import { ethers, upgrades } from "hardhat";
 import { Contract } from "ethers";
 import { FoMox, IUniswapV2Router02 } from "../typechain-types";
+import { usdtAddress, routerAddress, techAddress, ecoAddress, foPoolRewardAddress, communityRewardAddress, FoPoolAddress, MoPoolAddress,FTokenAddress, FoMoxAddress } from "./test";
 
-
-const ProxyAddress = "0xc48198310dba32ffa09CA13fE7d984227072b11b"; // MoPool 代理合约地址
- 
+  
 async function main() {
   console.log("开始部署 FoMox 合约...");
   
@@ -13,16 +12,7 @@ async function main() {
   console.log(`使用账户地址: ${deployer.address} 进行部署`);
   
   try {
-    // 配置需要的地址
-    const usdtAddress = "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"; // BSC主网USDT地址0x55d398326f99059fF775485246999027B3197955 测试网0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684
-    const routerAddress = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"; // PancakeSwap路由器地址0x10ED43C718714eb63d5aA57B78B54704E256024E 测试网0xD99D1c33F9fC3444f8101754aBC46c52416550D1
-    const techAddress = deployer.address; // 技术维护地址
-    const ecoAddress = deployer.address; // 生态地址
-    const foPoolRewardAddress = deployer.address; // Fo池分红地址
-    const communityRewardAddress = deployer.address; // 社区奖励地址
-    const foPoolAddress = "0x2D9be4288334B8E0690b051129fdcca7736695c4"; // FO池地址
-    const moPoolAddress = "0x5E231abD8d6DEA1cFbf59399eb6e3B2B306e586f"; // MO池地址
-    const fTokenAddress = "0xE36CF4Aab15d778e6aAa44696369e29b77a84b2b"; // FToken地址
+   
     
     // 获取合约工厂
     const FoMox = await ethers.getContractFactory("FoMox");
@@ -37,9 +27,9 @@ async function main() {
         ecoAddress,
         foPoolRewardAddress,
         communityRewardAddress,
-        foPoolAddress,
-        moPoolAddress,
-        fTokenAddress
+        FoPoolAddress,
+        MoPoolAddress,
+        FTokenAddress
       ], 
       { 
         initializer: 'initialize',
@@ -116,7 +106,7 @@ async function initializeSettings(foMoxAddress: string) {
 // 升级合约
 async function upgradeFoMox(forcedUpgrade = false) {
   try {
-    console.log(`开始升级FoMox合约(${ProxyAddress})...`);
+    console.log(`开始升级FoMox合约(${FoMoxAddress})...`);
     
     const FoMox = await ethers.getContractFactory("FoMox");
     
@@ -124,14 +114,14 @@ async function upgradeFoMox(forcedUpgrade = false) {
     let upgraded;
     if (forcedUpgrade) {
       console.log("警告：使用强制升级模式，这可能导致数据损坏");
-      upgraded = await upgrades.forceImport(ProxyAddress, FoMox);
+      upgraded = await upgrades.forceImport(FoMoxAddress, FoMox);
     } else {
       console.log("使用安全升级模式");
-      upgraded = await upgrades.upgradeProxy(ProxyAddress, FoMox);
+      upgraded = await upgrades.upgradeProxy(FoMoxAddress, FoMox);
     }
     
     await upgraded.waitForDeployment();
-    const newImplementationAddress = await upgrades.erc1967.getImplementationAddress(ProxyAddress);
+    const newImplementationAddress = await upgrades.erc1967.getImplementationAddress(FoMoxAddress);
     
     console.log(`FoMox合约升级完成，新实现地址: ${newImplementationAddress}`);
     return newImplementationAddress;
@@ -161,8 +151,8 @@ async function runDeployment() {
 
 async function getCurrentPrice() {
   try {
-    console.log(`开始获取FoMox合约(${ProxyAddress})的当前价格...`);
-    const FoMox = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    console.log(`开始获取FoMox合约(${FoMoxAddress})的当前价格...`);
+    const FoMox = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
     const currentPrice = await FoMox.getCurrentPrice();
     const todayStartPrice  =  await FoMox.todayStartPrice();
 
@@ -175,8 +165,8 @@ async function getCurrentPrice() {
 
 async function setMinDepositAmount() {
   try {
-    console.log(`开始设置FoPool合约(${ProxyAddress})的最小存款金额...`);
-    const FoPool = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    console.log(`开始设置FoPool合约(${FoMoxAddress})的最小存款金额...`);
+    const FoPool = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
      await FoPool.setMinDepost(ethers.parseEther("0.01"));
     console.log("已设置最小存款金额");
   } catch (error) {
@@ -186,8 +176,8 @@ async function setMinDepositAmount() {
 }
 async function setWhiteAddress(address:string,flag:boolean) {
   try {
-    console.log(`开始设置FoPool合约(${ProxyAddress})的白名单地址...`);
-    const FoPool = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    console.log(`开始设置FoPool合约(${FoMoxAddress})的白名单地址...`);
+    const FoPool = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
      await FoPool.setWhiteAddress(address, flag);
     console.log("已设置白名单地址");
   } catch (error) {
@@ -200,7 +190,7 @@ async function setWhiteAddress(address:string,flag:boolean) {
 async function checkDailyPriceLimit() {
   try {
     console.log(`开始检查每日价格限制...`);
-    const FoMox = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    const FoMox = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
     const dailyPriceLimit = await FoMox.checkDailyPriceLimit();
     console.log(`每日价格限制: ${dailyPriceLimit}`);
   } catch (error) {
@@ -220,7 +210,7 @@ async function setupAndCheckPair() {
     
     const usdtAddress = "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"; 
     const routerAddress = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1";
-    const foMox = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    const foMox = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
     const router = await ethers.getContractAt("IUniswapV2Router02", routerAddress) as IUniswapV2Router02;
     const usdt = await ethers.getContractAt("IERC20", usdtAddress);
     
@@ -236,12 +226,12 @@ async function setupAndCheckPair() {
     if (pairAddress === ethers.ZeroAddress) {
       console.log("交易对未设置，尝试创建...");
       const factoryContract = await ethers.getContractAt("IUniswapV2Factory", factory);
-      pairAddress = await factoryContract.getPair(ProxyAddress, usdtAddress);
+      pairAddress = await factoryContract.getPair(FoMoxAddress, usdtAddress);
       
       if (pairAddress === ethers.ZeroAddress) {
         console.log("交易对不存在，正在创建...");
-        await factoryContract.createPair(ProxyAddress, usdtAddress);
-        pairAddress = await factoryContract.getPair(ProxyAddress, usdtAddress);
+        await factoryContract.createPair(FoMoxAddress, usdtAddress);
+        pairAddress = await factoryContract.getPair(FoMoxAddress, usdtAddress);
       }
       
       console.log("设置交易对地址:", pairAddress);
@@ -280,7 +270,7 @@ async function setupAndCheckPair() {
         
         console.log("添加初始流动性...");
         await router.connect(user).addLiquidity(
-          ProxyAddress,
+          FoMoxAddress,
           usdtAddress,
           initialTokenAmount,
           initialUsdtAmount,
@@ -322,7 +312,7 @@ async function simulatePancakeSwapBuy() {
     // 配置需要的地址
     const usdtAddress = "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"; 
     const routerAddress = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"; 
-    const foMoxAddress = ProxyAddress;
+    const foMoxAddress = FoMoxAddress;
     
     // 获取合约实例
     const usdt = await ethers.getContractAt("IERC20", usdtAddress);
@@ -408,9 +398,9 @@ async function simulatePancakeSwapBuy() {
 
 async function setFTokenAddress() {
   try {
-    console.log(`开始设置FToken合约(${ProxyAddress})的地址...`);
+    console.log(`开始设置FToken合约(${FoMoxAddress})的地址...`);
     
-    const FoMox = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    const FoMox = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
     await FoMox.setFTokenAddress("0xE36CF4Aab15d778e6aAa44696369e29b77a84b2b");
     
     console.log("已设置FToken地址");
@@ -422,8 +412,8 @@ async function setFTokenAddress() {
 
 async function setBlackList(address:string,flag:boolean) {
   try {
-    console.log(`开始设置FoMox合约(${ProxyAddress})的黑名单地址...`);
-    const FoMox = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    console.log(`开始设置FoMox合约(${FoMoxAddress})的黑名单地址...`);
+    const FoMox = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
      await FoMox.setBlockAddress(address, flag);
     console.log("已设置黑名单地址");
   } catch (error) {
@@ -434,11 +424,11 @@ async function setBlackList(address:string,flag:boolean) {
 
 async function getAmountsOut() {
   try {
-    console.log(`开始获取FoMox合约(${ProxyAddress})的价格...`);
-    const FoMox = await ethers.getContractAt("FoMox", ProxyAddress) as FoMox;
+    console.log(`开始获取FoMox合约(${FoMoxAddress})的价格...`);
+    const FoMox = await ethers.getContractAt("FoMox", FoMoxAddress) as FoMox;
     const router = await ethers.getContractAt("IUniswapV2Router02", "0xD99D1c33F9fC3444f8101754aBC46c52416550D1") as IUniswapV2Router02;
     const usdtAddress = "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"; // 测试网USDT地址
-    const path = [usdtAddress, ProxyAddress];
+    const path = [usdtAddress, FoMoxAddress];
     
     const amountIn = ethers.parseUnits("18106473883045268", 0); // 1 USDT
     const amountsOut = await router.getAmountsOut(amountIn, path);
@@ -467,7 +457,7 @@ async function simulatePancakeSwapSell() {
     // 配置需要的地址
     const usdtAddress = "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"; 
     const routerAddress = "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"; 
-    const foMoxAddress = ProxyAddress;
+    const foMoxAddress = FoMoxAddress;
     
     // 获取合约实例
     const usdt = await ethers.getContractAt("IERC20", usdtAddress);
@@ -544,8 +534,8 @@ async function simulatePancakeSwapSell() {
   }
 }
 
-// main()
-upgradeFoMox(false)
+main()
+// upgradeFoMox(false)
 // .then(async () => {
 //   console.log("升级完成");
  

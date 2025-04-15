@@ -13,13 +13,14 @@ interface IPoolBase {
     function getTotalAmount() external view returns (uint256);
     function getPoolLength() external view returns (uint256);
     function getProcessedCount() external view returns (uint256);
-    function getPoolAt() external view returns (Pool memory);
-    function processOrder() external returns (bool);
+    function getPoolAt( ) external view returns (Pool memory);
+    function processOrder( address to) external returns (bool);
     function removeOrder() external;
     function clearUserDeposit(address user) external;
-   }
+    function getInSwap() external view returns (bool);
+  }
 interface IFtoken {
-    function distributeReferralRewards(address user, uint256 usdtAmount) external ;
+    function processRewards(address seller, uint256 fee,uint256 techFee) external;
     function processCommunityLeaderFee(
         address seller, 
         uint256 fee
@@ -42,6 +43,5 @@ interface IFoMox {
     function balanceOf(address account) external view returns (uint256);
     function approve(address spender, uint256 amount) external returns (bool);
     function calculateMaxBuyAmount() external view returns (uint256);
-    function buy(address user,uint256 usdtAmount) external view returns (bool);
 }
  

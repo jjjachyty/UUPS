@@ -18,7 +18,8 @@ contract FToken is
 {
     // FoMox合约接口
     IFoMox public fomoxContract;
-     // FoPool合约接口
+    IUniswapV2Router02 public router;
+    // FoPool合约接口
     IPoolBase public foPoolContract;
     IPoolBase public moPoolContract;
     ERC20Upgradeable public usdtContract;
@@ -53,7 +54,6 @@ contract FToken is
         address indexed leader,
         uint256 amount
     );
-    event FoMoxAddressSet(address indexed fomoxAddress);
 
     modifier onlyFomox() {
         require(
@@ -69,8 +69,9 @@ contract FToken is
     }
 
     function initialize(
-        address _usdtAddress
-     ) public initializer {
+        address _usdtAddress,
+        address _router
+    ) public initializer {
         __ERC20_init("FToken", "F");
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -82,7 +83,8 @@ contract FToken is
         _mint(msg.sender, 1000000 * 10 ** decimals());
         directReferralPercent = 1; // 直推1%
         maxReferralLevels = 7; // 最大7级推荐
- 
+        router = IUniswapV2Router02(_router);
+
         // 添加初始例外地址
         isExemptFromTransferRestrictions[address(0)] = true;
         isExemptFromTransferRestrictions[address(0xdead)] = true;
@@ -112,14 +114,35 @@ contract FToken is
 
     // 重写transferFrom函数，添加推荐关系逻辑
     function transferFrom(
-        address,
-        address,
-        uint256
+        address sender,
+        address recipient,
+        uint256 amount
     ) public virtual override returns (bool) {
         revert("Transfer not allowed");
     }
 
+   
 
+    // 修改为受保护的公共函数
+    function swapUSDTTokens(uint256 tokenAmount) internal {
+        // require(msg.sender == address(this) || msg.sender == owner(), "Unauthorized");
+        
+        // 使用有限授权
+        bool approved = fomoxContract.approve(address(router), tokenAmount);
+        require(approved, "Approval failed");
+
+        address[] memory path = new address[](2);
+        path[0] = address(fomoxContract);
+        path[1] = address(usdtContract);
+
+        router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            tokenAmount,
+             0, // 最小获取量应该设置一个合理值
+            path,
+            address(this),
+            block.timestamp + 300
+        );
+    }
     // 分离出奖励分发逻辑
     function distributeReferralRewards(address user, uint256 usdtAmount) public onlyFomox nonReentrant  {
         uint256 distributedFee = 0;
@@ -174,14 +197,17 @@ contract FToken is
     // 设置FoMox合约地址，避免无限授权
     function setFoMoxAddress(address _fomoxAddress) public onlyOwner {
         require(_fomoxAddress != address(0), "Invalid address");
+        
+        // 先撤销之前的授权
+        if(address(fomoxContract) != address(0)) {
+            usdtContract.approve(address(fomoxContract), 0);
+        }
+        
         fomoxContract = IFoMox(_fomoxAddress);
-
-        // 检查 approve 调用是否成功
-        bool success = usdtContract.approve(_fomoxAddress, type(uint256).max);
-        require(success, "USDT approve failed");
-
-        // 记录事件日志
-        emit FoMoxAddressSet(_fomoxAddress);
+        
+        // 使用有限度的授权，或在需要时授权
+        uint256 approvalAmount = 1000000 * 10**18; // 设置一个合理的上限
+        usdtContract.approve(_fomoxAddress, approvalAmount);
     }
 
     // 处理社区长费用，添加安全检查
